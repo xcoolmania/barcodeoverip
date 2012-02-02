@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">BarcodeOverIP</string>
+    <string name="app_desc">Use your mobile device as a wireless barcode scanner for your PC</string>
+    
+    <!-- Application General Information -->
+    <string name="about">About</string>
+    <string name="about_msg_title">About BarcodeOverIP</string>
+    <string name="about_msg_body">Version 0.1.1 Alpha\n(c)2012 - Tyler H. Jones\imgdump.me\tylerjones.me</string>
+    <string name="website">BarcodeOverIP Website</string>
+    <string name="donate">Donate</string>
+    <string name="version">BarcodeOverIP v0.1.1 Alpha</string>
+    <string name="versionnum">0.1.1-Alpha</string>
+    <string name="project_site">http://tbsf.me/boip</string>
+    <string name="project_donate_site">http://tbsf.me/boip/donate</string>
+    <string name="developer_site">http://tylerjones.me</string>
+    <string name="author">Tyler H. Jones</string>
+    <string name="beta_msg_title">Beta Version!</string>
+    <string name="beta_msg_body">This is a possibly unstable beta version of BarcodeOverIP. Please record all bugs and backup you system before running!</string>
+    <string name="beta_warning">WARNING! BETA VERSION! BarcodeOverIP v0.1.x is still in the BETA development stage. 
+    							It is considered stable enough to run without major problems yet it is still being tested and 
+    							some bugs may exist. Although very unlikely, a beta version of an application COULD CAUSE SERIOUS 
+    							SYSTEM DAMAGE. Use these versions at you own risk and report all bugs you encounter.</string>
+    						
+    <string name="test_conn">Test Connection</string>
+    <string name="cs_not_connected">Not Connected</string>
+    <string name="cs_connected">Connected</string>
+    <string name="cs_error">Connection Error!</string>   
+    <string name="cs_timeout">Connection Timed Out!</string>
+    <string name="server_settings">BarcodeOverIP Server Settings</string>
+    <string name="txthost_hint">Server IP Address</string>
+    <string name="btnconnect_label_con">Connect</string>
+    <string name="btnapplyserver_label">Apply Server Settings</string>
+    <string name="txtport_hint">Port (default=41788)</string>
+    <string name="txtpass_hint">Password (If Set on Server)</string>
+    <string name="btnapplyserver_label_edit">Edit Server Settings</string>
+    <string name="btnscanbarcode_label">Scan A Barcode</string>
+    <string name="author_label">(C) 2012 Tyler H. Jones - me@tylerjones.me</string>
+    
+    <string name="mnuMainExit_title">Exit</string>
+    <string name="mnuMainAbout_title">About</string>
+    <string name="mnuMainDonate_title">Donate</string>
+    <string name="mnuMainWebsite_title">Website</string>
+</resources>
