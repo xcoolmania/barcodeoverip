@@ -29,37 +29,22 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Hashtable;
 import java.util.Formatter;
 
 public class Common {
-//** Network Configuration Constants **********
+//-----------------------------------------------------------------------------------------
+//--- Constant varible declarations -------------------------------------------------------
 	public static final Integer NET_PORT = 41788;
-	public static final String NET_HOST = "";
+	public static final String NET_HOST = "none";
 	
 	/** The Constant APP_AUTHOR. */
 	public static final String APP_AUTHOR = "@string/author";
 	/** The Constant APP_VERSION. */
 	public static final String APP_VERSION = "@string/versionnum";	
 	
-	public static Hashtable<String, String> dataChars() {
-		Hashtable<String, String> chars = new Hashtable<String, String>(13);
-		chars.put(";", "_%10");
-		chars.put("=", "_%12");
-		chars.put(":", "_%14");
-		chars.put("&", "_%16");
-		chars.put("+", "_%17");
-		chars.put("@", "_%18");
-		chars.put("#", "_%19");
-		chars.put(":", "_%20");
-		chars.put(":", "_%21");
-		chars.put("\\", "_%22");
-		chars.put("(", "_%24");
-		chars.put(")", "_%25");
-		chars.put("?", "_%30");
-		return chars;
-	}
+//-----------------------------------------------------------------------------------------
+//--- Server return error codes and descriptions ------------------------------------------
 	
 	public static Hashtable<String, String> errorCodes() {
 		Hashtable<String, String> errors = new Hashtable<String, String>(13);
@@ -78,13 +63,11 @@ public class Common {
 		errors.put("ERR13", "Incorrect Username/Password!");
 		errors.put("ERR14", "Invalid Login Command Syntax.");
 		errors.put("ERR19", "Unknown Auth Error");
-		errors.put("ERR20", "Image Not Found!");
-		errors.put("ERR21", "Image Too Large!");
-		errors.put("ERR22", "Invalid Image Type!");
-		errors.put("ERR23", "Not an Image File!");
-		errors.put("ERR24", "Image Upload Failed!");
 		return errors;
 	}
+	
+//-----------------------------------------------------------------------------------------
+//--- Value type conversion functions -----------------------------------------------------
 	
 	/**
 	 * b2s.
@@ -108,6 +91,9 @@ public class Common {
 		return false;
 	}
 	
+//-----------------------------------------------------------------------------------------
+//--- Validate settings values functions --------------------------------------------------
+	
 	public static void isValidIP(String ip) throws Exception {
 		try {
 			String[] octets = ip.split("\\.");
@@ -129,19 +115,15 @@ public class Common {
 		}
 	}
 	
-	public static String calculateHash(MessageDigest algorithm,
-            String fileName) throws Exception{
-
+//-----------------------------------------------------------------------------------------
+//--- Make SHA1 Hash for transmitting passwords -------------------------------------------
+	
+	public static String calculateHash(MessageDigest algorithm, String fileName) throws Exception{
         FileInputStream     fis = new FileInputStream(fileName);
         BufferedInputStream bis = new BufferedInputStream(fis);
         DigestInputStream   dis = new DigestInputStream(bis, algorithm);
-
-        // read the file and update the hash calculation
         while (dis.read() != -1);
-
-        // get the hash value as byte array
         byte[] hash = algorithm.digest();
-
         return byteArray2Hex(hash);
     }
 
@@ -152,5 +134,4 @@ public class Common {
         }
         return formatter.toString();
     }
-
 }
