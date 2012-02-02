@@ -1,0 +1,84 @@
+2012-02-02 05:30:43,551 INFO Config file found... Loaded OK!
+2012-02-02 05:31:19,044 INFO Config file found... Loaded OK!
+2012-02-02 05:31:19,062 INFO Server Socket Created successfully! - Host/IP: 0.0.0.0 -- Port: 41788
+2012-02-02 05:31:35,348 INFO Incoming Connection! - From: ('127.0.0.1', 46367)
+2012-02-02 05:31:39,250 INFO Version Info Request - A client is requesting the server's version information.
+2012-02-02 05:31:42,344 INFO Incoming Connection! - From: ('127.0.0.1', 46370)
+2012-02-02 05:32:18,650 INFO Invalid Data Recvd - An incomplete or invalid set of commands was recvd from the client.
+2012-02-02 05:47:41,831 INFO Keyboard Interupt - Received keyboard interrupt, quitting threads
+2012-02-02 05:47:44,259 INFO Config file found... Loaded OK!
+2012-02-02 05:47:44,292 INFO Server Socket Created successfully! - Host/IP: 0.0.0.0 -- Port: 41788
+2012-02-02 05:47:46,713 INFO Incoming Connection! - From: ('127.0.0.1', 46588)
+2012-02-02 05:47:57,232 INFO Invalid Data Recvd - An incomplete or invalid set of commands was recvd from the client.
+2012-02-02 05:50:07,601 INFO Keyboard Interupt - Received keyboard interrupt, quitting threads
+2012-02-02 05:50:08,881 INFO Config file found... Loaded OK!
+2012-02-02 05:50:08,897 INFO Server Socket Created successfully! - Host/IP: 0.0.0.0 -- Port: 41788
+2012-02-02 05:50:10,983 INFO Incoming Connection! - From: ('127.0.0.1', 46650)
+2012-02-02 05:50:17,202 INFO Finished Parsing Data - Parsed data: '737492837237;'
+2012-02-02 05:50:17,202 INFO Sending Keyboard Emulation - Sending keystrokes to system...
+2012-02-02 05:53:37,664 INFO Config file found... Loaded OK!
+2012-02-02 05:53:37,695 INFO Server Socket Created successfully! - Host/IP: 0.0.0.0 -- Port: 41788
+2012-02-02 05:53:39,743 INFO Incoming Connection! - From: ('127.0.0.1', 46686)
+2012-02-02 05:53:47,212 INFO Finished Parsing Data - Parsed data: '737492837237;'
+2012-02-02 05:53:47,212 INFO Sending Keyboard Emulation - Sending keystrokes to system...
+2012-02-02 05:55:40,377 INFO Config file found... Loaded OK!
+2012-02-02 05:55:40,395 INFO Server Socket Created successfully! - Host/IP: 0.0.0.0 -- Port: 41788
+2012-02-02 05:55:41,722 INFO Incoming Connection! - From: ('127.0.0.1', 46713)
+2012-02-02 05:55:51,552 INFO Finished Parsing Data - Parsed data: '737492837237;'
+2012-02-02 05:55:51,552 INFO Sending Keyboard Emulation - Sending keystrokes to system...
+2012-02-02 05:55:51,592 INFO Sending Keyboard Emulatio - DONE - Sending keystrokes to system...FINISHED!
+2012-02-02 05:55:51,592 INFO Sending 'THANKS' To Client - Sending a thank you to the client to inform of successful receipt.
+2012-02-02 05:57:20,762 INFO Keyboard Interupt - Received keyboard interrupt, quitting threads
+2012-02-02 05:57:27,006 INFO Config file found... Loaded OK!
+2012-02-02 05:57:27,032 INFO Server Socket Created successfully! - Host/IP: 0.0.0.0 -- Port: 41788
+2012-02-02 05:57:28,503 INFO Incoming Connection! - From: ('127.0.0.1', 46740)
+2012-02-02 05:57:38,102 INFO Finished Parsing Data - Parsed data: '737492837237'
+2012-02-02 05:57:38,102 INFO Sending Keyboard Emulation - Sending keystrokes to system...
+2012-02-02 05:57:38,138 INFO Sending Keyboard Emulatio - DONE - Sending keystrokes to system...FINISHED!
+2012-02-02 05:57:38,138 INFO Sending 'THANKS' To Client - Sending a thank you to the client to inform of successful receipt.
+2012-02-02 07:08:28,934 INFO Keyboard Interupt - Received keyboard interrupt, quitting threads
+2012-02-02 07:08:30,276 INFO Config file found... Loaded OK!
+2012-02-02 07:08:30,306 INFO Server Socket Created successfully! - Host/IP: 0.0.0.0 -- Port: 41788
+2012-02-02 07:13:49,320 INFO Keyboard Interupt - Received keyboard interrupt, quitting threads
+2012-02-02 09:39:20,746 INFO Config file found... Loaded OK!
+2012-02-02 09:39:20,812 INFO Server Socket Created successfully! - Host/IP: 0.0.0.0 -- Port: 41788
+2012-02-02 09:56:17,056 INFO Incoming Connection! - From: ('192.168.1.47', 36717)
+2012-02-02 09:56:17,056 INFO BoIP Client Verification - BoIP cilent has verified its server settings OK
+2012-02-02 09:56:17,056 INFO Finished Parsing Data - Parsed data: ''
+2012-02-02 09:56:17,056 INFO Sending Keyboard Emulation - Sending keystrokes to system...
+2012-02-02 09:56:17,199 INFO Sending Keyboard Emulatio - DONE - Sending keystrokes to system...FINISHED!
+2012-02-02 09:56:17,199 INFO Sending 'THANKS' To Client - Sending a thank you to the client to inform of successful receipt.
+2012-02-02 10:27:30,452 INFO Incoming Connection! - From: ('192.168.1.47', 60412)
+2012-02-02 10:27:30,452 INFO BoIP Client Verification - BoIP cilent has verified its server settings OK
+2012-02-02 10:27:30,452 INFO Finished Parsing Data - Parsed data: ''
+2012-02-02 10:27:30,452 INFO Sending Keyboard Emulation - Sending keystrokes to system...
+2012-02-02 10:27:30,459 INFO Sending Keyboard Emulatio - DONE - Sending keystrokes to system...FINISHED!
+2012-02-02 10:27:30,459 INFO Sending 'THANKS' To Client - Sending a thank you to the client to inform of successful receipt.
+2012-02-02 10:30:50,745 INFO Incoming Connection! - From: ('192.168.1.47', 49183)
+2012-02-02 10:30:50,745 INFO BoIP Client Verification - BoIP cilent has verified its server settings OK
+2012-02-02 10:30:50,745 INFO Finished Parsing Data - Parsed data: ''
+2012-02-02 10:30:50,745 INFO Sending Keyboard Emulation - Sending keystrokes to system...
+2012-02-02 10:30:50,834 INFO Sending Keyboard Emulatio - DONE - Sending keystrokes to system...FINISHED!
+2012-02-02 10:30:50,835 INFO Sending 'THANKS' To Client - Sending a thank you to the client to inform of successful receipt.
+2012-02-02 10:31:13,375 INFO Incoming Connection! - From: ('192.168.1.47', 57674)
+2012-02-02 10:31:13,376 INFO BoIP Client Verification - BoIP cilent has verified its server settings OK
+2012-02-02 10:31:13,376 INFO Finished Parsing Data - Parsed data: ''
+2012-02-02 10:31:13,376 INFO Sending Keyboard Emulation - Sending keystrokes to system...
+2012-02-02 10:31:13,425 INFO Sending Keyboard Emulatio - DONE - Sending keystrokes to system...FINISHED!
+2012-02-02 10:31:13,425 INFO Sending 'THANKS' To Client - Sending a thank you to the client to inform of successful receipt.
+2012-02-02 10:32:50,510 INFO Keyboard Interupt - Received keyboard interrupt, quitting threads
+2012-02-02 10:33:19,349 INFO Config file found... Loaded OK!
+2012-02-02 10:33:19,382 INFO Server Socket Created successfully! - Host/IP: 0.0.0.0 -- Port: 41788
+2012-02-02 10:33:22,707 INFO Incoming Connection! - From: ('192.168.1.47', 54591)
+2012-02-02 10:33:22,707 INFO BoIP Client Verification - BoIP cilent has verified its server settings OK
+2012-02-02 10:52:52,370 INFO Keyboard Interupt - Received keyboard interrupt, quitting threads
+2012-02-02 10:52:56,138 INFO Config file found... Loaded OK!
+2012-02-02 10:52:56,162 INFO Server Socket Created successfully! - Host/IP: 0.0.0.0 -- Port: 41788
+2012-02-02 10:53:41,349 INFO Incoming Connection! - From: ('127.0.0.1', 55374)
+2012-02-02 10:54:02,132 INFO Invalid data format and/or syntax! - Does not end with ';'
+2012-02-02 10:54:07,182 INFO Incoming Connection! - From: ('127.0.0.1', 59181)
+2012-02-02 10:54:13,132 INFO Finished Parsing Data - Parsed data: 'sdfsdfsfsdff'
+2012-02-02 10:54:13,132 INFO Sending Keyboard Emulation - Sending keystrokes to system...
+2012-02-02 10:54:13,172 INFO Sending Keyboard Emulatio - DONE - Sending keystrokes to system...FINISHED!
+2012-02-02 10:54:13,173 INFO Sending 'THANKS' To Client - Sending a thank you to the client to inform of successful receipt.
+2012-02-02 16:01:31,644 INFO Keyboard Interupt - Received keyboard interrupt, quitting threads
