@@ -168,7 +168,7 @@ def handleConnection(cs):
 			check_array = data.upper().split(DSEP)
 			chash = check_array[1]
 			chash  = chash[:-1] #Remove trailing semi-colon on the last parameter value
-			if phash.upper() != "NONE":
+			if phash.upper().strip() != "NONE":
 				if chash.upper().strip() == phash.upper().strip():
 					cs.send(OK)
 					log.info("BoIP Client Verification", "BoIP cilent has verified its server settings OK")

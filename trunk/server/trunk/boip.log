@@ -82,3 +82,5 @@
 2012-02-02 10:54:13,172 INFO Sending Keyboard Emulatio - DONE - Sending keystrokes to system...FINISHED!
 2012-02-02 10:54:13,173 INFO Sending 'THANKS' To Client - Sending a thank you to the client to inform of successful receipt.
 2012-02-02 16:01:31,644 INFO Keyboard Interupt - Received keyboard interrupt, quitting threads
+2012-02-02 16:29:00,032 INFO Config file found... Loaded OK!
+2012-02-02 16:29:00,095 INFO Server Socket Created successfully! - Host/IP: 0.0.0.0 -- Port: 41788

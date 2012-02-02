@@ -3,7 +3,6 @@ package com.tylerhjones.boip;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.text.Editable;
 import android.util.Log;
 
 public class Settings {

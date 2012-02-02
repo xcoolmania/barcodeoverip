@@ -27,11 +27,10 @@
 
 package com.tylerhjones.boip;
 
-
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.tylerhjones.boip.R;
-import com.tylerhjones.boip.Common;
+//import com.tylerhjones.boip.Common;
 import com.tylerhjones.boip.Settings;
 import com.tylerhjones.boip.BoIPClient;
 
@@ -48,7 +47,6 @@ import android.net.Uri;
 
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.view.*;
@@ -70,22 +68,21 @@ public class BoIPActivity extends Activity {
 	
 	private Button btnApplyServer;	
 	private Button btnScanBarcode;
-	
-	public static BoIPClient BoIP;
-	
+		
 	    /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i(TAG, "onCreate called! Application starting up!");
         
-        setContentView(R.layout.main);
+        setContentView(R.layout.main); //Setup the window form layout
 
-		Settings.init(this.getApplicationContext());
-		
-        //--- Setup TextViews -----------------
+        //--- Setup Status TextView -----------------
         lblConnStatus = (TextView) findViewById(R.id.lblConnStatus);
-        
+
+		Settings.init(this);
+		BoIPClient BoIP = new BoIPClient(Settings.port, Settings.host, Settings.pass, this, lblConnStatus);
+	    if(BoIP.toString().length() > 0) { /*nothin*/ }
         //--- Setup TextEdits -------------------
 		txtHost = (EditText)this.findViewById(R.id.txtHost);
 		if (Settings.host != null) {
@@ -100,7 +97,7 @@ public class BoIPActivity extends Activity {
 			txtPass.setText(Settings.pass);
 		}
         
-        //--- Setup buttons -------------------
+//--- Setup buttons --------------------------------------------------------
         btnApplyServer = (Button) findViewById(R.id.btnApplyServer);
         btnApplyServer.setOnClickListener(new View.OnClickListener() {
         	public void onClick(View view) {
@@ -145,6 +142,10 @@ public class BoIPActivity extends Activity {
 //--- Connection Functions -----------------------------------------------------------
 	
 	public void ApplyServerSettings() {
+		//FIXME: I do not like how I initialize this class three times in the same class. Need to understand how pointers work in Java
+		// as it differs greatly from C (unfortunatley) 
+		BoIPClient BoIP = new BoIPClient(Settings.port, Settings.host, Settings.pass, this, lblConnStatus);
+		
 		if(txtHost.getText().toString().trim() == "" || txtHost.getText().toString() == null) {
 			String title = "No Hostname/IP Address Given!";
 			String msg = "No Hostname/IP Address was given!";
@@ -172,23 +173,14 @@ public class BoIPActivity extends Activity {
 	
 			Settings.setHost(txtHost.getText().toString());
 			Settings.setPort(txtPort.getText().toString());
-			if(BoIP != null) {
-				BoIP = new BoIPClient(Settings.port, Settings.host, Settings.pass, this.getApplicationContext(), lblConnStatus);
-				BoIP.checkConnection();
-			} else {
-				Log.e(TAG, "FUCK I FOUND IT!");
-				BoIP = new BoIPClient(Settings.port, Settings.host, Settings.pass, this.getApplicationContext(), lblConnStatus);
-				if(BoIP != null) {
-					Log.e(TAG, "FUCK FUCK FUCK FUCK");
-				}
-			}
+			BoIP.checkConnection();
 		} catch (Exception e) {
 			Log.e(TAG, "ApplyServerSettings() - " + e);
 		}		
 	}
 	
 	public void showScanBarcode() {	
-		if(!BoIP.CanConnect) { 
+		if(!BoIPClient.CanConnect) { 
 			String title = "Server Settings Not Set!";
 			String msg = "You must input the valid and camplete server settings values into the textboxes and press 'Apply Settings'. You can only scan barcodes if you have a valid connection setup.";
 		    AlertDialog ad = new AlertDialog.Builder(this).create();  
@@ -204,6 +196,7 @@ public class BoIPActivity extends Activity {
 			return;
 		}		
 		
+		//ZXing Product Lookup Window
 		Intent intent = new Intent("com.google.zxing.client.android.SCAN");
       	intent.putExtra("SCAN_MODE", "PRODUCT_MODE");
       	intent.putExtra("SCAN_WIDTH", 800);
@@ -215,6 +208,7 @@ public class BoIPActivity extends Activity {
 	}
 
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+		BoIPClient BoIP = new BoIPClient(Settings.port, Settings.host, Settings.pass, this, lblConnStatus);
 		if(resultCode == RESULT_OK) {
 			  IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
 			  String barcode = result.getContents().toString();
