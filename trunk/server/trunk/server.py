@@ -50,7 +50,7 @@ DSEP="||"
 DLIM=";"
 DDATA="_DATA:" #ex: "%_CMD:getimgfile=HY9cyL;getimginfo=HY9cyL;"
 DHASH="_HASH:" #ex: "%_AUTH:userid||authkey_CMD:getimgfile=HY9cyL;"
-THANKS = "THANKS" #sent from server to client when server has finished successfully
+THANKS = "\nTHANKS" #sent from server to client when server has finished successfully
 OK = "\nOK" #Server's response to CHECK command on success
 
 
@@ -60,7 +60,7 @@ import config, logger, virtkey
 
 ## Startup message/server info
 print "\n*******************************************************************************"
-print "** " + APPNAME + " " + VERSION + " - BarcodeOverIP server for taget systems"
+print "** " + APPNAME + " " + VERSION + " - BarcodeOverIP-server for taget "
 print "** http://tbsf.me/boip - Written By: Tyler H. Jones, February 2012"
 print "** Licensed Under Apache-2.0 License. (C) 2012 - Tyler H. Jones (tylerjones.me) "
 print "*******************************************************************************"
@@ -102,11 +102,8 @@ if(config["Password"].strip() != ""):
 else:
 	phash = "NONE"
 
-data_chars = {';':'_%10', '=':'_%12', ':':'_%14', '&':'_%16', '+':'_%17', '@':'_%18', '#':'_%19', ' ':'_%20', ',':'_%21', '\\':'_%22', '(':'_%24', ')':'_%25', '?':'_%30'}
-
 error_codes = {'ERR1':'Invalid data format and/or syntax!', 'ERR2':'No data was sent!', 'ERR3':'Invalid Command Sent!', 'ERR4':'Missing/Empty Command Argument(s) Recvd.', 'ERR5':'Invalid command syntax!', 'ERR6':'Invalid Auth Syntax!', 'ERR7':'Access Denied!', 'ERR8':'Server Timeout, Too Busy to Handle Request!', 'ERR9':'Unknown Data Transmission Error',
-		'ERR10':'Auth required.', 'ERR11':'Invalid Password.', 'ERR12':'Not logged in.', 'ERR13':'Incorrect Username/Password!', 'ERR14':'Invalid Login Command Syntax.', 'ERR19':'Unknown Auth Error',
-		'ERR20':'Image Not Found!', 'ERR21':'Image Too Large!', 'ERR22':'Invalid Image Type!', 'ERR23':'Not an Image File!', 'ERR24':'Image Upload Failed!'
+		'ERR10':'Auth required.', 'ERR11':'Invalid Password.', 'ERR12':'Not logged in.', 'ERR13':'Incorrect Username/Password!', 'ERR14':'Invalid Login Command Syntax.', 'ERR19':'Unknown Auth Error'
 	}
 
 ###############################################################################################
@@ -183,7 +180,7 @@ def handleConnection(cs):
 			else:
 				cs.send(OK)
 				log.info("BoIP Client Verification", "BoIP cilent has verified its server settings OK")	
-					
+			return True	
 		if data.upper() == "VERSION": # Get the server version and information
 			log.info("Version Info Request", "A client is requesting the server's version information.")
 			cs.send("\n***********************************************************\nBarcodeOverIP-server 0.1.1 Alpha\nPowered by Python 3.2 and MySQL\nThis server is for use with remote/mobile applications.\nPlease visit http://tbsf.me/boip for all other uses.\n\nWritten by: Tyler H. Jones (me@tylerjones.me) (C) 2012 - http://tbsf.me/boip\n***********************************************************\n\n")
