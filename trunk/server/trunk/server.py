@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 ##
-## BarcodeOverIP-server (python) Version 0.2.x Alpha
+## BarcodeOverIP-server (python) Version 0.2.x Beta
 ## Copyright (C) 2012  Tyler H. Jones (me@tylerjones.me)
 ## https://code.google.com/p/barcodeoverip/
 ##
@@ -22,7 +22,9 @@
 ## Constant variables
 
 VERSION="0.2.1"
-APPNAME="BarcodeOverIP-server"
+APPNAME="BarcodeOverIP-server-python_linux"
+#APPNAME="BarcodeOverIP-server-python_all"
+
 
 DSEP="||"
 DLIM=";"
@@ -32,8 +34,28 @@ THANKS = "THANKS\n" #sent from server to client when server has finished success
 OK = "OK\n" #Server's response to CHECK command on success
 
 ## Imports
-import time, shelve, os, sys, string, threading, socket, shutil, hashlib#, base64
-import config, logger, virtkey
+import time, shelve, os, sys, string, socket, hashlib
+#import threading, base64
+import config, logger
+
+if sys.platform == "win32":
+        ### Windows ONLY
+        import win32com.client
+elif sys.platform == "linux2":
+        ### Linux/X11 ONLY:
+        import virtkey
+elif sys.platform == "darmin":
+        ### MacOSX Only, dunno what to do here...
+        print "\n\n *** MacOS X support is still under development!\nSorry to dissapoint you! ***\n\n"
+        sys.exit()
+else:
+        ### Other systems
+        print "\n\n**************************************************"
+        print "** You seem to be running Python on a system not supported"
+        print "** by BarcodeOverIP-Server (Python). So far SoIP supports"
+        print "** Linux, Unix, MacOS X and Windows"
+        print "**************************************************\n\n"
+        sys.exit()
 
 ## Startup message/server info
 print "\n*******************************************************************************"
@@ -66,7 +88,6 @@ else:
 config = shelve.open(".config")
 
 ###############################################################################################
-###############################################################################################
 ## Variable Declarations
 ###############################################################################################
 
@@ -87,45 +108,66 @@ error_codes = {'ERR1':'Invalid data format and/or syntax!', 'ERR2':'No data was 
 	}
 
 ###############################################################################################
-###############################################################################################
 ## BEGIN - Functions
 ###############################################################################################
 
-def type_key(key, mask1="", mask2=""):
-	v = virtkey.virtkey()
-	if mask1 != "" and mask1 in mask_names: 
-		v.lock_mod(masks[mask1])
-	if mask2 != "" and mask2 in mask_names: 
-		v.lock_mod(masks[mask2])
+##########
+## WIN32/
+##########
+if sys.platform == "win32":
+        shell = win32com.client.Dispatch("WScript.Shell")
+        #shell.SendKeys("c", 0)
+        def type_string(s):
+                char_array = list(s);
+                for char in char_array:
+                        shell.SendKeys(str(char), 0)
 
-	v.press_unicode(ord(key))
-	v.release_unicode(ord(key)) #Release must be called IMMEDIATLEY after 'press'!
+##########
+## /WIN32
+##########
 
-	if mask1 != "" and mask1 in mask_names:
-		v.unlock_mod(masks[mask1])
-	if mask2 != "" and mask2 in mask_names:
-		v.unlock_mod(masks[mask2])
+##########
+## LINUX/
+##########
+if sys.platform == "linux2":
+        def type_key(key, mask1="", mask2=""):
+                v = virtkey.virtkey()
+                if mask1 != "" and mask1 in mask_names: 
+                        v.lock_mod(masks[mask1])
+                if mask2 != "" and mask2 in mask_names: 
+                        v.lock_mod(masks[mask2])
 
-def type_keycode(code, mask1="", mask2=""):
-	v = virtkey.virtkey()
-	if mask1 != "" and mask1 in mask_names: 
-		v.lock_mod(masks[mask1])
-	if mask2 != "" and mask2 in mask_names: 
-		v.lock_mod(masks[mask2])
+                v.press_unicode(ord(key))
+                v.release_unicode(ord(key)) #Release must be called IMMEDIATLEY after 'press'!
 
-	v.press_keycode(code)
-	v.release_keycode(code) #Release must be called IMMEDIATLEY after 'press'!
+                if mask1 != "" and mask1 in mask_names:
+                        v.unlock_mod(masks[mask1])
+                if mask2 != "" and mask2 in mask_names:
+                        v.unlock_mod(masks[mask2])
 
-	if mask1 != "" and mask1 in mask_names:
-		v.unlock_mod(masks[mask1])
-	if mask2 != "" and mask2 in mask_names:
-		v.unlock_mod(masks[mask2])
+        def type_keycode(code, mask1="", mask2=""):
+                v = virtkey.virtkey()
+                if mask1 != "" and mask1 in mask_names: 
+                        v.lock_mod(masks[mask1])
+                if mask2 != "" and mask2 in mask_names: 
+                        v.lock_mod(masks[mask2])
 
-def type_string(s):
-	char_array = list(s);
-	for char in char_array:
-		type_key(char);
+                v.press_keycode(code)
+                v.release_keycode(code) #Release must be called IMMEDIATLEY after 'press'!
 
+                if mask1 != "" and mask1 in mask_names:
+                        v.unlock_mod(masks[mask1])
+                if mask2 != "" and mask2 in mask_names:
+                        v.unlock_mod(masks[mask2])
+
+        def type_string(s):
+                char_array = list(s);
+                for char in char_array:
+                        type_key(char);
+
+##########
+## /LINUX
+##########
 	
 ##
 ## Handle data received by the server
@@ -139,18 +181,18 @@ def handleConnection(cs):
 		return False
 	else:
 		if str(data).strip() != "": #TODO: Remove this when no longer debugging
-			print("DEBUG: Received Data: " + str(data).strip())
+			#print("DEBUG: Received Data: " + str(data).strip())
 		#data = str(data).strip()
-###############################################
-## Basic server commands
-	## CHECK||[PASS_SHA1_HASH] - Check if client has access to the server
+        ###############################################
+        ## Basic server commands
 	if data.upper().startswith("CHECK") and data.upper().find(DSEP) > 0 and data.upper().endswith(";"):
 		check_array = data.upper().split(DSEP)
 		client_hash = check_array[1]
 		client_hash  = client_hash[:-1] #Remove trailing semi-colon on the last parameter value
-		print "clint_hash: " + client_hash
+		#print "clint_hash: " + client_hash
 		if server_hash.upper().strip() != "NONE":
 			if client_hash.upper().strip() == server_hash.upper().strip():
+                                Authed = True
 				cs.send(OK)
 				log.info("BoIP Client Verification", "BoIP cilent has verified its server settings OK")
 			else:
@@ -187,7 +229,6 @@ def handleConnection(cs):
 
 	#####################################################
 	## Parse data while error checking
-	print "Parsing Auth Data: " + data_array[0] + "\n"				
 	if server_hash.lower() == data_array[0].lower() or server_hash.upper() != "NONE":
 		Authed = True
 		if(server_hash.upper() == "NONE"):
@@ -209,7 +250,7 @@ def handleConnection(cs):
 	cs.send(THANKS)
 	return True
 
-###############################################################################################
+
 ###############################################################################################
 ## Start the server
 ###############################################################################################

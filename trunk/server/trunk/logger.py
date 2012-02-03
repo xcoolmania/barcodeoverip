@@ -1,6 +1,6 @@
 #!/usr/bin/python
 ##
-## phpImgDump-server (python) Version 0.1.x Alpha
+## phpImgDump-server (python) Version 0.2.x Beta
 ## Copyright (C) 2012  Tyler H. Jones (me@tylerjones.me)
 ## http://www.thebasementserver.com/phpimgdump
 ##
@@ -17,7 +17,7 @@
 ## limitations under the License.
 ##
 
-VERSION="0.1.1"
+VERSION="0.2.1"
 APPNAME="BarcodeOverIP-Server"
 LOGFILE="./boip.log"
 
