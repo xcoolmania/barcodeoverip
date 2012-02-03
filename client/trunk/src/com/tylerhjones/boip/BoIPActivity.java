@@ -63,6 +63,12 @@ public class BoIPActivity extends Activity {
 	private static final int DIALOG_ABOUT_ID = 2;
 	private static final int DIALOG_BETAWARN_ID = 3;
 	
+	private static final String OK = "OK"; //Server's client/user authorization pass message
+	private static final String DLIM = ";"; //Deliniator and end-of-data/cmd marker
+	private static final String DSEP = "||"; //Data and values separator
+	private static final String CHECK = "CHECK"; //Command to ask the server to authenticate us
+	private static final String ERR = "ERR"; //Prefix for errors returned by the server
+	
 	public final String setTINGS_FILENAME = "boip-settings";
 	public final String C_HOST = "host";
 	public final String C_PORT = "port";
@@ -164,11 +170,8 @@ public class BoIPActivity extends Activity {
 	public void ApplyServerSettings() {
 		//FIXME: I do not like how I initialize this class three times in the same class. Need to understand how pointers work in Java
 		// as it differs greatly from C (unfortunatley) 
-		Log.i(TAG, "ApplyServerSettings() - **** FIRST");
 		
-		Log.i(TAG, "ApplyServerSettings() - **** SECOND");
 		if(txtHost.getText().toString().trim() == "" || txtHost.getText().toString() == null) {
-			Log.i(TAG, "ApplyServerSettings() - **** THIRD");
 			String title = "No Hostname/IP Address Given!";
 			String msg = "No Hostname/IP Address was given!";
 		    AlertDialog ad = new AlertDialog.Builder(this).create();  
@@ -183,29 +186,47 @@ public class BoIPActivity extends Activity {
 		    ad.show(); 
 		}
 		try {
-			Log.i(TAG, "ApplyServerSettings() - **** FOURTH - In try{} clause");
 			if(txtPort.getText().toString().trim() == "" || txtPort.getText().toString() == null) {
 				txtPort.setText("41788");
 			}
 			if(txtPass.getText().toString().trim() == "" || txtPass.getText().toString() == null) {
 				txtPass.setText("none");
+				Log.d("ApplyServerConfig() **** ", "txtPass Value: " + txtPass.getText());
 			}
 			setPass(txtPass.getText().toString());
-			Log.i(TAG, "ApplyServerSettings() - **** FIFTH - After Setttings");
 
 			Log.i(TAG,"Set the Settings from the EditTexts");
 
 			setHost(txtHost.getText().toString());
 			setPort(txtPort.getText().toString());
-			Log.i(TAG, "ApplyServerSettings() - **** SIXTH");
 			
 			BIP.SetProperties(getHost(), getPort(), getPass());
-			//BoIPClient BIP = new BoIPClient(getPort(), getHost(), getPass(), this, lblConnStatus);
-			BIP.checkConnection();
-			Log.i(TAG, "ApplyServerSettings() - **** SEVENTH");
+			String res = BIP.checkConnection();
+			
+			if(res == "ERR11") { showMsgBox("Wrong Password!", "Wrong password was supplied along with the barcode/comfig data.", OK); }
+			else if(res == "ERR1") { showMsgBox("checkConnection()", "Invalid data and/or request syntax!", OK); }
+			else if(res == "ERR2") { showMsgBox("checkConnection()", "Server received a blank request.", OK); }
+			else if(res.contains(ERR)) { showMsgBox("checkConnection()", "Target server sent back an error: '" + res + "' -- '" + Common.errorCodes().get(res) + "'", OK); }
 		} catch (Exception e) {
 			Log.e(TAG, "ApplyServerSettings() - " + e);
 		}		
+	}
+	
+	//Shoiw a message box given the title and message
+	private void showMsgBox(String title, String msg, String type) {
+		if(type == null || type == "") { type = OK; }
+		AlertDialog ad = new AlertDialog.Builder(this).create();  
+		ad.setCancelable(false); // This blocks the 'BACK' button  
+		ad.setMessage(msg);
+		ad.setTitle(TAG + " - " + title);
+		if(type==OK) {
+			ad.setButton(OK, new DialogInterface.OnClickListener() {  
+				public void onClick(DialogInterface dialog, int which) {  
+					dialog.dismiss();
+				}
+			});
+		}
+		ad.show(); 
 	}
 	
 	public void showScanBarcode() {	
@@ -237,7 +258,6 @@ public class BoIPActivity extends Activity {
 	}
 
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-		//BoIPClient BoIP = new BoIPClient(getPort(), getHost(), getPass(), this, lblConnStatus);
 		if(resultCode == RESULT_OK) {
 			  IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
 			  String barcode = result.getContents().toString();
