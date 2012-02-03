@@ -1,6 +1,6 @@
 /*
  *
- *  BarcodeOverIP (BoIP-Android) Version 0.1.x
+ *  BarcodeOverIP (BoIP-Android) Version 0.2.x
  *  Copyright (C) 2012, Tyler H. Jones (me@tylerjones.me)
  *  http://tbsf.me/boip
  *
@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
+//import android.util.Base64;
 import java.security.MessageDigest;
 
 public class BoIPClient {
@@ -62,6 +63,7 @@ public class BoIPClient {
 	//Settings variables
 	private String port = String.valueOf(Common.NET_PORT);
 	private String host = Common.NET_HOST;
+	private String pass = "none";
 	private String authkey = "none";
    
 	//Stores the context of BoIPActivity when it is passed over in the object constructor at app load
@@ -86,43 +88,23 @@ public class BoIPClient {
 	}
 	
 	public void SetProperties(String phost, String pport, String ppass, Context cc, TextView status) {
-		Log.i(TAG, "reloadSettings() - Reloading all server setings into the Socket class");
+		Log.i(TAG, "SetProperties() - Reloading all server setings into the Socket class");
 		try {
-			MessageDigest sha1 = MessageDigest.getInstance("SHA1");
 			c = cc;
 			lblStatus = status;
 			port = pport;
 			host = phost;
+			pass = ppass;
 			if(ppass.trim() == "" || ppass.trim() == null) { authkey = "none"; } else {
-				authkey = Common.calculateHash(sha1, ppass);
+				authkey = Common.SHA1(pass);
+				Log.d("**** SHA1 Password Hash ****", authkey);
 			}
 		} catch(Exception e) {
-			Log.e(TAG, "reloadSettings() - Unknown Exception occured: " + e);
+			Log.e(TAG, "SetProperties() - Unknown Exception occured: " + e);
 			e.printStackTrace();
 		}
 	}
 		
-	//BoIPClient class object constructor
-	//FIXME: This is called 3 times in BoIPActivity and need to be called only once.
-	/* public BoIPClient(String cport, String chost, String cpass, Context cc, TextView clblStatus) {
-		Log.i(TAG, "BoIPClient() - Constructor");
-		lblStatus = clblStatus;
-		c = cc;
-		
-		Log.i(TAG, "reloadSettings() - Reloading all server setings into the Socket class");
-		try {
-			MessageDigest sha1 = MessageDigest.getInstance("SHA1");
-			port = cport;
-			host = chost;
-			if(cpass.trim() == "" || cpass.trim() == null) { authkey = "none"; } else {
-				authkey = Common.calculateHash(sha1, cpass);
-			}
-		} catch(Exception e) {
-			Log.e(TAG, "BoIPClient() - Unknown Exception occured: " + e);
-			e.printStackTrace();
-		}
-	} */
-	
 	/*
 	public void run() {
 		Log.v(TAG, "Thread started with run()");
@@ -142,28 +124,25 @@ public class BoIPClient {
 	
 	//Connect to a server given the host/ip and port number. 
 	public void connect() {
-		Log.i(TAG, "connect() - Attempting to connect to the server...");
+		Log.i(TAG + " - connect()", "Attempting to connect to the server...");
 	    try {
 	    	if(port == "" || port == null) { port = "41788"; }
 	        sock = new Socket(host, Integer.valueOf(port));
-			Log.i(TAG, "Connection with server is established");
-			//Data streams
+			Log.i(TAG + " - connect()", "Connection with server is established");
 		    input = new DataInputStream(sock.getInputStream());
 		    output = new PrintStream(sock.getOutputStream());
 	    } catch (UnknownHostException e) {
-            System.err.println("connect() - Don't know about host: hostname");
-            Log.e(TAG, "connect() - Unknown Host Exception on host '" + host + "': " + e);
-			e.printStackTrace();
+            Log.e(TAG + " - connect()", "Hostname not found(or unknown): " + host + ": " + e);
+        	Toast.makeText(c, "Connect FAIL: Hostname not found(unknown?): '" + host + "'", 8).show();
         } catch (IOException e) {
-		    System.out.println("connect() - " + e);
-			Log.e(TAG, "connect() - IO Exception: " + e);
-			e.printStackTrace();
+			Log.e(TAG + " - connect()", "Cannot connect to " + host + " on port " + port + " ---- " + e);
+			Toast.makeText(c, "Connect FAIL: Cannot connect to '" + host + "' on port " + port, 8);
 		}
 	}
 	
 	//Close the server connection and all associated data variable and arrays (saves some RAM)
 	public void close() {
-		Log.i(TAG, "Connection with server was closed with 'ConnEngine.closeSocket()'");
+		Log.i(TAG, "Connection with server was closed with 'BoIPClient.close()'");
 		try {
 			lblStatus.setText("Closing server connection...");
 			input.close();
@@ -176,13 +155,26 @@ public class BoIPClient {
 		}
 	}
 	
+	public String getAuthKey() {
+		try {
+			if(pass.trim() == "" || pass.trim() == null) { return "none"; } else {
+				Log.d("**** SHA1 Password Hash ****", authkey);
+				return Common.SHA1(pass);
+			}
+		} catch(Exception e) {
+			Log.e(TAG, "getAuthKey() - Unknown Exception occured: " + e);
+			e.printStackTrace();
+			return "none";
+		}
+	}
+	
 	//Check if server is up and if we are authorized and if you password is correct.
-	public void checkConnection() {
+	public String checkConnection() {
 		lblStatus.setText("Checking for, validating and authenticating the server..."); 
 		Log.i(TAG,"checkConnection() - Test the server settings...");
 		try {
-			if(!this.sock.isClosed()) { this.connect(); }
-			output.print(CHECK + DSEP + authkey + DLIM); //Send a CHECK command to the server
+			this.connect();
+			this.output.print(CHECK + DSEP + getAuthKey() + DLIM); //Send a CHECK command to the server
 			
 			String responseLine;
             while ((responseLine = input.readLine()) != null) {
@@ -191,28 +183,49 @@ public class BoIPClient {
         			CanConnect = true;
         			lblStatus.setText("Target system/server connected, authorized and ready for data...");
         			Toast.makeText(c, "Server settings applied & your client verified/authed OK!", Toast.LENGTH_SHORT).show();		
-            } else if(responseLine.indexOf(ERR) != -1) {
+                } else if(responseLine.indexOf(ERR) != -1) {
                 	int idx = responseLine.indexOf(ERR);
                 	String errmsg = responseLine.substring(idx, 5);
-            		lblStatus.setText("Target server sent back an error: " + errmsg);
-                	showMsgBox("checkConnection()", "Target server sent back an error: '" + errmsg + "' -- '" + Common.errorCodes().get(errmsg) + "'", OK);
+			    	if(errmsg == "ERR11") {
+			    		CanConnect = false;
+	        			this.close();
+				    	return "ERR11";
+			    	} else if(errmsg == "ERR1") {    
+	                	CanConnect = false;
+	                	lblStatus.setText("Target server sent back an error: " + Common.errorCodes().get(errmsg));
+			    		Toast.makeText(c, "Invalid data and/or request syntax!", 3).show();
+						this.close();
+				    	return "ERR1";
+			    	} else if(errmsg == "ERR2") {  
+	                	CanConnect = false;
+	                	lblStatus.setText("Target server sent back an error: " + Common.errorCodes().get(errmsg));
+			    		Toast.makeText(c, "Server received a blank request.", 3).show();
+						this.close();
+			    		return "ERR2";
+			    	} else {
+	            		lblStatus.setText("Target server sent back an error: " + Common.errorCodes().get(errmsg));
+	                	CanConnect = false;
+			    		Toast.makeText(c, Common.errorCodes().get(errmsg), 4).show();;
+			    		return errmsg;
+			    	}
                 }
             }
-        	CanConnect = false;
 			this.close();
     		lblStatus.setText("Disconnected from target server to wait for data to send to it...Ready.");
+    		return "0";
 		} catch(IOException e) {
 			this.close();
     		lblStatus.setText("IOException Caught in checkConnection()");
 			Log.e(TAG, "checkConnection() - IO Exception: " + e);
 			e.printStackTrace();
+			return "99";
 		}
 	}
 	
 	//Shoiw a message box given the title and message
 	private void showMsgBox(String title, String msg, String type) {
 		if(type == null || type == "") { type = OK; }
-		AlertDialog ad = new AlertDialog.Builder(c).create();  
+		AlertDialog ad = new AlertDialog.Builder(this.c).create();  
 		ad.setCancelable(false); // This blocks the 'BACK' button  
 		ad.setMessage(msg);
 		ad.setTitle(TAG + " - " + title);
@@ -260,13 +273,13 @@ public class BoIPClient {
 
 	public void sendBarcode(String barcode) {
         try {
-    		if(!this.sock.isClosed()) { this.connect(); }
-        	Toast.makeText(c, "Sending scanned barcode data to the target server...", 2).show();
+    		this.connect();
+    		Toast.makeText(c, "Sending scanned barcode data to the target server...", 2).show();
         	lblStatus.setText("Sending barcode data to the target system...");
         	Log.v(TAG, "***** sendBarcode() - authkey: " + authkey);
-        	String servermsg = authkey + "||" + barcode + ";";
+        	String servermsg = authkey + DSEP + barcode + DLIM;
         	Log.v(TAG, "***** sendBarcode() - servermsg: " + servermsg);
-        	output.print(servermsg);
+        	this.output.println(servermsg);
         	
         	String responseLine;
 			while ((responseLine = input.readLine()) != null) {
@@ -278,8 +291,21 @@ public class BoIPClient {
 			    } else if(responseLine.indexOf(ERR) != -1) {
 			    	int idx = responseLine.indexOf(ERR);
 			    	String errmsg = responseLine.substring(idx, 5);
-					lblStatus.setText("Tasrget system server gave back an error. " + errmsg);
-			    	showMsgBox("checkConnection()", "Server gave back an error: '" + errmsg + "' -- '" + Common.errorCodes().get(errmsg) + "'", OK);
+			    	if(errmsg == "ERR11") {
+				    	showMsgBox("Wrong Password!", "The password you gave does not match the on on the server. Please change it on your app and press 'Apply Server Settings' and then try again.'", OK);
+				    	break;
+			    	} else if(errmsg == "ERR1") {    
+			    		Toast.makeText(c, "Invalid data and/or request syntax!", 3);
+				    	break;
+			    	} else if(errmsg == "ERR2") {    
+			    		Toast.makeText(c, "Server received a blank request.", 3);
+				    	break;
+			    	} else {
+			    		Toast.makeText(c, Common.errorCodes().get(errmsg), 4);
+			    	}
+ 					lblStatus.setText("Target system server gave back an error. " + errmsg);
+ 					Toast.makeText(c, Common.errorCodes().get(errmsg), 3).show();
+			    	//showMsgBox("sendBarcode()", "Server gave back an error: '" + errmsg + "' -- '" + Common.errorCodes().get(errmsg) + "'", OK);
 			    	break;
 			    } else {
 			    	Log.v(TAG, "*** responseLine ***  " + responseLine);

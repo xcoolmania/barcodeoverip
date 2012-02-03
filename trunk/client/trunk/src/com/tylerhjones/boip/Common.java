@@ -27,8 +27,10 @@ package com.tylerhjones.boip;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
+import java.io.UnsupportedEncodingException;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Hashtable;
 import java.util.Formatter;
 
@@ -118,20 +120,62 @@ public class Common {
 //-----------------------------------------------------------------------------------------
 //--- Make SHA1 Hash for transmitting passwords -------------------------------------------
 	
-	public static String calculateHash(MessageDigest algorithm, String fileName) throws Exception{
-        FileInputStream     fis = new FileInputStream(fileName);
-        BufferedInputStream bis = new BufferedInputStream(fis);
-        DigestInputStream   dis = new DigestInputStream(bis, algorithm);
-        while (dis.read() != -1);
-        byte[] hash = algorithm.digest();
-        return byteArray2Hex(hash);
-    }
+	public static String convertToHex_better(byte[] data) { // This one may work better than the one below
+	    StringBuffer buf = new StringBuffer();
+	    for (int i = 0; i < data.length; i++) { 
+	        int halfbyte = (data[i] >>> 4) & 0x0F;
+	        int two_halfs = 0;
+	        do { 
+	            if ((0 <= halfbyte) && (halfbyte <= 9)) 
+	                buf.append((char) ('0' + halfbyte));
+	            else 
+	                buf.append((char) ('a' + (halfbyte - 10)));
+	            halfbyte = data[i] & 0x0F;
+	        } while(two_halfs++ < 1);
+	    } 
+	    return buf.toString();
+	} 
+	
+	public static String convertToHex(byte[] data) { 
+	    StringBuffer buf = new StringBuffer();
+	    int length = data.length;
+	    for(int i = 0; i < length; ++i) { 
+	        int halfbyte = (data[i] >>> 4) & 0x0F;
+	        int two_halfs = 0;
+	        do { 
+	            if((0 <= halfbyte) && (halfbyte <= 9)) 
+	                buf.append((char) ('0' + halfbyte));
+	            else 
+	                buf.append((char) ('a' + (halfbyte - 10)));
+	            halfbyte = data[i] & 0x0F;
+	        }
+	        while(++two_halfs < 1);
+	    } 
+	    return buf.toString();
+	}
 
-    private static String byteArray2Hex(byte[] hash) {
-        Formatter formatter = new Formatter();
-        for (byte b : hash) {
-            formatter.format("%02x", b);
-        }
-        return formatter.toString();
-    }
+	public static String SHA1(String text) throws NoSuchAlgorithmException {	 
+	    MessageDigest md = MessageDigest.getInstance("SHA-1");
+	    md.update(text.getBytes());
+	
+	    byte byteData[] = md.digest();
+	
+	    //convert the byte to hex format method 1
+	    StringBuffer sb = new StringBuffer();
+	    for (int i = 0; i < byteData.length; i++) {
+	    	sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
+	    }
+	
+	    //System.out.println("Hex format : " + sb.toString());
+	
+	    //convert the byte to hex format method 2
+	    StringBuffer hexString = new StringBuffer();
+		for (int i=0;i<byteData.length;i++) {
+			String hex=Integer.toHexString(0xff & byteData[i]);
+		     	if(hex.length()==1) hexString.append('0');
+		     	hexString.append(hex);
+		}
+		return hexString.toString();
+	}
+	
 }
