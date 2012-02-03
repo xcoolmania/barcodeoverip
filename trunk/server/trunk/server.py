@@ -179,8 +179,8 @@ def handleConnection(cs):
 		log.warning("handleConnection", "No data sent!")
 		cs.send("ERR2\n")
 		return False
-	else:
-		if str(data).strip() != "": #TODO: Remove this when no longer debugging
+	#else:
+		#if str(data).strip() != "": #TODO: Remove this when no longer debugging
 			#print("DEBUG: Received Data: " + str(data).strip())
 		#data = str(data).strip()
         ###############################################
