@@ -75,15 +75,53 @@ public class BoIPClient {
 	
 	//This stores the result of connection attempt and tells us if me need to re-auth with the server
 	public static boolean CanConnect = false;
-   
+
+	public BoIPClient() {
+
+	}
+	
+	//Reload the application settings into this class. Called by BoIPActivity during onCreatel()
+	public void SetProperties(String phost, String pport, String ppass) {
+		SetProperties(phost, pport, ppass, c, lblStatus);
+	}
+	
+	public void SetProperties(String phost, String pport, String ppass, Context cc, TextView status) {
+		Log.i(TAG, "reloadSettings() - Reloading all server setings into the Socket class");
+		try {
+			MessageDigest sha1 = MessageDigest.getInstance("SHA1");
+			c = cc;
+			lblStatus = status;
+			port = pport;
+			host = phost;
+			if(ppass.trim() == "" || ppass.trim() == null) { authkey = "none"; } else {
+				authkey = Common.calculateHash(sha1, ppass);
+			}
+		} catch(Exception e) {
+			Log.e(TAG, "reloadSettings() - Unknown Exception occured: " + e);
+			e.printStackTrace();
+		}
+	}
+		
 	//BoIPClient class object constructor
 	//FIXME: This is called 3 times in BoIPActivity and need to be called only once.
-	public BoIPClient(String port, String host, String pass, Context cc, TextView lblStatusV) {
+	/* public BoIPClient(String cport, String chost, String cpass, Context cc, TextView clblStatus) {
 		Log.i(TAG, "BoIPClient() - Constructor");
-		lblStatus = lblStatusV;
+		lblStatus = clblStatus;
 		c = cc;
-		reloadSettings(host, port, pass);
-	}
+		
+		Log.i(TAG, "reloadSettings() - Reloading all server setings into the Socket class");
+		try {
+			MessageDigest sha1 = MessageDigest.getInstance("SHA1");
+			port = cport;
+			host = chost;
+			if(cpass.trim() == "" || cpass.trim() == null) { authkey = "none"; } else {
+				authkey = Common.calculateHash(sha1, cpass);
+			}
+		} catch(Exception e) {
+			Log.e(TAG, "BoIPClient() - Unknown Exception occured: " + e);
+			e.printStackTrace();
+		}
+	} */
 	
 	/*
 	public void run() {
@@ -134,22 +172,6 @@ public class BoIPClient {
 			lblStatus.setText("Server socket connection closed: Ready for reopen when data is given...");
 		} catch (IOException e) {
 			Log.e(TAG, "close() - IO Exception: " + e);
-			e.printStackTrace();
-		}
-	}
-	
-	//Reload the application settings into this class. Called by BoIPActivity during onCreatel()
-	public void reloadSettings(String phost, String pport, String ppass) {
-		Log.i(TAG, "reloadSettings() - Reloading all server setings into the Socket class");
-		try {
-			MessageDigest sha1 = MessageDigest.getInstance("SHA1");
-			port = pport;
-			host = phost;
-			if(ppass.trim() == "" || ppass.trim() == null) { authkey = "none"; } else {
-				authkey = Common.calculateHash(sha1, ppass);
-			}
-		} catch(Exception e) {
-			Log.e(TAG, "reloadSettings() - Unknown Exception occured: " + e);
 			e.printStackTrace();
 		}
 	}
@@ -272,5 +294,6 @@ public class BoIPClient {
 	    		e.printStackTrace();
 		}
 	}
+	
 }
 

@@ -31,9 +31,8 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.tylerhjones.boip.R;
 //import com.tylerhjones.boip.Common;
-import com.tylerhjones.boip.Settings;
+//import com.tylerhjones.boip.Settings;
 import com.tylerhjones.boip.BoIPClient;
-
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -41,9 +40,13 @@ import android.util.Log;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+//import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+//import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 
 import android.widget.Button;
 import android.widget.EditText;
@@ -60,11 +63,22 @@ public class BoIPActivity extends Activity {
 	private static final int DIALOG_ABOUT_ID = 2;
 	private static final int DIALOG_BETAWARN_ID = 3;
 	
-	private static TextView lblConnStatus;
+	public final String setTINGS_FILENAME = "boip-settings";
+	public final String C_HOST = "host";
+	public final String C_PORT = "port";
+	public final String C_PASS = "pass";
+	public final String C_FIRSTRUN = "firstrun";
+	public final String C_BETAWARN = "betawarn";
+		
+	//private Settings set = new Settings(this.getApplicationContext());
+	private SharedPreferences set;
 	
 	private EditText txtHost;
 	private EditText txtPort;
 	private EditText txtPass;
+	private static TextView lblConnStatus;
+	
+	protected BoIPClient BIP = new BoIPClient();
 	
 	private Button btnApplyServer;	
 	private Button btnScanBarcode;
@@ -79,23 +93,29 @@ public class BoIPActivity extends Activity {
 
         //--- Setup Status TextView -----------------
         lblConnStatus = (TextView) findViewById(R.id.lblConnStatus);
+        
+        //--- App Settings --------------
+    	set = getSharedPreferences("boip-settings", 0);
 
-		Settings.init(this);
-		BoIPClient BoIP = new BoIPClient(Settings.port, Settings.host, Settings.pass, this, lblConnStatus);
-	    if(BoIP.toString().length() > 0) { /*nothin*/ }
+        //getPort(), getHost(), getPass(), this, lblConnStatus
+		//set.init(this);
+		//BIP = new BoIPClient(getPort(), getHost(), getPass(), this, lblConnStatus);
+	    //if(BoIP.toString().length() > 0) { /*nothin*/ }
         //--- Setup TextEdits -------------------
 		txtHost = (EditText)this.findViewById(R.id.txtHost);
-		if (Settings.host != null) {
-			txtHost.setText(Settings.host);
+		if (getHost() != null) {
+			txtHost.setText(getHost());
 		}
 		txtPort = (EditText)this.findViewById(R.id.txtPort);
-		if (Settings.port != null) {
-			txtPort.setText(Settings.port);
+		if (getPort() != null) {
+			txtPort.setText(getPort());
 		}
 		txtPass = (EditText)this.findViewById(R.id.txtPass);
-		if (Settings.pass != null) {
-			txtPass.setText(Settings.pass);
+		if (getPass() != null) {
+			txtPass.setText(getPass());
 		}
+		
+		BIP.SetProperties(getHost(), getPort(), getPass(), this.getApplicationContext(), lblConnStatus);
         
 //--- Setup buttons --------------------------------------------------------
         btnApplyServer = (Button) findViewById(R.id.btnApplyServer);
@@ -144,9 +164,11 @@ public class BoIPActivity extends Activity {
 	public void ApplyServerSettings() {
 		//FIXME: I do not like how I initialize this class three times in the same class. Need to understand how pointers work in Java
 		// as it differs greatly from C (unfortunatley) 
-		BoIPClient BoIP = new BoIPClient(Settings.port, Settings.host, Settings.pass, this, lblConnStatus);
+		Log.i(TAG, "ApplyServerSettings() - **** FIRST");
 		
+		Log.i(TAG, "ApplyServerSettings() - **** SECOND");
 		if(txtHost.getText().toString().trim() == "" || txtHost.getText().toString() == null) {
+			Log.i(TAG, "ApplyServerSettings() - **** THIRD");
 			String title = "No Hostname/IP Address Given!";
 			String msg = "No Hostname/IP Address was given!";
 		    AlertDialog ad = new AlertDialog.Builder(this).create();  
@@ -161,19 +183,26 @@ public class BoIPActivity extends Activity {
 		    ad.show(); 
 		}
 		try {
+			Log.i(TAG, "ApplyServerSettings() - **** FOURTH - In try{} clause");
 			if(txtPort.getText().toString().trim() == "" || txtPort.getText().toString() == null) {
 				txtPort.setText("41788");
 			}
 			if(txtPass.getText().toString().trim() == "" || txtPass.getText().toString() == null) {
 				txtPass.setText("none");
 			}
-			Settings.setPass(txtPass.getText().toString());
-		
+			setPass(txtPass.getText().toString());
+			Log.i(TAG, "ApplyServerSettings() - **** FIFTH - After Setttings");
+
 			Log.i(TAG,"Set the Settings from the EditTexts");
-	
-			Settings.setHost(txtHost.getText().toString());
-			Settings.setPort(txtPort.getText().toString());
-			BoIP.checkConnection();
+
+			setHost(txtHost.getText().toString());
+			setPort(txtPort.getText().toString());
+			Log.i(TAG, "ApplyServerSettings() - **** SIXTH");
+			
+			BIP.SetProperties(getHost(), getPort(), getPass());
+			//BoIPClient BIP = new BoIPClient(getPort(), getHost(), getPass(), this, lblConnStatus);
+			BIP.checkConnection();
+			Log.i(TAG, "ApplyServerSettings() - **** SEVENTH");
 		} catch (Exception e) {
 			Log.e(TAG, "ApplyServerSettings() - " + e);
 		}		
@@ -208,12 +237,12 @@ public class BoIPActivity extends Activity {
 	}
 
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-		BoIPClient BoIP = new BoIPClient(Settings.port, Settings.host, Settings.pass, this, lblConnStatus);
+		//BoIPClient BoIP = new BoIPClient(getPort(), getHost(), getPass(), this, lblConnStatus);
 		if(resultCode == RESULT_OK) {
 			  IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
 			  String barcode = result.getContents().toString();
 			  if (barcode != null) {
-		    	  	BoIP.sendBarcode(barcode);
+		    	  	BIP.sendBarcode(barcode);
 		      }
 		} else {
 			Toast.makeText(this, "No barcode was scanned.", Toast.LENGTH_LONG);
@@ -256,7 +285,6 @@ public class BoIPActivity extends Activity {
 //------------------------------------------------------------------------------------
 //--- Private Functions --------------------------------------------------------------	
     
-   
     private void ShowAbout() {
     	showDialog(DIALOG_ABOUT_ID);
     }
@@ -304,4 +332,83 @@ public class BoIPActivity extends Activity {
         }
         return adialog;
     }
+    
+	// *********************************************************************
+	// set Properties
+
+	public void setFirstRun(boolean val) {
+		Editor edset = set.edit();
+		slog("FirstRun", Common.b2s(val));
+		edset.putBoolean(C_FIRSTRUN, val);
+		edset.commit();
+	}
+	public void setBetaWarn(boolean val) {
+		Editor edset = set.edit();
+		slog("BetaWarn", Common.b2s(val));
+		edset.putBoolean(C_BETAWARN, val);
+		edset.commit();
+	}
+	public void setPass(String val) {
+		Editor edset = set.edit();
+		slog("Pass", val);
+		edset.putString(C_PASS, val);
+		edset.commit();
+	}
+	public void setHost(String val) {
+		Editor edset = set.edit();
+		//Common.isValidIP(val);
+		slog("Host", val);
+		edset.putString(C_HOST, val);
+		edset.commit();
+	}
+	public void setPort(String val) {
+		Editor edset = set.edit();
+		//Common.isValidPort(val);
+		slog("Port", val);
+		edset.putString(C_PORT, val);
+		edset.commit();
+	}
+	public boolean getFirstRun() {
+		boolean val = set.getBoolean(C_FIRSTRUN, false);
+		glog("FirstRun", Common.b2s(val));
+		return val;
+	}
+
+	public boolean getBetaWarn() {
+		boolean val = set.getBoolean(C_BETAWARN, true);
+		glog("BetaWarn", Common.b2s(val));
+		return val;
+	}
+	public String getPass() {
+		String val = set.getString(C_PASS, "");
+		glog("Pass", val);
+		return val;
+	}
+	public String getHost() {
+		String val = set.getString(C_HOST, "");
+		glog("Host", val);
+		return val;		
+	}
+	public String getPort() {
+		String val = set.getString(C_PORT, "");
+		glog("Port", val);
+		return val;
+	}
+	
+	// END set Properties Functions
+	// *********************************************************************
+		
+	// *********************************************************************
+	// Private Functions/Methods
+	
+	private void glog(String name, String val) {
+		Log.i(TAG, "GET setting '" + name + "': " + val);
+	}
+
+	private void slog(String name, String val) {
+		Log.i(TAG, "set setting '" + name + "': " + val);
+	}
+	
+	// END Private Functions/Methods
+	// *********************************************************************
 }

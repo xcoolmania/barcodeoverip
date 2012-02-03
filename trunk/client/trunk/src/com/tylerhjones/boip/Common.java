@@ -34,7 +34,7 @@ import java.util.Formatter;
 
 public class Common {
 //-----------------------------------------------------------------------------------------
-//--- Constant varible declarations -------------------------------------------------------
+//--- Constant variable declarations -------------------------------------------------------
 	public static final Integer NET_PORT = 41788;
 	public static final String NET_HOST = "none";
 	
