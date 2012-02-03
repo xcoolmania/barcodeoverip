@@ -1,0 +1,13 @@
+2012-02-03 09:00:10,773 INFO Config file found... Loaded OK!
+2012-02-03 09:00:10,790 INFO Server Socket Created successfully! - Host/IP: 0.0.0.0 -- Port: 41788
+2012-02-03 09:01:53,219 INFO Incoming Connection! - From: ('127.0.0.1', 36565)
+2012-02-03 09:01:57,470 INFO Invalid data format and/or syntax! - Does not end with ';'
+2012-02-03 09:02:00,213 INFO Incoming Connection! - From: ('127.0.0.1', 36568)
+2012-02-03 09:02:03,490 INFO Invalid data format and/or syntax! - Does not end with ';'
+2012-02-03 09:02:07,673 INFO Incoming Connection! - From: ('127.0.0.1', 36570)
+2012-02-03 09:02:11,142 INFO Version Info Request - A client is requesting the server's version information.
+2012-02-03 09:02:13,263 INFO Incoming Connection! - From: ('127.0.0.1', 36572)
+2012-02-03 09:02:51,852 INFO Invalid data format and/or syntax! - Does not end with ';'
+2012-02-03 09:02:56,963 INFO Incoming Connection! - From: ('127.0.0.1', 36577)
+2012-02-03 09:03:01,742 INFO BoIP Client Verification - BoIP cilent has verified its server settings OK
+2012-02-03 09:03:08,320 INFO Keyboard Interupt - Received keyboard interrupt, quitting threads
