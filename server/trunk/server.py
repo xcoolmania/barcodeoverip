@@ -95,7 +95,7 @@ host = config["BindIP"]
 port = int(config["BindPort"])
 
 m = hashlib.new('sha1')
-if(config["Password"].strip() != ""):
+if(config["Password"].strip() != "" and config["Password"].upper().strip() != "NONE"):
 	m.update(config["Password"])
 	server_hash = m.hexdigest()	
 else:
@@ -179,9 +179,9 @@ def handleConnection(cs):
 		log.warning("handleConnection", "No data sent!")
 		cs.send("ERR2\n")
 		return False
-	#else:
-		#if str(data).strip() != "": #TODO: Remove this when no longer debugging
-			#print("DEBUG: Received Data: " + str(data).strip())
+	else:
+		if str(data).strip() != "": #TODO: Remove this when no longer debugging
+			print("DEBUG: Received Data: " + str(data).strip())
 		#data = str(data).strip()
         ###############################################
         ## Basic server commands
@@ -229,9 +229,9 @@ def handleConnection(cs):
 
 	#####################################################
 	## Parse data while error checking
-	if server_hash.lower() == data_array[0].lower() or server_hash.upper() != "NONE":
+	if server_hash.lower() == data_array[0].lower() or server_hash.upper() == "NONE" or server_hash.strip() == "" :
 		Authed = True
-		if(server_hash.upper() == "NONE"):
+		if(server_hash.upper() == "NONE" or server_hash.upper() == "NONE" ):
 			log.info("No Password Set", "No password is set in settings.conf therefore access is granted to anyone. Using a password is STRONGLY suggested!");
 		else:
 			log.info("Password Accepted!", "Your password was correct! You have been granted authorization!");

@@ -38,7 +38,6 @@ import java.io.PrintStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 //import android.util.Base64;
-import java.security.MessageDigest;
 
 public class BoIPClient {
 	
