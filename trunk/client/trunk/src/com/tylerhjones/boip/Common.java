@@ -1,6 +1,6 @@
 /*
  *
- *  BarcodeOverIP (BoIP-Android) Version 0.1.x
+ *  BarcodeOverIP (BoIP-Android) Version 0.2.x
  *  Copyright (C) 2012, Tyler H. Jones (me@tylerjones.me)
  *  http://tbsf.me/boip
  *
@@ -25,14 +25,9 @@
  */
 package com.tylerhjones.boip;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.UnsupportedEncodingException;
-import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Hashtable;
-import java.util.Formatter;
 
 public class Common {
 //-----------------------------------------------------------------------------------------

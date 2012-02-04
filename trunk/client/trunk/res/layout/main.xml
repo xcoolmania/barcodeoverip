@@ -21,14 +21,12 @@
 			android:text="@string/server_settings" android:textSize="16dp"
 			android:textStyle="normal" />
 
-
-			<EditText android:id="@+id/txtHost" android:layout_width="match_parent"
-				android:layout_height="match_parent" android:nextFocusDown="@+id/txtPort"
-				android:hint="@string/txthost_hint"><requestFocus /></EditText>
-			<EditText android:id="@+id/txtPort" android:layout_width="match_parent"
-				android:layout_height="match_parent" android:hint="@string/txtport_hint"
-				android:nextFocusDown="@+id/txtPass" android:inputType="phone" />
-
+		<EditText android:id="@+id/txtHost" android:layout_width="match_parent"
+			android:layout_height="match_parent" android:nextFocusDown="@+id/txtPort"
+			android:hint="@string/txthost_hint"><requestFocus /></EditText>
+		<EditText android:id="@+id/txtPort" android:layout_width="match_parent"
+			android:layout_height="match_parent" android:hint="@string/txtport_hint"
+			android:nextFocusDown="@+id/txtPass" android:inputType="phone" />
 
 		<EditText android:id="@+id/txtPass" android:layout_width="match_parent"
 			android:layout_height="wrap_content" android:hint="@string/txtpass_hint"

@@ -1,6 +1,6 @@
 /*
  *
- *  BarcodeOverIP (BoIP-Android) Version 0.1.x
+ *  BarcodeOverIP (BoIP-Android) Version 0.2.x
  *  Copyright (C) 2012, Tyler H. Jones (me@tylerjones.me)
  *  http://tbsf.me/boip
  *
@@ -135,7 +135,12 @@ public class BoIPActivity extends Activity {
         	public void onClick(View view) {
         		showScanBarcode();
         	}
-        });       
+        }); 
+        
+        if(getFirstRun()) { 
+        	showMsgBox("First Run Tips", "Whenever you edit/change the sever settings (Host, Port, Password) you MUST press 'Apply Server Settings'\nAfter you apply the settings, the app will remember them until you change them again.", OK); 
+        	setFirstRun(false);
+        }
     }
     
 	/** OS kills process */
@@ -190,7 +195,7 @@ public class BoIPActivity extends Activity {
 				txtPort.setText("41788");
 			}
 			if(txtPass.getText().toString().trim() == "" || txtPass.getText().toString() == null) {
-				txtPass.setText("none");
+				txtPass.setText("");
 				Log.d("ApplyServerConfig() **** ", "txtPass Value: " + txtPass.getText());
 			}
 			setPass(txtPass.getText().toString());
@@ -369,6 +374,7 @@ public class BoIPActivity extends Activity {
 		edset.commit();
 	}
 	public void setPass(String val) {
+		if(val.trim() == "" || val.toUpperCase() == "NONE") { val = ""; }
 		Editor edset = set.edit();
 		slog("Pass", val);
 		edset.putString(C_PASS, val);
@@ -389,7 +395,7 @@ public class BoIPActivity extends Activity {
 		edset.commit();
 	}
 	public boolean getFirstRun() {
-		boolean val = set.getBoolean(C_FIRSTRUN, false);
+		boolean val = set.getBoolean(C_FIRSTRUN, true);
 		glog("FirstRun", Common.b2s(val));
 		return val;
 	}

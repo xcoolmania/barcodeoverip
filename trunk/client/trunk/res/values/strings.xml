@@ -2,17 +2,17 @@
 <resources>
 
     <string name="app_name">BarcodeOverIP</string>
-    <string name="app_desc">Use your mobile device as a wireless barcode scanner for your PC</string>
+    <string name="app_desc">Use your Android device as a wireless barcode scanner for your PC/Laptop</string>
     
     <!-- Application General Information -->
     <string name="about">About</string>
     <string name="about_msg_title">About BarcodeOverIP</string>
-    <string name="about_msg_body">Version 0.2.1 Beta\n(c)2012 - Tyler H. Jones\neMail: me@tylerjones.me\nWebsite: http://tbsf.me/boip</string>
-    <string name="website">BarcodeOverIP Website</string>
+    <string name="about_msg_body">Version 0.2.2 Beta\n(c)2012 - Tyler H. Jones\neMail: me@tylerjones.me\nSite: https://code.google.com/hosting/settings</string>
+    <string name="website">Website</string>
     <string name="donate">Donate</string>
-    <string name="version">BarcodeOverIP v0.2.1 Beta</string>
-    <string name="versionnum">0.2.1-Beta</string>
-    <string name="project_site">http://tbsf.me/boip</string>
+    <string name="version">BarcodeOverIP v0.2.2 Beta</string>
+    <string name="versionnum">0.2.2-Beta</string>
+    <string name="project_site">https://code.google.com/hosting/settings</string>
     <string name="project_donate_site">http://tbsf.me/boip/donate</string>
     <string name="developer_site">http://tylerjones.me</string>
     <string name="author">Tyler H. Jones</string>
@@ -30,7 +30,7 @@
     <string name="cs_not_found">Server Not Found!</string>
     <string name="cs_access_denied">Access Denied by Server</string>
     <string name="cs_timeout">Connection Timed Out!</string>
-    <string name="server_settings">BarcodeOverIP Server Connection Settings</string>
+    <string name="server_settings">Server Connection Settings</string>
     <string name="btnconnect_label_con">Connect</string>
     <string name="btnapplyserver_label">Apply Server Settings</string>
     <string name="txthost_hint">Hostname/IP</string>
