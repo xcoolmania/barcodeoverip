@@ -45,10 +45,10 @@ public class BoIPClient {
 	private static final String TAG = "BoIPClient";	//Tag name for logging (function name usually)
 	
 //-----------------------------------------------------------------------------------------
-//--- Client-server comminication data parsing constants ----------------------------------
+//--- Client-server communication data parsing constants ----------------------------------
 	
 	private static final String OK = "OK"; //Server's client/user authorization pass message
-	private static final String DLIM = ";"; //Deliniator and end-of-data/cmd marker
+	private static final String DLIM = ";"; //Deliminator and end-of-data/cmd marker
 	private static final String DSEP = "||"; //Data and values separator
 	private static final String CHECK = "CHECK"; //Command to ask the server to authenticate us
 	private static final String ERR = "ERR"; //Prefix for errors returned by the server
@@ -104,23 +104,6 @@ public class BoIPClient {
 			e.printStackTrace();
 		}
 	}
-		
-	/*
-	public void run() {
-		Log.v(TAG, "Thread started with run()");
-		try {
-			this.sendIDRequest();
-			this.waitForResponse();
-		} catch (IOException e) {
-			Log.e(TAG, "run() - IO Exception: " + e);
-			e.printStackTrace();
-			
-		} catch (InterruptedException e) {
-			Log.e(TAG, "run() - Interrupted Exception: " + e);
-			e.printStackTrace();
-		}
-	}
-	*/
 	
 	//Connect to a server given the host/ip and port number. 
 	public void connect() {
@@ -238,38 +221,6 @@ public class BoIPClient {
 		}
 		ad.show(); 
 	}
-	/*
-	private void sendIDRequest() throws IOException, InterruptedException {
-		byte[] b = ID_REQUEST.getBytes();
-		DatagramPacket packet = new DatagramPacket(b, b.length);
-		packet.setAddress(InetAddress.getByName(MULTICAST_ADDRESS));
-		packet.setPort(this.port);
-		this.sock.send(packet);
-		Thread.sleep(500);
-	}
-	
-	private void waitForResponse() throws IOException {
-		byte[] b = new byte[BUFFER_LENGTH];
-		DatagramPacket packet = new DatagramPacket(b, b.length);
-		//Log.d(TAG, "Going to wait for packet");
-		while (true) {
-			this.inSocket.receive(packet);
-			this.handleReceivedPacket(packet);
-		}
-	}
-	
-	// 
-	
-	private void handleReceivedPacket(DatagramPacket packet) {
-		String data = new String(packet.getData());
-		//Log.d(TAG, "Got packet! data:"+data);
-		//Log.d(TAG, "IP:"+packet.getAddress().getHostAddress());
-		if (data.substring(0, ID_REQUEST_RESPONSE.length()).compareTo(ID_REQUEST_RESPONSE) == 0) {
-			// We've received a response. Notify the listener
-			this.listener.onAddressReceived(packet.getAddress().getHostAddress());
-		}
-	}
-	*/
 
 	public void sendBarcode(String barcode) {
         try {
