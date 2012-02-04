@@ -31,9 +31,9 @@
     <string name="cs_access_denied">Access Denied by Server</string>
     <string name="cs_timeout">Connection Timed Out!</string>
     <string name="server_settings">BarcodeOverIP Server Connection Settings</string>
-    <string name="txthost_hint">Server Hostname or IP</string>
     <string name="btnconnect_label_con">Connect</string>
     <string name="btnapplyserver_label">Apply Server Settings</string>
+    <string name="txthost_hint">Hostname/IP</string>
     <string name="txtport_hint">Port (Default 41788)</string>
     <string name="txtpass_hint">Password (If Enabled)</string>
     <string name="btnapplyserver_label_edit">Edit Server Settings</string>

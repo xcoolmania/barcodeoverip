@@ -1,99 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:isScrollContainer="true"
-    android:scrollbarAlwaysDrawVerticalTrack="true"
-    android:scrollbarStyle="outsideInset"
-    android:scrollbars="vertical" >
+	android:layout_width="fill_parent" android:layout_height="fill_parent"
+	android:isScrollContainer="true"
+	android:scrollbarAlwaysDrawVerticalTrack="true" android:scrollbarStyle="outsideInset"
+	android:scrollbars="vertical">
 	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	    android:layout_width="fill_parent"
-	    android:layout_height="wrap_content"
-	    android:orientation="vertical"
-	    android:paddingLeft="5dp"
-	    android:paddingRight="5dp" >
-	
-	    <TextView
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
-	        android:layout_gravity="center|center_horizontal"
-	        android:gravity="center_horizontal"
-	        android:nextFocusDown="@+id/txtHost"
-	        android:paddingBottom="7dp"
-	        android:paddingTop="7dp"
-	        android:text="@string/server_settings"
-	        android:textSize="16dp"
-	        android:textStyle="normal" />
-	
-	    <EditText
-	        android:id="@+id/txtHost"
-	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
-	        android:nextFocusDown="@+id/txtPort"
-	        android:hint="@string/txthost_hint" >
-	
-	        <requestFocus />
-	    </EditText>
-	
-	    <EditText
-	        android:id="@+id/txtPort"
-	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
-	        android:hint="@string/txtport_hint"
-	        android:nextFocusDown="@+id/txtPass"
-	        android:inputType="phone" />
-	
-	    <EditText
-	        android:id="@+id/txtPass"
-	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
-	        android:hint="@string/txtpass_hint"
-	        android:nextFocusDown="@+id/btnApplyServer"        
-	        android:inputType="textPassword" />
-	
-	    <Button
-	        android:id="@+id/btnApplyServer"
-	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
-	        android:nextFocusDown="@+id/btnScanBarcode"        
-	        android:text="@string/btnapplyserver_label" />
-	
-	    <TextView
-	        android:id="@+id/lblConnStatus"
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
-	        android:paddingBottom="5dp"
-	        android:paddingLeft="5dp"
-	        android:paddingRight="5dp"
-	        android:paddingTop="5dp"
-	        android:text="@string/cs_not_connected" />
-	
-	    <Button
-	        android:id="@+id/btnScanBarcode"
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
-	        android:layout_marginTop="25dp"   
-	        android:text="@string/btnscanbarcode_label" 
-	        android:textSize="22dp" 
-	        android:textStyle="bold" 
-	        android:drawableLeft="@drawable/scan_barcode_big"/>
-	
-	    <TextView
-	        android:id="@+id/lblVersion"
-	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
-	        android:gravity="bottom|center_horizontal"
-	        android:layout_marginTop="10dp"                       	            
-	        android:text="@string/version"
-	        android:textAppearance="?android:attr/textAppearanceMedium" />
-	
-	 	<TextView
-	   		android:id="@+id/lblAuthor"
-	   		android:layout_width="match_parent"
-	       	android:layout_height="wrap_content"
-	       	android:layout_marginTop="5dp"
-	       	android:gravity="bottom|center_horizontal"
-	       	android:text="@string/author_label" />
-	       
+		android:layout_width="fill_parent" android:layout_height="wrap_content"
+		android:orientation="vertical" android:paddingLeft="5dp"
+		android:paddingRight="5dp">
+
+		<Button android:id="@+id/btnScanBarcode" android:layout_width="fill_parent"
+			android:layout_height="wrap_content" android:layout_marginTop="25dp"
+			android:text="@string/btnscanbarcode_label" android:textSize="22dp"
+			android:textStyle="bold" android:drawableLeft="@drawable/scan_barcode_big" />
+
+		<TextView android:layout_width="fill_parent"
+			android:layout_height="wrap_content" android:layout_gravity="center|center_horizontal"
+			android:gravity="center_horizontal" android:nextFocusDown="@+id/txtHost"
+			android:paddingBottom="7dp" android:paddingTop="7dp"
+			android:text="@string/server_settings" android:textSize="16dp"
+			android:textStyle="normal" />
+
+
+			<EditText android:id="@+id/txtHost" android:layout_width="match_parent"
+				android:layout_height="match_parent" android:nextFocusDown="@+id/txtPort"
+				android:hint="@string/txthost_hint"><requestFocus /></EditText>
+			<EditText android:id="@+id/txtPort" android:layout_width="match_parent"
+				android:layout_height="match_parent" android:hint="@string/txtport_hint"
+				android:nextFocusDown="@+id/txtPass" android:inputType="phone" />
+
+
+		<EditText android:id="@+id/txtPass" android:layout_width="match_parent"
+			android:layout_height="wrap_content" android:hint="@string/txtpass_hint"
+			android:nextFocusDown="@+id/btnApplyServer" android:inputType="textPassword" />
+		<Button android:id="@+id/btnApplyServer" android:layout_width="match_parent"
+			android:layout_height="wrap_content" android:nextFocusDown="@+id/btnScanBarcode"
+			android:text="@string/btnapplyserver_label" />
+		<TextView android:id="@+id/lblConnStatus"
+			android:layout_width="fill_parent" android:layout_height="wrap_content"
+			android:paddingBottom="5dp" android:paddingLeft="5dp"
+			android:paddingRight="5dp" android:paddingTop="5dp"
+			android:text="@string/cs_not_connected" />
+		<TextView android:id="@+id/lblVersion" android:layout_width="match_parent"
+			android:layout_height="wrap_content" android:gravity="bottom|center_horizontal"
+			android:layout_marginTop="10dp" android:text="@string/version"
+			android:textAppearance="?android:attr/textAppearanceMedium" />
+
+		<TextView android:id="@+id/lblAuthor" android:layout_width="match_parent"
+			android:layout_height="wrap_content" android:layout_marginTop="5dp"
+			android:gravity="bottom|center_horizontal" android:text="@string/author_label" />
+
 	</LinearLayout>
 </ScrollView>
