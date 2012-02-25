@@ -1,0 +1,52 @@
+---------------------------------------------------------------------------------------------------------------------------------------
+------------ Windows (XP, Vista, 7) (32 bit ONLY!*) -----------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------------
+
+*You can use a 64 bit system, just install the 32 bit versions of Python and the other dependancies
+
+---------------------------------------------------------------------------------------------------------------------------------------
+--> What you need to install for the script to work:
+
+ - Python 2.7.2 - http://python.org/ftp/python/2.7.2/python-2.7.2.msi
+ - pywin32 Build 217 - http://sourceforge.net/projects/pywin32/files/pywin32/Build%20217/pywin32-217.win32-py2.7.exe/download
+ - SendKeys 0.3 (Python 2.7) - 
+ - python-netifaces (Use command 'easy_install netifaces' in Python shell to install)
+
+---------------------------------------------------------------------------------------------------------------------------------------
+--> Running the script:
+
+---------------------------------------------------------------------------------------------------------------------------------------
+--> Troubleshooting:
+
+---------------------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------------
+
+
+---------------------------------------------------------------------------------------------------------------------------------------
+------------ Linux/Unix using XLib, XTest ---------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------------
+
+---------------------------------------------------------------------------------------------------------------------------------------
+--> Depandancies:
+
+ - Python 2.6.5
+ - python-virtkeys
+ - xlib
+ - xtest
+ - python-netifaces
+
+
+---------------------------------------------------------------------------------------------------------------------------------------
+--> Running the script:
+
+ - Edit settings.conf to your liking (To make it easier to remember the server IP, set the host value to the IP you will be connecting 
+   to. That way it will be displayed everytime you run the script reminding you of what the IP address is. Use the command 'ifconfig' 
+   in a terminal to find the IPv4 address of your network connection and copy it into the config file)
+ - Run the script using the command: 'python server.py'
+ - To run the server in the the background (no open windows need to stay open) run the script inside a 'screen'. 
+   Initialize/Unhide Command: 'screen -R boip-server', once inside the screen, run the script normally
+   Hide Current Screen: Press 'Ctrl + A + D'
+ - Press 'Ctrl + C' when the script is visibly running in the current terminal window to exit the script
+
+---------------------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------------
