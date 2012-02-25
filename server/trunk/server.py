@@ -36,6 +36,7 @@ OK = "OK\n" #Server's response to CHECK command on success
 ## Imports
 import time, shelve, os, sys, string, socket, hashlib
 #import threading, base64
+from netifaces import interfaces, ifaddresses, AF_INET
 import config, logger
 
 if sys.platform == "win32":
@@ -267,7 +268,14 @@ s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 s.bind((host, port))
 s.listen(5)
-log.info("Server Socket Created successfully!", "Host/IP: " + host + " -- Port: " + str(port))
+log.info("Server Socket Created successfully!", "Listening Host/IP: " + host + " (Port: " + str(port) + ")")
+
+if host == "0.0.0.0":
+	print "\n(0.0.0.0) = Listening on all interfaces...\nAll available network interfaces on system:"
+	for ifaceName in interfaces():
+    		addresses = [i['addr'] for i in ifaddresses(ifaceName).setdefault(AF_INET, [{'addr':'No IP addr'}] )]
+    		print "  -- %s: %s" % (ifaceName, ', '.join(addresses))
+	print "\nSince the server is listening on all interfaces, you can connect to it using any of the above addresses, provided that you are in address range of the one you choose.\n"
 
 try:
 	while 1:

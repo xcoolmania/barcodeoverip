@@ -14,12 +14,27 @@
 			android:text="@string/btnscanbarcode_label" android:textSize="22dp"
 			android:textStyle="bold" android:drawableLeft="@drawable/scan_barcode_big" />
 
-		<TextView android:layout_width="fill_parent"
-			android:layout_height="wrap_content" android:layout_gravity="center|center_horizontal"
-			android:gravity="center_horizontal" android:nextFocusDown="@+id/txtHost"
-			android:paddingBottom="7dp" android:paddingTop="7dp"
-			android:text="@string/server_settings" android:textSize="16dp"
-			android:textStyle="normal" />
+		<TextView
+		    android:layout_width="fill_parent"
+		    android:layout_height="wrap_content"
+		    android:gravity="center_horizontal"
+		    android:nextFocusDown="@+id/txtHost"
+		    android:paddingBottom="7dp"
+		    android:paddingTop="7dp"
+		    android:text="@string/server_settings"
+		    android:textSize="16dp"
+		    android:textStyle="normal" />
+
+		<CheckBox
+		    android:id="@+id/chkServerList"
+		    android:layout_width="match_parent"
+		    android:layout_height="wrap_content"
+		    android:text="@string/chkServerList_text" android:checked="false"/>
+
+		<Spinner
+		    android:id="@+id/cboServers"
+		    android:layout_width="match_parent"
+		    android:layout_height="wrap_content" android:visibility="gone"/>
 
 		<EditText android:id="@+id/txtHost" android:layout_width="match_parent"
 			android:layout_height="match_parent" android:nextFocusDown="@+id/txtPort"

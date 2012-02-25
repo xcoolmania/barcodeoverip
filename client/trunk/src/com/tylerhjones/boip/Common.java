@@ -40,6 +40,14 @@ public class Common {
 	/** The Constant APP_VERSION. */
 	public static final String APP_VERSION = "@string/versionnum";	
 	
+	public static final String DB_NAME = "servers";
+	public static final int DB_VERSION = 1;
+	public static final String TABLE_SERVERS = "servers";
+	public static final String S_FIELD_INDEX = "index";
+	public static final String S_FIELD_HOST = "host";
+	public static final String S_FIELD_PORT = "port";
+	public static final String S_FIELD_PASS = "pass";
+
 //-----------------------------------------------------------------------------------------
 //--- Server return error codes and descriptions ------------------------------------------
 	

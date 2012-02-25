@@ -48,11 +48,17 @@ import android.net.Uri;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.view.*;
+import android.view.View.OnClickListener;
 
 public class BoIPActivity extends Activity {
 	
@@ -62,11 +68,12 @@ public class BoIPActivity extends Activity {
 	private static final String TAG = "BoIPActivity";
 	private static final int DIALOG_ABOUT_ID = 2;
 	private static final int DIALOG_BETAWARN_ID = 3;
+	private static final int DIALOG_EDIT_SERVERS = 9;
 	
 	private static final String OK = "OK"; //Server's client/user authorization pass message
-	private static final String DLIM = ";"; //Deliniator and end-of-data/cmd marker
-	private static final String DSEP = "||"; //Data and values separator
-	private static final String CHECK = "CHECK"; //Command to ask the server to authenticate us
+	//private static final String DLIM = ";"; //Deliniator and end-of-data/cmd marker
+	//private static final String DSEP = "||"; //Data and values separator
+	//private static final String CHECK = "CHECK"; //Command to ask the server to authenticate us
 	private static final String ERR = "ERR"; //Prefix for errors returned by the server
 	
 	public final String setTINGS_FILENAME = "boip-settings";
@@ -75,19 +82,27 @@ public class BoIPActivity extends Activity {
 	public final String C_PASS = "pass";
 	public final String C_FIRSTRUN = "firstrun";
 	public final String C_BETAWARN = "betawarn";
+	public final String C_USELIST = "uselist";
+	public final String C_CURSERVER = "curserver";
 		
 	//private Settings set = new Settings(this.getApplicationContext());
 	private SharedPreferences set;
 	
+	//Define BoIP communication class
+	protected BoIPClient BIP = new BoIPClient();
+
+	//Widget definitions
 	private EditText txtHost;
 	private EditText txtPort;
 	private EditText txtPass;
 	private static TextView lblConnStatus;
-	
-	protected BoIPClient BIP = new BoIPClient();
-	
 	private Button btnApplyServer;	
 	private Button btnScanBarcode;
+	private Spinner cboServers;
+	private CheckBox chkServerList;
+	
+	//Other variables
+	private boolean UseServerList = false; //When true, use the Spinner to pick a server instead of entering a server's info manually 
 		
 	    /** Called when the activity is first created. */
     @Override
@@ -97,17 +112,13 @@ public class BoIPActivity extends Activity {
         
         setContentView(R.layout.main); //Setup the window form layout
 
-        //--- Setup Status TextView -----------------
+        //--- Setup Status TextView --------------------------------------------------
         lblConnStatus = (TextView) findViewById(R.id.lblConnStatus);
         
-        //--- App Settings --------------
+        //--- Initialize Local Application Settings ----------------------------------
     	set = getSharedPreferences("boip-settings", 0);
 
-        //getPort(), getHost(), getPass(), this, lblConnStatus
-		//set.init(this);
-		//BIP = new BoIPClient(getPort(), getHost(), getPass(), this, lblConnStatus);
-	    //if(BoIP.toString().length() > 0) { /*nothin*/ }
-        //--- Setup TextEdits -------------------
+        //--- Setup TextEdits --------------------------------------------------------
 		txtHost = (EditText)this.findViewById(R.id.txtHost);
 		if (getHost() != null) {
 			txtHost.setText(getHost());
@@ -122,8 +133,39 @@ public class BoIPActivity extends Activity {
 		}
 		
 		BIP.SetProperties(getHost(), getPort(), getPass(), this.getApplicationContext(), lblConnStatus);
+		
+		//--- Setup Spinners ---------------------------------------------------------
+		cboServers = (Spinner) findViewById(R.id.cboServers);
+		//FIXME: Set the list items to the saved servers from the SQLite DB
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.cboServers_array, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        cboServers.setAdapter(adapter);
+        cboServers.setOnItemSelectedListener(new MyOnItemSelectedListener());
         
-//--- Setup buttons --------------------------------------------------------
+        //--- Setup CheckBoxes -------------------------------------------------------
+        chkServerList = (CheckBox) findViewById(R.id.chkServerList);
+        chkServerList.setOnClickListener(new OnClickListener() {
+        	public void onClick(View v) {
+        		UseServerList = chkServerList.isChecked();
+    			setUseList(UseServerList);
+        		if(UseServerList) { // Hide/show widgets depending on the checkbox state 
+        			cboServers.setVisibility(View.VISIBLE);
+        			txtHost.setVisibility(View.GONE);
+        			txtPort.setVisibility(View.GONE);
+        			txtPass.setVisibility(View.GONE);
+        		} else {
+        			cboServers.setVisibility(View.GONE);
+        			txtHost.setVisibility(View.VISIBLE);
+        			txtPort.setVisibility(View.VISIBLE);
+        			txtPass.setVisibility(View.VISIBLE);
+        		}
+        	}
+        });
+        
+    	UseServerList = getUseList();
+    	chkServerList.setChecked(UseServerList);
+        
+        //--- Setup buttons ----------------------------------------------------------
         btnApplyServer = (Button) findViewById(R.id.btnApplyServer);
         btnApplyServer.setOnClickListener(new View.OnClickListener() {
         	public void onClick(View view) {
@@ -146,6 +188,7 @@ public class BoIPActivity extends Activity {
 	/** OS kills process */
 	public void onDestroy() {
 		super.onDestroy();
+		//TODO: Make sure all app settings are saved
 	}
 
 	/** App starts anything it needs to start */
@@ -156,16 +199,19 @@ public class BoIPActivity extends Activity {
 	/** App kills anything it started */
 	public void onStop() {
 		super.onStop();
+		//TODO: Make sure all app settings are saved
 	}
 	
 	/** App starts displaying things */
 	public void onResume() {
 		super.onResume();
+		//TODO: Re-verify with the current server and let the user know if it has disconnected
 	}
 
 	/** App goes into background */
 	public void onPause() {
 		super.onPause();
+		//TODO: Make sure all app settings are saved
 	}
 
 
@@ -259,7 +305,6 @@ public class BoIPActivity extends Activity {
       	intent.putExtra("RESULT_DISPLAY_DURATION_MS", 500L);
       	intent.putExtra("PROMPT_MESSAGE", "BarcodeOverIP -  Scan a barcode for transmission to target system");
       	startActivityForResult(intent, IntentIntegrator.REQUEST_CODE);
-		
 	}
 
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
@@ -273,6 +318,19 @@ public class BoIPActivity extends Activity {
 			Toast.makeText(this, "No barcode was scanned.", Toast.LENGTH_LONG);
 		}
 	}
+	
+//--- Spinner Event Handler ----------------------------------------------------------
+	public class MyOnItemSelectedListener implements OnItemSelectedListener {
+
+	    public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+	    	if (pos == 0) { return; } //Use selected the first item "Choose Server..." just ignore this and exit the event handler function
+	        //TODO: Load the server settings and verify them
+	    }
+
+		public void onNothingSelected(AdapterView<?> arg0) {
+			// TODO Auto-generated method stub
+		}
+	 }
 	
 //------------------------------------------------------------------------------------
 //--- Setup Menus --------------------------------------------------------------------	
@@ -298,8 +356,8 @@ public class BoIPActivity extends Activity {
         case R.id.mnuMainDonate:
             ShowDonate();
             return true;
-        case R.id.mnuMainWebsite:
-            ShowWebsite();
+        case R.id.mnuMainEditServers:
+            ShowEditServers();
             return true;
         default:
             return super.onOptionsItemSelected(item);
@@ -314,14 +372,16 @@ public class BoIPActivity extends Activity {
     	showDialog(DIALOG_ABOUT_ID);
     }
     
-    private void ShowWebsite() {
-    	Uri uri = Uri.parse( "http://" + getText(R.string.project_site) );
-		startActivity( new Intent( Intent.ACTION_VIEW, uri ) );
-    }
-    
     private void ShowDonate() {
     	Uri uri = Uri.parse( "http://" + getText(R.string.project_donate_site) );
 		startActivity( new Intent( Intent.ACTION_VIEW, uri ) );
+    }
+    
+    private void ShowEditServers() {
+    	showDialog(DIALOG_EDIT_SERVERS);
+    	//FIXME: Uncomment the below lines and remove the above lines when the ServerManager activity has been written
+    	//Intent intent = new Intent(this, ServerManager.class);
+    	//startActivity(intent);
     }
     
     protected Dialog onCreateDialog(int id) {
@@ -351,6 +411,18 @@ public class BoIPActivity extends Activity {
 		    });  
 		    adialog.show();       		
             break;
+        case DIALOG_EDIT_SERVERS:
+		    adialog = new AlertDialog.Builder(this).create();  
+		    adialog.setCancelable(false); // This blocks the 'BACK' button  
+		    adialog.setMessage(getText(R.string.editservers_msg_body).toString());
+		    adialog.setTitle(getText(R.string.editservers_msg_title));
+		    adialog.setButton("OK", new DialogInterface.OnClickListener() {  
+		        public void onClick(DialogInterface dialog, int which) {  
+		            dialog.dismiss();                      
+		        }
+		    });  
+		    adialog.show();  
+        	break;
         default:
             adialog = null;
             break;
@@ -361,6 +433,19 @@ public class BoIPActivity extends Activity {
 	// *********************************************************************
 	// set Properties
 
+	public void setUseList(boolean val) {
+		Editor edset = set.edit();
+		slog("UseList", Common.b2s(val));
+		edset.putBoolean(C_USELIST, val);
+		edset.commit();
+	}
+	public void setCurServer(String val) {
+		if (val.trim() == "") { val = "0"; }
+		Editor edset = set.edit();
+		slog("CurServer", val);
+		edset.putString(C_CURSERVER, val);
+		edset.commit();
+	}
 	public void setFirstRun(boolean val) {
 		Editor edset = set.edit();
 		slog("FirstRun", Common.b2s(val));
@@ -394,12 +479,22 @@ public class BoIPActivity extends Activity {
 		edset.putString(C_PORT, val);
 		edset.commit();
 	}
+	
 	public boolean getFirstRun() {
 		boolean val = set.getBoolean(C_FIRSTRUN, true);
 		glog("FirstRun", Common.b2s(val));
 		return val;
 	}
-
+	public boolean getUseList() {
+		boolean val = set.getBoolean(C_USELIST, true);
+		glog("UseList", Common.b2s(val));
+		return val;
+	}
+	public String getCurServer() {
+		String val = set.getString(C_CURSERVER, "0"); //0 = None selected
+		glog("CurServer", val);
+		return val;
+	}
 	public boolean getBetaWarn() {
 		boolean val = set.getBoolean(C_BETAWARN, true);
 		glog("BetaWarn", Common.b2s(val));
