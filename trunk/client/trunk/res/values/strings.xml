@@ -56,7 +56,12 @@
  	<string name="mnuESAdd_title">Add</string>
  	<string name="mnuESEdit_title">Edit</string>
  		
- 	
+ 	<string name="es_listinfo_label">Saved Servers Browser</string>
+    <string name="servername">Server Name</string>
+    
+    <string name="serverinfo_remove">Delete</string>
+    <string name="serverinfo_save">Save</string>
+    <string name="serverinfo_close">Close</string>
     
     <string-array name="cboServers_array">
         <item>Choose Server...</item>
