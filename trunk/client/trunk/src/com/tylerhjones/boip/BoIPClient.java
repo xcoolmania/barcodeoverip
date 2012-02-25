@@ -116,9 +116,11 @@ public class BoIPClient {
 	    } catch (UnknownHostException e) {
             Log.e(TAG + " - connect()", "Hostname not found(or unknown): " + host + ": " + e);
         	Toast.makeText(c, "Connect FAIL: Hostname not found(unknown?): '" + host + "'", 8).show();
+        	lblStatus.setText("Hostname/IP not found!");
         } catch (IOException e) {
 			Log.e(TAG + " - connect()", "Cannot connect to " + host + " on port " + port + " ---- " + e);
 			Toast.makeText(c, "Connect FAIL: Cannot connect to '" + host + "' on port " + port, 8);
+        	lblStatus.setText("Connection Error!");
 		}
 	}
 	
@@ -174,14 +176,14 @@ public class BoIPClient {
 				    	return "ERR11";
 			    	} else if(errmsg == "ERR1") {    
 	                	CanConnect = false;
-	                	lblStatus.setText("Target server sent back an error: " + Common.errorCodes().get(errmsg));
-			    		Toast.makeText(c, "Invalid data and/or request syntax!", 3).show();
+	                	lblStatus.setText("Server Error: " + Common.errorCodes().get(errmsg));
+			    		Toast.makeText(c, "Invalid data and/or request syntax!", 4).show();
 						this.close();
 				    	return "ERR1";
 			    	} else if(errmsg == "ERR2") {  
 	                	CanConnect = false;
-	                	lblStatus.setText("Target server sent back an error: " + Common.errorCodes().get(errmsg));
-			    		Toast.makeText(c, "Server received a blank request.", 3).show();
+	                	lblStatus.setText("Server Error: " + Common.errorCodes().get(errmsg));
+			    		Toast.makeText(c, "Server received a blank request.", 4).show();
 						this.close();
 			    		return "ERR2";
 			    	} else {
@@ -204,7 +206,7 @@ public class BoIPClient {
 		}
 	}
 	
-	//Shoiw a message box given the title and message
+	//Show a message box given the title and message
 	private void showMsgBox(String title, String msg, String type) {
 		if(type == null || type == "") { type = OK; }
 		AlertDialog ad = new AlertDialog.Builder(this.c).create();  
@@ -236,22 +238,26 @@ public class BoIPClient {
 			    Log.i(TAG, "checkConnection() - Server: " + responseLine);
 			    if (responseLine.indexOf(THANKS) != -1) {
 					lblStatus.setText("Target server responded with '" + THANKS + "' - barcode sent successfully!");
-					Toast.makeText(c, "Barcode sent successfully!", 2).show();
+					Toast.makeText(c, "Barcode sent successfully!", 3).show();
 					break;
 			    } else if(responseLine.indexOf(ERR) != -1) {
 			    	int idx = responseLine.indexOf(ERR);
 			    	String errmsg = responseLine.substring(idx, 5);
 			    	if(errmsg == "ERR11") {
 				    	showMsgBox("Wrong Password!", "The password you gave does not match the on on the server. Please change it on your app and press 'Apply Server Settings' and then try again.'", OK);
+				    	lblStatus.setText("Incorrect Password!");
 				    	break;
 			    	} else if(errmsg == "ERR1") {    
-			    		Toast.makeText(c, "Invalid data and/or request syntax!", 3);
+			    		Toast.makeText(c, "Invalid data and/or request syntax!", 4);
+			    		lblStatus.setText("Communication Error!");
 				    	break;
 			    	} else if(errmsg == "ERR2") {    
-			    		Toast.makeText(c, "Server received a blank request.", 3);
+			    		Toast.makeText(c, "Server received a blank request.", 4);
+			    		lblStatus.setText("Communication Error!");
 				    	break;
 			    	} else {
 			    		Toast.makeText(c, Common.errorCodes().get(errmsg), 4);
+			    		lblStatus.setText("Common.errorCodes().get(errmsg)");
 			    	}
  					lblStatus.setText("Target system server gave back an error. " + errmsg);
  					Toast.makeText(c, Common.errorCodes().get(errmsg), 3).show();
