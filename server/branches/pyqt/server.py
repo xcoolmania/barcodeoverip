@@ -38,6 +38,7 @@ import time, shelve, os, sys, string, socket, hashlib
 from PyQt4 import QtGui
 #import threading, base64
 from netifaces import interfaces, ifaddresses, AF_INET
+import config, logger
 
 if sys.platform == "win32":
 	### Windows ONLY
@@ -60,8 +61,6 @@ else:
 	sys.exit()
 
 def main():
-
-	import config, logger
     
     	app = QtGui.QApplication(sys.argv)
 
