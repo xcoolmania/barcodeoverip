@@ -51,6 +51,13 @@
     <string name="mnuMainWebsite_title">Website</string>
     <string name="mnuMainEditServers_title">Edit Servers</string>
     
+ 	<string name="mnuESDeleteAll_title">Delete All</string>
+ 	<string name="mnuESDelete_title">Delete</string>
+ 	<string name="mnuESAdd_title">Add</string>
+ 	<string name="mnuESEdit_title">Edit</string>
+ 		
+ 	
+    
     <string-array name="cboServers_array">
         <item>Choose Server...</item>
     </string-array>

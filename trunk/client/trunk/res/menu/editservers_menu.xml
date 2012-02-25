@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:id="@+id/mnuESAdd"
+          android:icon="@drawable/add"
+          android:title="@string/mnuESAdd_title" />
+    <item android:id="@+id/mnuESEdit"
+          android:icon="@drawable/edit"
+          android:title="@string/mnuESEdit_title" />
+	<item android:id="@+id/mnuESDelete"
+          android:icon="@drawable/delete"
+          android:title="@string/mnuESDelete_title" />
+	<item android:id="@+id/mnuESDeleteAll"
+          android:icon="@drawable/delete"
+          android:title="@string/mnuESDeleteAll_title" />
+</menu>
