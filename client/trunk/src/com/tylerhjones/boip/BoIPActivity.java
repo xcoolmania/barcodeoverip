@@ -27,6 +27,9 @@
 
 package com.tylerhjones.boip;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.tylerhjones.boip.R;
@@ -47,6 +50,7 @@ import android.net.Uri;
 //import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.database.Cursor;
 
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -367,7 +371,25 @@ public class BoIPActivity extends Activity {
     
 //------------------------------------------------------------------------------------
 //--- Private Functions --------------------------------------------------------------	
-    
+   /* 
+    private void setupServerList() {
+    	Database db = new Database(getBaseContext());
+		Cursor cursor;
+		db.open();
+		List<String> list = new ArrayList<String>();
+		cursor = db.Servers();
+		if (cursor.moveToFirst()) {
+			do {
+				list.add(cursor.getString(0));
+			} while (cursor.moveToNext());
+		}
+		if (cursor != null && !cursor.isClosed()) {
+			cursor.close();
+		}
+		db.close();
+		
+    }
+    */
     private void ShowAbout() {
     	showDialog(DIALOG_ABOUT_ID);
     }
