@@ -1,6 +1,6 @@
 #!/usr/bin/python
 ##
-## BarcodeOverIP-server (python) Version 0.2.x Beta
+## BarcodeOverIP-server (pyqt4) Version 0.1.x Alpha
 ## Copyright (C) 2012  Tyler H. Jones (me@tylerjones.me)
 ## http://www.thebasementserver.com/phpimgdump
 ##
