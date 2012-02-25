@@ -45,7 +45,7 @@ OK = "OK\n" #Server's response to CHECK command on success
 
 ## Startup message/server info
 print "\n*******************************************************************************"
-print "** " + APPNAME + " " + VERSION + " - BarcodeOverIP-server for *nix w/ X11 & XTest "
+print "** " + APPNAME + " " + VERSION + " - BarcodeOverIP-server for Win32 "
 print "** Website: https://code.google.com/p/barcodeoverip/"
 print "** Written By: Tyler H. Jones, February 2012"
 print "** Licensed Under Apache-2.0 License. (C) 2012 - Tyler H. Jones (tylerjones.me) "
@@ -63,7 +63,7 @@ log.setup(0, verbose)
 ## Variable Declarations
 ###############################################################################################
 
-host = '192.168.1.64'
+host = '192.168.1.5'
 port = 41788
 password = 'hello'
 append_return = True
@@ -83,7 +83,7 @@ error_codes = {'ERR1':'Invalid data format and/or syntax!', 'ERR2':'No data was 
 
         
 shell = win32com.client.Dispatch("WScript.Shell")
-#shell.SendKeys("c", 0)
+
 def type_string(s):
     char_array = list(s);
     for char in char_array:
@@ -164,7 +164,8 @@ def handleConnection(cs):
         log.info("Sending Keyboard Emulation", "Sending keystrokes to system...")
         type_string(data_array[1].strip())
         if append_return:
-                type_keycode(36)
+                #type_keycode(36)
+                shell.SendKeys("(ENTER)", 0)
         log.info("Sending Keyboard Emulation... DONE!", "Sending keystrokes to system... FINISHED!")
         log.info("Sending 'THANKS' To Client", "Sending a thank you to the client to inform of successful receipt.")
         cs.send(THANKS)
@@ -182,8 +183,8 @@ s.listen(5)
 log.info("Server Socket Created successfully!", "Host/IP: " + host + " -- Port: " + str(port))
 
 try:
-        while True:
-                clientsock, clientaddr = s.accept()
+        while 1:
+                (clientsock, clientaddr) = s.accept()
                 log.info("Incoming Connection!", "From: " + str(clientsock.getpeername()))
                 #TODO: Use a fork/thread instead of a function call
                 handleConnection(clientsock)
