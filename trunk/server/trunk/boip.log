@@ -99,3 +99,18 @@
 2012-02-25 02:13:30,686 INFO Sending Keyboard Emulation - Sending keystrokes to system...
 2012-02-25 02:13:30,888 INFO Sending Keyboard Emulation... DONE! - Sending keystrokes to system... FINISHED!
 2012-02-25 02:13:30,888 INFO Sending 'THANKS' To Client - Sending a thank you to the client to inform of successful receipt.
+2012-02-25 02:23:28,646 INFO Keyboard Interupt - Received keyboard interrupt, quitting threads
+2012-02-25 04:11:55,019 INFO Config file found... Loaded OK!
+2012-02-25 04:11:55,049 INFO Server Socket Created successfully! - Host/IP: 0.0.0.0 -- Port: 41788
+2012-02-25 04:18:25,246 INFO Keyboard Interupt - Received keyboard interrupt, quitting threads
+2012-02-25 04:45:01,215 INFO Config file found... Loaded OK!
+2012-02-25 04:45:01,245 INFO Server Socket Created successfully! - Listening Host/IP: 0.0.0.0 -- Port: 41788
+2012-02-25 04:45:18,278 INFO Keyboard Interupt - Received keyboard interrupt, quitting threads
+2012-02-25 04:45:22,140 INFO Config file found... Loaded OK!
+2012-02-25 04:45:22,152 INFO Server Socket Created successfully! - Listening Host/IP: 0.0.0.0 -- Port: 41788
+2012-02-25 04:45:46,936 INFO Keyboard Interupt - Received keyboard interrupt, quitting threads
+2012-02-25 04:45:48,656 INFO Config file found... Loaded OK!
+2012-02-25 04:45:48,667 INFO Server Socket Created successfully! - Listening Host/IP: 0.0.0.0 -- Port: 41788
+2012-02-25 04:47:08,226 INFO Keyboard Interupt - Received keyboard interrupt, quitting threads
+2012-02-25 04:47:10,052 INFO Config file found... Loaded OK!
+2012-02-25 04:47:10,064 INFO Server Socket Created successfully! - Listening Host/IP: 0.0.0.0 (Port: 41788)
