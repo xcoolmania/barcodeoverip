@@ -26,7 +26,7 @@ try:
 	config = open(CONFIG_FILE).read().split("\n")
 	conffile = CONFIG_FILE
 except IOError:
-	conffile = raw_input(APPNAME + " cannot find 'settings.conf'! It should be here in the root folder of the server application (./settings.conf).\nPlease enter the full path to the settings file.\n(i.e. '/home/user/settings.conf') >>> ")
+	conffile = raw_input(APPNAME + " cannot find 'settings.conf'! It should be here in the root folder of the server application (settings.conf).\nPlease enter the full path to the settings file.\n(i.e. '/home/user/settings.conf' OR 'C:\Users\User\biop-server\settings.conf') >>> ")
 	try:
 		config = open(conffile).read().split("\n")
 	except IOError:
