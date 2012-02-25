@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/lblServerName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10px"
+        android:layout_marginLeft="10px"
+        android:text="@string/servername" />
+
+    <TableLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15px"
+        android:layout_gravity="center_horizontal" >
+
+        <TableRow
+            android:id="@+id/linServerInfoButtons"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <Button
+                android:id="@+id/btnServerInfoRemove"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/serverinfo_remove" />
+
+            <Button
+                android:id="@+id/btnServerInfoSave"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/serverinfo_save" />
+
+            <Button
+                android:id="@+id/btnServerInfoClose"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/serverinfo_close" />
+        </TableRow>
+    </TableLayout>
+
+</LinearLayout>
