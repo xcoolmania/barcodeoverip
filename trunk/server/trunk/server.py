@@ -21,9 +21,9 @@
 #########################################################
 ## Constant variables
 
-VERSION="0.2.1"
-APPNAME="BarcodeOverIP-server-python_linux"
-#APPNAME="BarcodeOverIP-server-python_all"
+VERSION="0.2.2"
+#APPNAME="BarcodeOverIP-server-python_linux"
+APPNAME="BarcodeOverIP-server-python_all"
 
 
 DSEP="||"
@@ -40,7 +40,8 @@ import config, logger
 
 if sys.platform == "win32":
         ### Windows ONLY
-        import win32com.client
+        import win32com.client, win32api
+	from SendKeys import SendKeys
 elif sys.platform == "linux2":
         ### Linux/X11 ONLY:
         import virtkey
@@ -59,7 +60,7 @@ else:
 
 ## Startup message/server info
 print "\n*******************************************************************************"
-print "** " + APPNAME + " " + VERSION + " - BarcodeOverIP-server for *nix w/ X11 & XTest "
+print "** " + APPNAME + " " + VERSION + " - BarcodeOverIP-server for Python 2.7.2 "
 print "** Website: https://code.google.com/p/barcodeoverip/"
 print "** Written By: Tyler H. Jones, February 2012"
 print "** Licensed Under Apache-2.0 License. (C) 2012 - Tyler H. Jones (tylerjones.me) "
@@ -183,6 +184,7 @@ def handleConnection(cs):
 		if str(data).strip() != "": #TODO: Remove this when no longer debugging
 			print("DEBUG: Received Data: " + str(data).strip())
 		#data = str(data).strip()
+
         ###############################################
         ## Basic server commands
 	if data.upper().startswith("CHECK") and data.upper().find(DSEP) > 0 and data.upper().endswith(";"):
@@ -206,7 +208,7 @@ def handleConnection(cs):
 		return True	
 	if data.upper() == "VERSION": # Get the server version and information
 		log.info("Version Info Request", "A client is requesting the server's version information.")
-		cs.send("\n*******************************************************************\nBarcodeOverIP-server 0.2.1 Beta \nPowered by Python 2.6 and libXtest/Xlib\nThis server is for use with mobile device applications.\nYou must have the right client to use it!\nPlease visit: https://code.google.com/p/barcodeoverip/ for more\ninformation on available clients.\n\nWritten by: Tyler H. Jones (me@tylerjones.me) (C) 2012\nGoogle Code Website: https://code.google.com/p/barcodeoverip/\n*******************************************************************\n\n")
+		cs.send("\n*******************************************************************\nBarcodeOverIP-server 0.2.2 Beta \nPowered by Python 2.7.2\nThis server is for use with mobile device applications.\nYou must have the right client to use it!\nPlease visit: https://code.google.com/p/barcodeoverip/ for more\ninformation on available clients.\n\nWritten by: Tyler H. Jones (me@tylerjones.me) (C) 2012\nGoogle Code Website: https://code.google.com/p/barcodeoverip/\n*******************************************************************\n\n")
 		return True
 	if data.upper().startswith("ERR") and data.upper().find(" ") >= 0:
 		er = data.split(" ")
@@ -244,7 +246,10 @@ def handleConnection(cs):
 	log.info("Sending Keyboard Emulation", "Sending keystrokes to system...")
 	type_string(data_array[1].strip())
 	if config["AppendReturn"]:
-		type_keycode(36)
+		if sys.platform == "linux2":
+			type_keycode(36)
+		if sys.platform == "win32":
+			shell.SendKeys("(ENTER)", 0)
 	log.info("Sending Keyboard Emulation... DONE!", "Sending keystrokes to system... FINISHED!")
 	log.info("Sending 'THANKS' To Client", "Sending a thank you to the client to inform of successful receipt.")
 	cs.send(THANKS)
@@ -265,8 +270,8 @@ s.listen(5)
 log.info("Server Socket Created successfully!", "Host/IP: " + host + " -- Port: " + str(port))
 
 try:
-	while True:
-		clientsock, clientaddr = s.accept()
+	while 1:
+		(clientsock, clientaddr) = s.accept()
 		log.info("Incoming Connection!", "From: " + str(clientsock.getpeername()))
 		#TODO: Use a fork/thread instead of a function call
 		handleConnection(clientsock)

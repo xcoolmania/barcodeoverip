@@ -1,8 +1,9 @@
 #!/usr/bin/python
+
 ##
-## phpImgDump-server (python) Version 0.2.x Beta
+## BarcodeOverIP-server (python) Version 0.2.x Beta
 ## Copyright (C) 2012  Tyler H. Jones (me@tylerjones.me)
-## http://www.thebasementserver.com/phpimgdump
+## https://code.google.com/p/barcodeoverip/
 ##
 ## Licensed under the Apache License, Version 2.0 (the "License");
 ## you may not use this file except in compliance with the License.
@@ -19,7 +20,7 @@
 
 VERSION="0.2.1"
 APPNAME="BarcodeOverIP-Server"
-LOGFILE="./boip.log"
+LOGFILE="boip.log"
 
 import time, os, sys, random, string, logging, shutil
 

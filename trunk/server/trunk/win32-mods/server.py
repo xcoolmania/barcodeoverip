@@ -126,7 +126,7 @@ def handleConnection(cs):
                 return True     
         if data.upper() == "VERSION": # Get the server version and information
                 log.info("Version Info Request", "A client is requesting the server's version information.")
-                cs.send("\n*******************************************************************\nBarcodeOverIP-server 0.2.1 Beta \nPowered by Python 2.6 and libXtest/Xlib\nThis server is for use with mobile device applications.\nYou must have the right client to use it!\nPlease visit: https://code.google.com/p/barcodeoverip/ for more\ninformation on available clients.\n\nWritten by: Tyler H. Jones (me@tylerjones.me) (C) 2012\nGoogle Code Website: https://code.google.com/p/barcodeoverip/\n*******************************************************************\n\n")
+                cs.send("\n*******************************************************************\nBarcodeOverIP-server 0.2.1 Beta \nPowered by Python 2.7.2 and pySendKeys\nThis server is for use with mobile device applications.\nYou must have the right client to use it!\nPlease visit: https://code.google.com/p/barcodeoverip/ for more\ninformation on available clients.\n\nWritten by: Tyler H. Jones (me@tylerjones.me) (C) 2012\nGoogle Code Website: https://code.google.com/p/barcodeoverip/\n*******************************************************************\n\n")
                 return True
         if data.upper().startswith("ERR") and data.upper().find(" ") >= 0:
                 er = data.split(" ")
@@ -175,6 +175,9 @@ def handleConnection(cs):
 ###############################################################################################
 ## Start the server
 ###############################################################################################
+
+
+
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
