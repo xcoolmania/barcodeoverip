@@ -54,12 +54,13 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="txtPort" pref="101" max="32767" attributes="0"/>
                   </Group>
-                  <Component id="jSeparator2" alignment="0" pref="433" max="32767" attributes="0"/>
                   <Group type="102" attributes="0">
                       <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="txtPassword" pref="281" max="32767" attributes="0"/>
                   </Group>
+                  <Component id="jSeparator2" alignment="0" pref="433" max="32767" attributes="0"/>
+                  <Component id="chkAppendNL" alignment="0" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -87,9 +88,11 @@
                   <Component id="jLabel4" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="txtPassword" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-              <Component id="jSeparator2" min="-2" pref="10" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="chkAppendNL" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="32767" attributes="0"/>
+              <Component id="jSeparator2" min="-2" pref="10" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
               <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="jScrollPane1" min="-2" pref="87" max="-2" attributes="0"/>
@@ -152,6 +155,9 @@
           <Dimension value="[85, 29]"/>
         </Property>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnApplyActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="btnToggleServer">
       <Properties>
@@ -249,6 +255,13 @@
         <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
           <Dimension value="[85, 29]"/>
         </Property>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="chkAppendNL">
+      <Properties>
+        <Property name="selected" type="boolean" value="true"/>
+        <Property name="text" type="java.lang.String" value="Append a carrage return (enter key) to end of barcode"/>
+        <Property name="toolTipText" type="java.lang.String" value="Adds a simulated press of the enter key after the barcode is typed. Defualt is TRUE."/>
       </Properties>
     </Component>
   </SubComponents>

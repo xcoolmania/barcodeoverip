@@ -16,9 +16,12 @@ public class Main {
     /**
      * @param args the command line arguments
      */
-    private static JFrame SETS = new MainFrame();
 
     public static void main(String[] args) {
+        ServerCore CORE = new ServerCore();
+        JFrame SETS = new MainFrame(CORE);
+        CORE.run(SETS);
+       // SETS.setCore(CORE);
         SETS.show();
         // TODO code application logic here
     }
