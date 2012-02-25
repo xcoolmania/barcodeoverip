@@ -39,24 +39,24 @@ import time, shelve, os, sys, string, socket, hashlib
 import config, logger
 
 if sys.platform == "win32":
-        ### Windows ONLY
-        import win32com.client, win32api
+	### Windows ONLY
+	import win32com.client, win32api
 	from SendKeys import SendKeys
 elif sys.platform == "linux2":
-        ### Linux/X11 ONLY:
-        import virtkey
+	### Linux/X11 ONLY:
+	import virtkey
 elif sys.platform == "darmin":
-        ### MacOSX Only, dunno what to do here...
-        print "\n\n *** MacOS X support is still under development!\nSorry to dissapoint you! ***\n\n"
-        sys.exit()
+	### MacOSX Only, dunno what to do here...
+	print "\n\n *** MacOS X support is still under development!\nSorry to dissapoint you! ***\n\n"
+	sys.exit()
 else:
-        ### Other systems
-        print "\n\n**************************************************"
-        print "** You seem to be running Python on a system not supported"
-        print "** by BarcodeOverIP-Server (Python). So far SoIP supports"
-        print "** Linux, Unix, MacOS X and Windows"
-        print "**************************************************\n\n"
-        sys.exit()
+	### Other systems
+	print "\n\n**************************************************"
+	print "** You seem to be running Python on a system not supported"
+	print "** by BarcodeOverIP-Server (Python). So far SoIP supports"
+	print "** Linux, Unix, MacOS X and Windows"
+	print "**************************************************\n\n"
+	sys.exit()
 
 ## Startup message/server info
 print "\n*******************************************************************************"
@@ -116,12 +116,12 @@ error_codes = {'ERR1':'Invalid data format and/or syntax!', 'ERR2':'No data was 
 ## WIN32/
 ##########
 if sys.platform == "win32":
-        shell = win32com.client.Dispatch("WScript.Shell")
-        #shell.SendKeys("c", 0)
-        def type_string(s):
-                char_array = list(s);
-                for char in char_array:
-                        shell.SendKeys(str(char), 0)
+	shell = win32com.client.Dispatch("WScript.Shell")
+	#shell.SendKeys("c", 0)
+	def type_string(s):
+		char_array = list(s)
+		for char in char_array:
+			shell.SendKeys(str(char), 0)
 
 ##########
 ## /WIN32
@@ -131,40 +131,40 @@ if sys.platform == "win32":
 ## LINUX/
 ##########
 if sys.platform == "linux2":
-        def type_key(key, mask1="", mask2=""):
-                v = virtkey.virtkey()
-                if mask1 != "" and mask1 in mask_names: 
-                        v.lock_mod(masks[mask1])
-                if mask2 != "" and mask2 in mask_names: 
-                        v.lock_mod(masks[mask2])
+	def type_key(key, mask1="", mask2=""):
+		v = virtkey.virtkey()
+		if mask1 != "" and mask1 in mask_names: 
+			v.lock_mod(masks[mask1])
+		if mask2 != "" and mask2 in mask_names: 
+			v.lock_mod(masks[mask2])
 
-                v.press_unicode(ord(key))
-                v.release_unicode(ord(key)) #Release must be called IMMEDIATLEY after 'press'!
+		v.press_unicode(ord(key))
+		v.release_unicode(ord(key)) #Release must be called IMMEDIATLEY after 'press'!
 
-                if mask1 != "" and mask1 in mask_names:
-                        v.unlock_mod(masks[mask1])
-                if mask2 != "" and mask2 in mask_names:
-                        v.unlock_mod(masks[mask2])
+		if mask1 != "" and mask1 in mask_names:
+			v.unlock_mod(masks[mask1])
+		if mask2 != "" and mask2 in mask_names:
+			v.unlock_mod(masks[mask2])
 
-        def type_keycode(code, mask1="", mask2=""):
-                v = virtkey.virtkey()
-                if mask1 != "" and mask1 in mask_names: 
-                        v.lock_mod(masks[mask1])
-                if mask2 != "" and mask2 in mask_names: 
-                        v.lock_mod(masks[mask2])
+	def type_keycode(code, mask1="", mask2=""):
+		v = virtkey.virtkey()
+		if mask1 != "" and mask1 in mask_names: 
+			v.lock_mod(masks[mask1])
+		if mask2 != "" and mask2 in mask_names: 
+			v.lock_mod(masks[mask2])
 
-                v.press_keycode(code)
-                v.release_keycode(code) #Release must be called IMMEDIATLEY after 'press'!
+		v.press_keycode(code)
+		v.release_keycode(code) #Release must be called IMMEDIATLEY after 'press'!
 
-                if mask1 != "" and mask1 in mask_names:
-                        v.unlock_mod(masks[mask1])
-                if mask2 != "" and mask2 in mask_names:
-                        v.unlock_mod(masks[mask2])
+		if mask1 != "" and mask1 in mask_names:
+			v.unlock_mod(masks[mask1])
+		if mask2 != "" and mask2 in mask_names:
+			v.unlock_mod(masks[mask2])
 
-        def type_string(s):
-                char_array = list(s);
-                for char in char_array:
-                        type_key(char);
+	def type_string(s):
+		char_array = list(s);
+		for char in char_array:
+			type_key(char);
 
 ##########
 ## /LINUX
@@ -185,8 +185,8 @@ def handleConnection(cs):
 			print("DEBUG: Received Data: " + str(data).strip())
 		#data = str(data).strip()
 
-        ###############################################
-        ## Basic server commands
+	###############################################
+	## Basic server commands
 	if data.upper().startswith("CHECK") and data.upper().find(DSEP) > 0 and data.upper().endswith(";"):
 		check_array = data.upper().split(DSEP)
 		client_hash = check_array[1]
@@ -194,7 +194,7 @@ def handleConnection(cs):
 		#print "clint_hash: " + client_hash
 		if server_hash.upper().strip() != "NONE":
 			if client_hash.upper().strip() == server_hash.upper().strip():
-                                Authed = True
+				Authed = True
 				cs.send(OK)
 				log.info("BoIP Client Verification", "BoIP cilent has verified its server settings OK")
 			else:
@@ -249,7 +249,7 @@ def handleConnection(cs):
 		if sys.platform == "linux2":
 			type_keycode(36)
 		if sys.platform == "win32":
-			shell.SendKeys("(ENTER)", 0)
+			shell.SendKeys("{ENTER}", 0)
 	log.info("Sending Keyboard Emulation... DONE!", "Sending keystrokes to system... FINISHED!")
 	log.info("Sending 'THANKS' To Client", "Sending a thank you to the client to inform of successful receipt.")
 	cs.send(THANKS)
