@@ -19,19 +19,7 @@
  *  Filename: ${nameAndExt}.java
  *  Package Name: ${package}
  *  Created By: ${user} on ${date} ${time}
- *
+ *  
  *  Description: TODO
- *
+ * 
  */
-
-package com.tylerhjones.boipserver;
-
-/**
- *
- * @author tyler
- */
-interface Callable
-{
-    public void ActivateServer();
-    public void DeactivateServer();
-}  
