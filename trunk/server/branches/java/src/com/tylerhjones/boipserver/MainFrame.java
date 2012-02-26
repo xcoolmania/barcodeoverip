@@ -11,9 +11,25 @@
 
 package com.tylerhjones.boipserver;
 
+import java.awt.Image;
+import java.awt.MediaTracker;
+import java.awt.Toolkit;
+import java.awt.TrayIcon;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.jar.JarFile;
 import javax.swing.JOptionPane;
-/**
+
+
+/*
  *
  * @author tyler
  */
@@ -26,6 +42,14 @@ public class MainFrame extends javax.swing.JFrame {
     private Hashtable OrigSets = new Hashtable(4);
     private Settings SET = new Settings();
 
+    private TrayIcon SysTrayIcon;
+
+    public static JarFile jar;
+    public static String basePath = "";
+    public static InetAddress localAddr;
+
+    private Toolkit toolkit;
+    private MediaTracker tracker;
 
     public void setCore(ServerCore c) {
         CORE = c;
@@ -45,6 +69,26 @@ public class MainFrame extends javax.swing.JFrame {
         txtPassword.setText(OrigSets.get("pass").toString());
         txtPort.setText(OrigSets.get("port").toString());
         chkAppendNL.setSelected(Boolean.valueOf(OrigSets.get("newl").toString()));
+
+        String ip = this.FindSystemIP();
+        if(ip == "NO") {
+            int n = JOptionPane.showConfirmDialog(this, "The IP address of the current system could not be determined. Either there is no network connection or you need to set the IP manually.", "Can't Determine IP Address", JOptionPane.OK_OPTION);
+            chkAutoSet.setSelected(false);
+            lblHostTitle.enable(true);
+            txtHost.enable(true);
+            lblPortTitle.enable(true);
+            txtPort.enable(true);
+        } else {
+            lblHostTitle.enable(false);
+            txtHost.enable(false);
+            lblPortTitle.enable(false);
+            txtPort.enable(false);
+            SET.setHost(ip);
+            SET.setPort(41788);
+            lblHost.setText("Host/IP = " + ip);
+            lblPort.setText("Port # = 41788");
+        }
+
     }
 
     /** This method is called from within the constructor to
@@ -61,24 +105,26 @@ public class MainFrame extends javax.swing.JFrame {
         btnApply = new javax.swing.JButton();
         btnToggleServer = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
-        txtHost = new javax.swing.JTextField();
-        txtPort = new javax.swing.JTextField();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         txtPassword = new javax.swing.JTextField();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        txtLog = new javax.swing.JTextArea();
-        jLabel5 = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
-        jSeparator2 = new javax.swing.JSeparator();
         btnAbout = new javax.swing.JButton();
         chkAppendNL = new javax.swing.JCheckBox();
+        frameAdvanced = new javax.swing.JPanel();
+        txtHost = new javax.swing.JTextField();
+        lblHostTitle = new javax.swing.JLabel();
+        lblPortTitle = new javax.swing.JLabel();
+        txtPort = new javax.swing.JTextField();
+        chkAutoSet = new javax.swing.JCheckBox();
+        jLabel2 = new javax.swing.JLabel();
+        lblLastClient = new javax.swing.JLabel();
+        lblHost = new javax.swing.JLabel();
+        lblPort = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("BarcodeOverIP-Server 0.3.1 Beta - Settings");
         setAlwaysOnTop(true);
         setName("MainWindow"); // NOI18N
+        setResizable(false);
 
         btnExit.setText("Exit");
         btnExit.setToolTipText("Exit the server application and close all connections.");
@@ -95,6 +141,11 @@ public class MainFrame extends javax.swing.JFrame {
         btnOk.setMaximumSize(new java.awt.Dimension(85, 29));
         btnOk.setMinimumSize(new java.awt.Dimension(65, 29));
         btnOk.setPreferredSize(new java.awt.Dimension(85, 29));
+        btnOk.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnOkActionPerformed(evt);
+            }
+        });
 
         btnApply.setText("Apply");
         btnApply.setToolTipText("Save changes to server configuraton");
@@ -107,142 +158,209 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
-        btnToggleServer.setFont(new java.awt.Font("DejaVu Sans", 1, 13));
-        btnToggleServer.setText("Activate");
-        btnToggleServer.setMaximumSize(new java.awt.Dimension(138, 29));
-        btnToggleServer.setMinimumSize(new java.awt.Dimension(108, 29));
-        btnToggleServer.setPreferredSize(new java.awt.Dimension(138, 29));
+        btnToggleServer.setFont(new java.awt.Font("DejaVu Sans", 1, 13)); // NOI18N
+        btnToggleServer.setText("Activate Server");
+        btnToggleServer.setMaximumSize(new java.awt.Dimension(402, 29));
+        btnToggleServer.setMinimumSize(new java.awt.Dimension(402, 29));
+        btnToggleServer.setPreferredSize(new java.awt.Dimension(402, 29));
         btnToggleServer.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnToggleServerActionPerformed(evt);
             }
         });
 
-        jLabel1.setFont(new java.awt.Font("DejaVu Sans", 1, 14));
-        jLabel1.setText("BarcodeOverIP-Server Settings");
+        jLabel1.setFont(new java.awt.Font("DejaVu Sans", 0, 12)); // NOI18N
+        jLabel1.setText("<html>\nEnter the following values into your mobile device (follow the steps your device gives you) to connect to this computer to start scanning barcodes! It's that easy!<br>\n<br> - If the big button below says \"Activate\", you need press it to activate the listening server before you can start sending barcodes.\n</html>");
+        jLabel1.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        jLabel1.setFocusable(false);
+        jLabel1.setMaximumSize(new java.awt.Dimension(402, 45));
+        jLabel1.setMinimumSize(new java.awt.Dimension(402, 45));
+        jLabel1.setPreferredSize(new java.awt.Dimension(402, 45));
 
-        txtHost.setText("0.0.0.0");
-        txtHost.setToolTipText("Default = 0.0.0.0 (All interfaces)");
+        jLabel4.setLabelFor(txtPassword);
+        jLabel4.setText("Password (Optional):");
+        jLabel4.setFocusable(false);
 
-        txtPort.setText("41788");
-        txtPort.setToolTipText("Default = 41788");
-
-        jLabel2.setText("Listen to Host/IP:");
-
-        jLabel3.setText("On Port:");
-
-        jLabel4.setText("Paasoword (Optional):");
-
+        txtPassword.setToolTipText("Set a password to limit access to the server. Make blank to remove the password requirement.");
         txtPassword.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtPasswordActionPerformed(evt);
             }
         });
 
-        txtLog.setColumns(20);
-        txtLog.setRows(5);
-        jScrollPane1.setViewportView(txtLog);
-
-        jLabel5.setText("Log Output:");
-
         btnAbout.setText("About");
         btnAbout.setMaximumSize(new java.awt.Dimension(85, 29));
         btnAbout.setMinimumSize(new java.awt.Dimension(65, 29));
         btnAbout.setPreferredSize(new java.awt.Dimension(85, 29));
+        btnAbout.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAboutActionPerformed(evt);
+            }
+        });
 
         chkAppendNL.setSelected(true);
-        chkAppendNL.setText("Append a carrage return (enter key) to end of barcode");
+        chkAppendNL.setText("Append a cairrage return (enter) to end of rec'd barcode.");
         chkAppendNL.setToolTipText("Adds a simulated press of the enter key after the barcode is typed. Defualt is TRUE.");
+
+        frameAdvanced.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Advanced Settings", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 14))); // NOI18N
+        frameAdvanced.setEnabled(false);
+        frameAdvanced.setFocusable(false);
+        frameAdvanced.setName("Advanced Settings"); // NOI18N
+
+        txtHost.setText("0.0.0.0");
+        txtHost.setToolTipText("Default = 0.0.0.0 (All interfaces)");
+        txtHost.setEnabled(false);
+
+        lblHostTitle.setLabelFor(txtHost);
+        lblHostTitle.setText("Host/IP:");
+        lblHostTitle.setEnabled(false);
+        lblHostTitle.setFocusable(false);
+
+        lblPortTitle.setLabelFor(lblPortTitle);
+        lblPortTitle.setText("Port:");
+        lblPortTitle.setEnabled(false);
+        lblPortTitle.setFocusable(false);
+
+        txtPort.setText("41788");
+        txtPort.setToolTipText("Default = 41788");
+        txtPort.setEnabled(false);
+
+        javax.swing.GroupLayout frameAdvancedLayout = new javax.swing.GroupLayout(frameAdvanced);
+        frameAdvanced.setLayout(frameAdvancedLayout);
+        frameAdvancedLayout.setHorizontalGroup(
+            frameAdvancedLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(frameAdvancedLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(lblHostTitle)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtHost, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lblPortTitle)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtPort, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(21, Short.MAX_VALUE))
+        );
+        frameAdvancedLayout.setVerticalGroup(
+            frameAdvancedLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(frameAdvancedLayout.createSequentialGroup()
+                .addGroup(frameAdvancedLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtHost, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblHostTitle)
+                    .addComponent(lblPortTitle)
+                    .addComponent(txtPort, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        chkAutoSet.setSelected(true);
+        chkAutoSet.setText("Automatically determine server IP & port number");
+        chkAutoSet.setToolTipText("BoIP will look at you system's nerwork configuration and assign a port and an IP to listen for connections on.");
+        chkAutoSet.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chkAutoSetActionPerformed(evt);
+            }
+        });
+
+        jLabel2.setFont(new java.awt.Font("DejaVu Sans", 1, 13)); // NOI18N
+        jLabel2.setLabelFor(lblLastClient);
+        jLabel2.setText("Last Client:");
+        jLabel2.setToolTipText("(IP, UPC, When (Min/Hrs))");
+
+        lblLastClient.setLabelFor(btnExit);
+        lblLastClient.setText("NONE!");
+
+        lblHost.setFont(new java.awt.Font("DejaVu Sans", 1, 24)); // NOI18N
+        lblHost.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblHost.setText("Host/IP = 0.0.0.0");
+
+        lblPort.setFont(new java.awt.Font("DejaVu Sans", 1, 24)); // NOI18N
+        lblPort.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblPort.setText("Port # = 41788");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jSeparator1, javax.swing.GroupLayout.DEFAULT_SIZE, 433, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 433, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 277, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnToggleServer, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jLabel5)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnOk, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnApply, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnAbout, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addComponent(btnOk, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnApply, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnAbout, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 50, Short.MAX_VALUE)
+                                .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 402, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(24, 24, 24)
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtHost, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtPort, javax.swing.GroupLayout.DEFAULT_SIZE, 101, Short.MAX_VALUE))
+                        .addComponent(lblLastClient, javax.swing.GroupLayout.DEFAULT_SIZE, 301, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(frameAdvanced, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(chkAutoSet, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 402, Short.MAX_VALUE)
+                            .addComponent(chkAppendNL, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 402, Short.MAX_VALUE)
+                            .addComponent(btnToggleServer, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 402, Short.MAX_VALUE)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(24, 24, 24)
                         .addComponent(jLabel4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtPassword, javax.swing.GroupLayout.DEFAULT_SIZE, 281, Short.MAX_VALUE))
-                    .addComponent(jSeparator2, javax.swing.GroupLayout.DEFAULT_SIZE, 433, Short.MAX_VALUE)
-                    .addComponent(chkAppendNL))
+                        .addComponent(txtPassword, javax.swing.GroupLayout.DEFAULT_SIZE, 247, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(lblPort, javax.swing.GroupLayout.DEFAULT_SIZE, 402, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(lblHost, javax.swing.GroupLayout.DEFAULT_SIZE, 402, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnToggleServer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(7, 7, 7)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(lblHost, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lblPort, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(chkAutoSet)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnToggleServer, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(1, 1, 1)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4))
+                .addGap(7, 7, 7)
+                .addComponent(chkAppendNL)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(frameAdvanced, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(txtHost, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3)
-                    .addComponent(txtPort, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(chkAppendNL)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel5)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(lblLastClient))
+                .addGap(13, 13, 13)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnOk, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnApply, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnAbout, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnAbout, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-        // This methods allows classes to register for MyEvents
-    //public void addStatusChangedListener(ServerStatusEventListener listener) {
-    //    listenerList.add(ServerStatusEventListener.class, listener);
-    //}
-
-    // This methods allows classes to unregister for MyEvents
-    //public void removeStatusChangedListener(ServerStatusEventListener listener) {
-    //    listenerList.remove(ServerStatusEventListener.class, listener);
-    //}
-
     private void btnToggleServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnToggleServerActionPerformed
-        if(btnToggleServer.getText() == "Activate") {
+        if(btnToggleServer.getText().equals("Activate")) {
             setServerState(true);
             btnToggleServer.setText("Deactivate");
             LogI(TAG, "Activated the server.");
@@ -267,33 +385,67 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void btnApplyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnApplyActionPerformed
         // TODO add your handling code here:
+        this.saveChanges();
     }//GEN-LAST:event_btnApplyActionPerformed
 
-/*
-    void fireServerStatusChanged(ServerStatusEvent evt) {
-        Object[] listeners = listenerList.getListenerList();
-        // Each listener occupies two elements - the first is the listener class
-        // and the second is the listener instance
-        for (int i=0; i<listeners.length; i+=2) {
-            if (listeners[i]==ServerStatusEventListener.class) {
-                ((ServerStatusEventListener)listeners[i+1]).ServerStatusChanged(evt);
-            }
+    private void btnOkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOkActionPerformed
+        // TODO add your handling code here:
+        this.saveChanges();
+        this.hide();
+    }//GEN-LAST:event_btnOkActionPerformed
+
+    private void btnAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAboutActionPerformed
+        //TODO: Add an about dialog with some info in it here...
+    }//GEN-LAST:event_btnAboutActionPerformed
+
+    private void chkAutoSetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkAutoSetActionPerformed
+        if(chkAutoSet.isSelected()) {
+            lblHostTitle.enable(false);
+            txtHost.enable(false);
+            lblPortTitle.enable(false);
+            txtPort.enable(false);
+        } else {
+            lblHostTitle.enable(true);
+            txtHost.enable(true);
+            lblPortTitle.enable(true);
+            txtPort.enable(true);
         }
+    }//GEN-LAST:event_chkAutoSetActionPerformed
+
+
+    public void setTrayIcon(TrayIcon ico) {
+        SysTrayIcon = ico;
     }
-*/
+
+    private String FindSystemIP() {
+        String sHost = "";
+	try {
+            localAddr = InetAddress.getLocalHost();
+            if (localAddr.isLoopbackAddress()) {
+                localAddr = getLocalHost_nix();
+            }
+            sHost = localAddr.getHostAddress();
+        } catch (UnknownHostException ex) {
+            System.out.println("Error finding local IP.");
+            return "NO";
+        }
+        return sHost;
+    }
+
     //*********************************************
     // Check if any settings are different and then save them if the user wishes to
 
     private boolean checkForChanges() {
         boolean changed = false;
-        if(txtHost.getText().trim() != OrigSets.get("host").toString().trim()) {
-            changed = true;
+        if(!chkAutoSet.isSelected()) {
+            if(!txtHost.getText().trim().equals(OrigSets.get("host").toString().trim())) {
+                changed = true;
+            }
+            if(!txtPort.getText().trim().equals(OrigSets.get("port").toString().trim())) {
+                changed = true;
+            }
         }
-        if(txtPort.getText().trim() != OrigSets.get("port").toString().trim()) {
-            changed = true;
-
-        }
-        if(txtPassword.getText().trim() != OrigSets.get("pass").toString().trim()) {
+        if(!txtPassword.getText().trim().equals(OrigSets.get("pass").toString().trim())) {
             changed = true;
 
         }
@@ -304,24 +456,26 @@ public class MainFrame extends javax.swing.JFrame {
     }
 
     private String validateValues() {
-        if(txtHost.getText().trim().length() < 1 || txtHost.getText().trim() == "" || txtHost.getText().trim() == null) {
-            return "Invalid or empty Host/IP Address!";
-        }
-        if(txtPort.getText().trim().length() < 1 || txtPort.getText().trim() == "" || txtPort.getText().trim() == null) {
-            txtPort.setText("41788");
-        } else {
-            boolean validport = false;
-            try {
-                int i = Integer.parseInt(txtPort.getText());
-                if(i < 65535 && i > 1023) {
-                    validport = true;
-                } else {
-                    return "Given port is out of range. Must be: <65535 and >1023!";
-                }
-            } catch(NumberFormatException nme) {
-                validport = false;
+        if(!chkAutoSet.isSelected()) {
+            if(txtHost.getText().trim().length() < 1 || txtHost.getText().trim().equals("") || txtHost.getText().trim() == null) {
+                return "Invalid or empty Host/IP Address!";
             }
-            if(!validport) { return "Given port value is not a valid number!"; }
+            if(txtPort.getText().trim().length() < 1 || txtPort.getText().trim().equals("") || txtPort.getText().trim() == null) {
+                txtPort.setText("41788");
+            } else {
+                boolean validport = false;
+                try {
+                    int i = Integer.parseInt(txtPort.getText());
+                    if(i < 65535 && i > 1023) {
+                        validport = true;
+                    } else {
+                        return "Given port is out of range. Must be: <65535 and >1023!";
+                    }
+                } catch(NumberFormatException nme) {
+                    validport = false;
+                }
+                if(!validport) { return "Given port value is not a valid number!"; }
+            }
         }
         if(txtPassword.getText().trim().length() > 32) { return "Given password is too long! Must be <32 characters long!"; }
         return "OK"; //All is ok
@@ -330,23 +484,35 @@ public class MainFrame extends javax.swing.JFrame {
     private boolean saveChanges() {
         if(!checkForChanges()) { return true; }
         String validres = validateValues();
-        if(validres != "OK") {
+        if(!validres.equals("OK")) {
             int n = JOptionPane.showConfirmDialog(this, validres, "Invalid Value!", JOptionPane.OK_OPTION);
             return false;
         }
+        if(!chkAutoSet.isSelected()) {
+            SET.setHost(txtHost.getText().trim());
+            SET.setPort(Integer.valueOf(txtPort.getText().trim()));
+        }
         SET.setAppendNL(chkAppendNL.isSelected());
-        SET.setHost(txtHost.getText().trim());
-        SET.setPort(Integer.valueOf(txtPort.getText().trim()));
         SET.setPass(txtPassword.getText().trim());
         LogI(TAG, "Changes successfully saved!");
+
+        lblHost.setText("Host/IP = " + SET.getHost());
+        lblPort.setText("Port # = " + SET.getPort());
+
+        //Start and stop the server to force it to take the changes
+        setServerState(false);
+        setServerState(true);
+
         return true;
     }
 
     private boolean setServerState(boolean val) {  // TRUE = Active
         if(val) {
             CORE.ActivateServer();
+            SysTrayIcon.setToolTip("BarcodeOverIP " + Settings.VERSION + " - Active");
         } else {
             CORE.DeactivateServer();
+            SysTrayIcon.setToolTip("BarcodeOverIP " + Settings.VERSION + " - Active");
         }
         return val;
     }
@@ -362,22 +528,73 @@ public class MainFrame extends javax.swing.JFrame {
         if(level == 2) { a = "WARN: "; }
         if(level == 3) { a = "*ERR*: "; }
         if(level == 4) { a = "**FATAL**: "; }
-        txtLog.setText(txtLog.getText() + "\n" + a + tag + " -- " + info);
+        System.out.println(a + tag + " -- " + info);
     }
 
-    /**
-    * @param args the command line arguments
-    */
-    /*
-    public static void main(String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new MainFrame().setVisible(true);
-            }
-        });
-    }
-     * */
-     
+    	public static InetAddress getLocalHost_nix() throws UnknownHostException {
+		InetAddress localHost = InetAddress.getLocalHost();
+		if(!localHost.isLoopbackAddress()) return localHost;
+		InetAddress[] addrs = getAllLocalUsingNetworkInterface_nix();
+		for(int i=0; i<addrs.length; i++) {
+			//Check for "." to ensure IPv4
+			if(!addrs[i].isLoopbackAddress() && addrs[i].getHostAddress().contains(".")) return addrs[i];
+		}
+		return localHost;
+	}
+
+	public static InetAddress[] getAllLocal_nix() throws UnknownHostException {
+		InetAddress[] iAddresses = InetAddress.getAllByName("127.0.0.1");
+		if(iAddresses.length != 1) return iAddresses;
+		if(!iAddresses[0].isLoopbackAddress()) return iAddresses;
+		return getAllLocalUsingNetworkInterface_nix();
+	}
+	
+	private static InetAddress[] getAllLocalUsingNetworkInterface_nix() throws UnknownHostException {
+		ArrayList addresses = new ArrayList();
+		Enumeration e = null;
+		try {
+			e = NetworkInterface.getNetworkInterfaces();
+		} catch (SocketException ex) {
+			throw new UnknownHostException("127.0.0.1");
+		}
+		while(e.hasMoreElements()) {
+			NetworkInterface ni = (NetworkInterface)e.nextElement();
+			for(Enumeration e2 = ni.getInetAddresses(); e2.hasMoreElements();) {
+				addresses.add(e2.nextElement());
+			}
+		}
+		InetAddress[] iAddresses = new InetAddress[addresses.size()];
+		for(int i=0; i<iAddresses.length; i++) {
+			iAddresses[i] = (InetAddress)addresses.get(i);
+		}
+		return iAddresses;
+	}
+
+
+        	public Image getImage(String sImage) {
+		Image imReturn = null;
+		try {
+			if (jar == null) {
+				imReturn = this.toolkit.createImage(this.getClass().getClassLoader().getResource(sImage));
+			} else {
+				//
+				BufferedInputStream bis = new BufferedInputStream(jar.getInputStream(jar.getEntry(sImage)));
+				ByteArrayOutputStream buffer=new ByteArrayOutputStream(4096);
+				int b;
+				while((b=bis.read())!=-1) {
+					buffer.write(b);
+				}
+				byte[] imageBuffer=buffer.toByteArray();
+				imReturn = this.toolkit.createImage(imageBuffer);
+				bis.close();
+				buffer.close();
+			}
+		} catch (IOException ex) {
+
+		}
+		return imReturn;
+	}
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAbout;
@@ -386,16 +603,18 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JButton btnOk;
     private javax.swing.JButton btnToggleServer;
     private javax.swing.JCheckBox chkAppendNL;
+    private javax.swing.JCheckBox chkAutoSet;
+    private javax.swing.JPanel frameAdvanced;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JSeparator jSeparator2;
+    private javax.swing.JLabel lblHost;
+    private javax.swing.JLabel lblHostTitle;
+    private javax.swing.JLabel lblLastClient;
+    private javax.swing.JLabel lblPort;
+    private javax.swing.JLabel lblPortTitle;
     private javax.swing.JTextField txtHost;
-    private javax.swing.JTextArea txtLog;
     private javax.swing.JTextField txtPassword;
     private javax.swing.JTextField txtPort;
     // End of variables declaration//GEN-END:variables

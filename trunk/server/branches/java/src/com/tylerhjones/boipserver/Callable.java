@@ -13,5 +13,4 @@ interface Callable
 {
     public void ActivateServer();
     public void DeactivateServer();
-    public void CallbackMessage();
 }  
