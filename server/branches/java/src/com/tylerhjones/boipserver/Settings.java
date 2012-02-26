@@ -1,15 +1,34 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ *
+ *  BarcodeOverIP-Server (Java) Version 0.3.x
+ *  Copyright (C) 2012, Tyler H. Jones (me@tylerjones.me)
+ *  http://tbsf.me/boip
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ *  Filename: ${nameAndExt}.java
+ *  Package Name: ${package}
+ *  Created By: ${user} on ${date} ${time}
+ *
+ *  Description: TODO
+ *
  */
 
 package com.tylerhjones.boipserver;
 
 import  java.util.prefs.*;
-/**
- *
- * @author tyler
- */
+
+
 public class Settings {
 
     public static final String VERSION = "0.3.1";
@@ -32,7 +51,7 @@ public class Settings {
     }
 
     public String getHost() {
-        return prefs.get(S_HOST, "0.0.0.0");
+        return prefs.get(S_HOST, "0.0.0.0").trim();
     }
 
     public void setHost(String val) {
@@ -48,11 +67,11 @@ public class Settings {
     }
 
     public String getPass() {
-        return prefs.get(S_PASS, "");
+        return prefs.get(S_PASS, "").trim();
     }
 
     public void setPass(String val) {
-        if(val.trim().toLowerCase() == "none") {
+        if(val.trim().toLowerCase().equals("none")) {
             prefs.put(S_PASS, "");
         } else {
             prefs.put(S_PASS, val);

@@ -1,12 +1,27 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/*
- * MainFrame.java
  *
- * Created on Feb 25, 2012, 10:40:16 AM
+ *  BarcodeOverIP-Server (Java) Version 0.3.x
+ *  Copyright (C) 2012, Tyler H. Jones (me@tylerjones.me)
+ *  http://tbsf.me/boip
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ *  Filename: MainFrame.java
+ *  Package Name: com.tylerhjones.boipserver
+ *  Created By: Tyler H. Jones on Feb 25, 2012, 10:40:16 AM
+ *
+ *  Description: TODO
+ *
  */
 
 package com.tylerhjones.boipserver;
@@ -27,12 +42,9 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.jar.JarFile;
 import javax.swing.JOptionPane;
+import java.awt.Robot;
 
-
-/*
- *
- * @author tyler
- */
+//Main class
 public class MainFrame extends javax.swing.JFrame {
 
     private String TAG = "MainFrame";
@@ -65,22 +77,22 @@ public class MainFrame extends javax.swing.JFrame {
         OrigSets.put("pass", new String(SET.getPass()));
         OrigSets.put("newl", new Boolean(SET.getAppendNL()));
 
-        txtHost.setText(OrigSets.get("host").toString());
+        //txtHost.setText(OrigSets.get("host").toString());
         txtPassword.setText(OrigSets.get("pass").toString());
         txtPort.setText(OrigSets.get("port").toString());
         chkAppendNL.setSelected(Boolean.valueOf(OrigSets.get("newl").toString()));
 
         String ip = this.FindSystemIP();
-        if(ip == "NO") {
+        if(ip.equals("NO")) {
             int n = JOptionPane.showConfirmDialog(this, "The IP address of the current system could not be determined. Either there is no network connection or you need to set the IP manually.", "Can't Determine IP Address", JOptionPane.OK_OPTION);
             chkAutoSet.setSelected(false);
             lblHostTitle.enable(true);
-            txtHost.enable(true);
+            //txtHost.enable(true);
             lblPortTitle.enable(true);
             txtPort.enable(true);
         } else {
             lblHostTitle.enable(false);
-            txtHost.enable(false);
+            //txtHost.enable(false);
             lblPortTitle.enable(false);
             txtPort.enable(false);
             SET.setHost(ip);
@@ -158,7 +170,7 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
-        btnToggleServer.setFont(new java.awt.Font("DejaVu Sans", 1, 13)); // NOI18N
+        btnToggleServer.setFont(new java.awt.Font("DejaVu Sans", 1, 13));
         btnToggleServer.setText("Activate Server");
         btnToggleServer.setMaximumSize(new java.awt.Dimension(402, 29));
         btnToggleServer.setMinimumSize(new java.awt.Dimension(402, 29));
@@ -169,7 +181,7 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
-        jLabel1.setFont(new java.awt.Font("DejaVu Sans", 0, 12)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("DejaVu Sans", 0, 12));
         jLabel1.setText("<html>\nEnter the following values into your mobile device (follow the steps your device gives you) to connect to this computer to start scanning barcodes! It's that easy!<br>\n<br> - If the big button below says \"Activate\", you need press it to activate the listening server before you can start sending barcodes.\n</html>");
         jLabel1.setVerticalAlignment(javax.swing.SwingConstants.TOP);
         jLabel1.setFocusable(false);
@@ -209,7 +221,6 @@ public class MainFrame extends javax.swing.JFrame {
 
         txtHost.setText("0.0.0.0");
         txtHost.setToolTipText("Default = 0.0.0.0 (All interfaces)");
-        txtHost.setEnabled(false);
 
         lblHostTitle.setLabelFor(txtHost);
         lblHostTitle.setText("Host/IP:");
@@ -238,7 +249,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addComponent(lblPortTitle)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtPort, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(21, Short.MAX_VALUE))
+                .addContainerGap(35, Short.MAX_VALUE))
         );
         frameAdvancedLayout.setVerticalGroup(
             frameAdvancedLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -260,7 +271,7 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
-        jLabel2.setFont(new java.awt.Font("DejaVu Sans", 1, 13)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("DejaVu Sans", 1, 13));
         jLabel2.setLabelFor(lblLastClient);
         jLabel2.setText("Last Client:");
         jLabel2.setToolTipText("(IP, UPC, When (Min/Hrs))");
@@ -268,11 +279,11 @@ public class MainFrame extends javax.swing.JFrame {
         lblLastClient.setLabelFor(btnExit);
         lblLastClient.setText("NONE!");
 
-        lblHost.setFont(new java.awt.Font("DejaVu Sans", 1, 24)); // NOI18N
+        lblHost.setFont(new java.awt.Font("DejaVu Sans", 1, 24));
         lblHost.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblHost.setText("Host/IP = 0.0.0.0");
 
-        lblPort.setFont(new java.awt.Font("DejaVu Sans", 1, 24)); // NOI18N
+        lblPort.setFont(new java.awt.Font("DejaVu Sans", 1, 24));
         lblPort.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblPort.setText("Port # = 41788");
 
@@ -291,33 +302,33 @@ public class MainFrame extends javax.swing.JFrame {
                                 .addComponent(btnApply, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btnAbout, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 50, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 78, Short.MAX_VALUE)
                                 .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 402, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(24, 24, 24)
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lblLastClient, javax.swing.GroupLayout.DEFAULT_SIZE, 301, Short.MAX_VALUE))
+                        .addComponent(lblLastClient, javax.swing.GroupLayout.DEFAULT_SIZE, 329, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(frameAdvanced, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(chkAutoSet, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 402, Short.MAX_VALUE)
+                            .addComponent(chkAutoSet, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 430, Short.MAX_VALUE)
                             .addComponent(chkAppendNL, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 402, Short.MAX_VALUE)
-                            .addComponent(btnToggleServer, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 402, Short.MAX_VALUE)))
+                            .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 430, Short.MAX_VALUE)
+                            .addComponent(btnToggleServer, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 430, Short.MAX_VALUE)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(24, 24, 24)
                         .addComponent(jLabel4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtPassword, javax.swing.GroupLayout.DEFAULT_SIZE, 247, Short.MAX_VALUE))
+                        .addComponent(txtPassword, javax.swing.GroupLayout.DEFAULT_SIZE, 257, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(lblPort, javax.swing.GroupLayout.DEFAULT_SIZE, 402, Short.MAX_VALUE))
+                        .addComponent(lblPort, javax.swing.GroupLayout.DEFAULT_SIZE, 430, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(lblHost, javax.swing.GroupLayout.DEFAULT_SIZE, 402, Short.MAX_VALUE)))
+                        .addComponent(lblHost, javax.swing.GroupLayout.DEFAULT_SIZE, 430, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -360,14 +371,16 @@ public class MainFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnToggleServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnToggleServerActionPerformed
-        if(btnToggleServer.getText().equals("Activate")) {
+        if(btnToggleServer.getText().equals("Activate Server")) {
             setServerState(true);
-            btnToggleServer.setText("Deactivate");
+            btnToggleServer.setText("Deactivate Server");
             LogI(TAG, "Activated the server.");
+            return;
         } else {
             setServerState(false);
-            btnToggleServer.setText("Activate");
+            btnToggleServer.setText("Activate Server");
             LogI(TAG, "Deactivated the server.");
+            return;
         }
     }//GEN-LAST:event_btnToggleServerActionPerformed
 
@@ -384,14 +397,21 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_btnExitActionPerformed
 
     private void btnApplyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnApplyActionPerformed
-        // TODO add your handling code here:
-        this.saveChanges();
+        txtHost.requestFocusInWindow();
+        KeypressEmulator KE = new KeypressEmulator();
+        //txt.enable(true);
+       // txtHost.requestFocusInWindow();
+        System.out.println("KeyPress Returned: " + KE.typeString(txtPassword.getText(), SET.getAppendNL()));
+        //this.saveChanges();
     }//GEN-LAST:event_btnApplyActionPerformed
 
     private void btnOkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOkActionPerformed
-        // TODO add your handling code here:
-        this.saveChanges();
-        this.hide();
+        KeypressEmulator KE = new KeypressEmulator();
+        txtHost.enable(true);
+        txtHost.requestFocusInWindow();
+        KE.typeString(txtPassword.getText(), SET.getAppendNL());
+        //this.saveChanges();
+        //this.hide();
     }//GEN-LAST:event_btnOkActionPerformed
 
     private void btnAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAboutActionPerformed
@@ -438,20 +458,11 @@ public class MainFrame extends javax.swing.JFrame {
     private boolean checkForChanges() {
         boolean changed = false;
         if(!chkAutoSet.isSelected()) {
-            if(!txtHost.getText().trim().equals(OrigSets.get("host").toString().trim())) {
-                changed = true;
-            }
-            if(!txtPort.getText().trim().equals(OrigSets.get("port").toString().trim())) {
-                changed = true;
-            }
+            if(!txtHost.getText().trim().equals(OrigSets.get("host").toString().trim())) { changed = true; }
+            if(!txtPort.getText().trim().equals(OrigSets.get("port").toString().trim())) { changed = true; }
         }
-        if(!txtPassword.getText().trim().equals(OrigSets.get("pass").toString().trim())) {
-            changed = true;
-
-        }
-        if(chkAppendNL.isSelected() != Boolean.valueOf(OrigSets.get("newl").toString().trim())) {
-            changed = true;
-        }
+        if(!txtPassword.getText().trim().equals(OrigSets.get("pass").toString().trim())) { changed = true; }
+        if(chkAppendNL.isSelected() != Boolean.valueOf(OrigSets.get("newl").toString().trim())) { changed = true; }
         return changed;
     }
 

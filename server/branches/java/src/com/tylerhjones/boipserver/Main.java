@@ -1,6 +1,27 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ *
+ *  BarcodeOverIP-Server (Java) Version 0.3.x
+ *  Copyright (C) 2012, Tyler H. Jones (me@tylerjones.me)
+ *  http://tbsf.me/boip
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ *  Filename: ${nameAndExt}.java
+ *  Package Name: ${package}
+ *  Created By: ${user} on ${date} ${time}
+ *
+ *  Description: TODO
+ *
  */
 
 package com.tylerhjones.boipserver;
@@ -56,7 +77,7 @@ public class Main {
         SETS.show();
         //------------------------------------------------------
         //--- Setup System Tray Icon
-        //final TrayIcon trayIcon;
+        final TrayIcon trayIcon;
 
         if (SystemTray.isSupported()) { //Check if the system can use a systray icon
             ImageIcon icon = createImageIcon("/icon.png", "BarcodeOverIP App Icon"); // ./build/classes/icon.png

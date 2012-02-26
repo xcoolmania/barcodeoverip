@@ -1,16 +1,33 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ *
+ *  BarcodeOverIP-Server (Java) Version 0.3.x
+ *  Copyright (C) 2012, Tyler H. Jones (me@tylerjones.me)
+ *  http://tbsf.me/boip
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ *  Filename: ${nameAndExt}.java
+ *  Package Name: ${package}
+ *  Created By: ${user} on ${date} ${time}
+ *
+ *  Description: TODO
+ *
  */
 
 package com.tylerhjones.boipserver;
 
-import java.awt.AWTException;
-import java.awt.MediaTracker;
-import java.awt.Robot;
-import java.awt.Toolkit;
-import java.awt.event.KeyEvent;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 /**
@@ -22,22 +39,25 @@ public class ServerCore {
     private static MainFrame MAINWIN;
     private static Settings SETS = new Settings();
     private static int MaxConns = 5;
-    private boolean stopNOW = false;
-    private static Toolkit toolkit;
-    private static MediaTracker tracker;
+    private static boolean stopNOW = false;
 
     public ServerCore() {
         //MAINWIN.LogI(TAG, "Class constructor initialized!");
        // parent = p;
     }
 
-    public void start() {
+    public void StartServer() {
         int i = 0;
         try{
-            //ServerSocket listener = new ServerSocket(SETS.getPort(), 2, InetAddress.getByName(SETS.getHost()));
-            ServerSocket listener = new ServerSocket(SETS.getPort());
+            ServerSocket listener;
             Socket server;
 
+            if(SETS.getHost().equals("") || SETS.getHost().equals("0.0.0.0")) {
+                listener = new ServerSocket(SETS.getPort());
+            } else {
+                listener = new ServerSocket(SETS.getPort(), 2, InetAddress.getByName(SETS.getHost()));
+            }
+            
             while((i++ < MaxConns) || (MaxConns == 0)){
                 if(stopNOW) {
                     stopNOW = false;
@@ -45,8 +65,8 @@ public class ServerCore {
                 }
                 //ConnectionHandler CON;
                 server = listener.accept();
-                MAINWIN.LogI(TAG, "Connection recieved from: " + server.getLocalAddress().toString());
-                ConnectionHandler CONN_C = new ConnectionHandler(server, MAINWIN);
+                MAINWIN.LogI(TAG, "Connection recieved from: " + server.getInetAddress().toString());
+                ConnectionHandler CONN_C = new ConnectionHandler(server);
                 Thread t = new Thread(CONN_C);
                 t.start();
             }
@@ -59,8 +79,9 @@ public class ServerCore {
     public void ActivateServer() {
         MAINWIN.LogI(TAG, "Activating server...");
         stopNOW = false;
-        this.start();
+        this.StartServer();
     }
+    
     public void DeactivateServer() {
         MAINWIN.LogI(TAG, "Deactivating server...");
         stopNOW = true;
@@ -69,28 +90,5 @@ public class ServerCore {
     // Sets the class variable for the MainWindow of the application
     public void setWindow(MainFrame s) {
         MAINWIN = s;
-    }
-
-    // Emulate the typing of the keyboard and type out a given string
-    public void TypeChars(String chars) {
-        // Verify that all the chars intending to be typed are ONLY letters and numbers.
-        if(!chars.matches("^[a-zA-Z0-9]+$")) {
-            MAINWIN.LogE(TAG, "The data sent to the server contains illegal characters!");
-            return;
-        }
-
-        try {
-            Robot robot = new Robot();
-
-            // Simulate a mouse click
-            //robot.mousePress(InputEvent.BUTTON1_MASK);
-            //robot.mouseRelease(InputEvent.BUTTON1_MASK);
-
-            // Simulate a key press
-            robot.keyPress(KeyEvent.VK_A);
-            robot.keyRelease(KeyEvent.VK_A);
-        } catch (AWTException e) {
-            e.printStackTrace();
-        }
     }
 }
