@@ -27,32 +27,23 @@
 
 package com.tylerhjones.boip;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.google.zxing.integration.android.IntentIntegrator;
-import com.google.zxing.integration.android.IntentResult;
-import com.tylerhjones.boip.R;
-//import com.tylerhjones.boip.Common;
-//import com.tylerhjones.boip.Settings;
-import com.tylerhjones.boip.BoIPClient;
-
 import android.app.Activity;
-import android.os.Bundle;
-import android.util.Log;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
-//import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
-//import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.database.Cursor;
-
+import android.net.Uri;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -60,9 +51,8 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.AdapterView.OnItemSelectedListener;
-import android.view.*;
-import android.view.View.OnClickListener;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 
 public class BoIPActivity extends Activity {
 	
@@ -94,6 +84,8 @@ public class BoIPActivity extends Activity {
 	
 	//Define BoIP communication class
 	protected BoIPClient BIP = new BoIPClient();
+	
+	protected Database DB;
 
 	//Widget definitions
 	private EditText txtHost;
@@ -267,7 +259,7 @@ public class BoIPActivity extends Activity {
 		}		
 	}
 	
-	//Shoiw a message box given the title and message
+	// Show a message box given the title and message
 	private void showMsgBox(String title, String msg, String type) {
 		if(type == null || type == "") { type = OK; }
 		AlertDialog ad = new AlertDialog.Builder(this).create();  
@@ -299,9 +291,9 @@ public class BoIPActivity extends Activity {
 		    });  
 		    ad.show();  
 			return;
-		}		
+		}
 		
-		//ZXing Product Lookup Window
+		// ---- ZXing Product Lookup Window -------------------------------------
 		Intent intent = new Intent("com.google.zxing.client.android.SCAN");
       	intent.putExtra("SCAN_MODE", "PRODUCT_MODE");
       	intent.putExtra("SCAN_WIDTH", 800);
@@ -399,13 +391,12 @@ public class BoIPActivity extends Activity {
 		startActivity( new Intent( Intent.ACTION_VIEW, uri ) );
     }
     
-    private void ShowEditServers() {
-    	showDialog(DIALOG_EDIT_SERVERS);
-    	//FIXME: Uncomment the below lines and remove the above lines when the ServerManager activity has been written
-    	//Intent intent = new Intent(this, ServerManager.class);
-    	//startActivity(intent);
-    }
-    
+	protected void ShowEditServers() {
+	
+		Intent intent = new Intent(this.getBaseContext(), EditServersActivity.class);
+		startActivity(intent);
+	}
+
     protected Dialog onCreateDialog(int id) {
         AlertDialog adialog = null;
         switch(id) {
