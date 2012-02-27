@@ -16,16 +16,7 @@
             android:layout_weight="1"
             android:gravity="center_vertical"
             android:text="" />
-            
-        <TextView  
-            android:id="@+id/listitem_hostport"
-            android:layout_width="fill_parent"
-            android:layout_height="0dip"
-            android:layout_weight="1" 
-            android:singleLine="true"
-            android:ellipsize="marquee"
-            android:text="" />
-            
+                      
     </LinearLayout>
 
 </LinearLayout>

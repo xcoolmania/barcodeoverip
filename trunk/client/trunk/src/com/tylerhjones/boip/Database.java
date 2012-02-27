@@ -145,6 +145,42 @@ public class Database {
 			return null;
 		}
 	}
+	
+	public String[] getAllServerNames() {
+
+		try {
+			Log.v(TAG, "getAllServerNames()");
+			Cursor curs = theDB.query(Common.TABLE_SERVERS, new String[] {  Common.S_FIELD_NAME }, null, null, null, null, null);
+			String[] sarray = new String[curs.getCount()];
+			int i = 0;
+			while (curs.moveToNext()) {
+				sarray[i] = curs.getString(0);
+				++i;
+			}
+			return sarray;
+		} catch(SQLiteException e) {
+			Log.e(TAG, "getAllServerNames() threw an exception!", e);
+			return null;
+		}
+	}
+	
+	public Integer[] getAllServerIndexes() {
+
+		try {
+			Log.v(TAG, "getAllServerIndexes()");
+			Cursor curs = theDB.query(Common.TABLE_SERVERS, new String[] {  Common.S_FIELD_INDEX }, null, null, null, null, null);
+			Integer[] iarray = new Integer[curs.getCount()];
+			int i = 0;
+			while (curs.moveToNext()) {
+				iarray[i] = Integer.valueOf(curs.getString(0));
+				++i;
+			}
+			return iarray;
+		} catch(SQLiteException e) {
+			Log.e(TAG, "getAllServerIndexs() threw an exception!", e);
+			return null;
+		}
+	}
 
 	public Cursor getServerFromIndex(int idx) throws SQLiteException {
 		Log.v(TAG, "getServerFromIndex()");
