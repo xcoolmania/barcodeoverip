@@ -1,6 +1,6 @@
 /*
  *
- *  BarcodeOverIP (BoIP-Android) Version 0.2.x
+ *  BarcodeOverIP (BoIP-Android) Version 0.3.x
  *  Copyright (C) 2012, Tyler H. Jones (me@tylerjones.me)
  *  http://tbsf.me/boip
  *
@@ -16,9 +16,9 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- *  Filename: BoIPActivity.java
- *  Package Name: com.tylerhjones.boip
- *  Created By: tyler on Feb 1, 2012 at 2:09:12 PM
+ *  Filename: ${classAndfile}
+ *  Package Name: ${package}
+ *  Created By: ${user} ${date} ${time}
  *  
  *  Description: TODO
  * 

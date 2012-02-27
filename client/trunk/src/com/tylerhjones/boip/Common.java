@@ -48,6 +48,11 @@ public class Common {
 	public static final String S_FIELD_HOST = "host";
 	public static final String S_FIELD_PORT = "port";
 	public static final String S_FIELD_PASS = "pass";
+	public static final String S_INDEX = "index";
+	public static final String S_NAME = "name";
+	public static final String S_HOST = "host";
+	public static final String S_PORT = "port";
+	public static final String S_PASS = "pass";
 
 //-----------------------------------------------------------------------------------------
 //--- Server return error codes and descriptions ------------------------------------------
