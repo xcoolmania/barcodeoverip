@@ -41,8 +41,9 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.jar.JarFile;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
-import java.awt.Robot;
+
 
 //Main class
 public class MainFrame extends javax.swing.JFrame {
@@ -77,7 +78,7 @@ public class MainFrame extends javax.swing.JFrame {
         OrigSets.put("pass", new String(SET.getPass()));
         OrigSets.put("newl", new Boolean(SET.getAppendNL()));
 
-        //txtHost.setText(OrigSets.get("host").toString());
+        txtHost.setText(OrigSets.get("host").toString());
         txtPassword.setText(OrigSets.get("pass").toString());
         txtPort.setText(OrigSets.get("port").toString());
         chkAppendNL.setSelected(Boolean.valueOf(OrigSets.get("newl").toString()));
@@ -100,7 +101,6 @@ public class MainFrame extends javax.swing.JFrame {
             lblHost.setText("Host/IP = " + ip);
             lblPort.setText("Port # = 41788");
         }
-
     }
 
     /** This method is called from within the constructor to
@@ -434,7 +434,8 @@ public class MainFrame extends javax.swing.JFrame {
 
 
     public void setTrayIcon(TrayIcon ico) {
-        SysTrayIcon = ico;
+        this.SysTrayIcon = ico;
+        this.setIconImage(this.getImage("/icon24.ico"));
     }
 
     private String FindSystemIP() {
@@ -520,10 +521,10 @@ public class MainFrame extends javax.swing.JFrame {
     private boolean setServerState(boolean val) {  // TRUE = Active
         if(val) {
             CORE.ActivateServer();
-            SysTrayIcon.setToolTip("BarcodeOverIP " + Settings.VERSION + " - Active");
+            this.SysTrayIcon.setToolTip("BarcodeOverIP " + SET.VERSION + " - Active");
         } else {
             CORE.DeactivateServer();
-            SysTrayIcon.setToolTip("BarcodeOverIP " + Settings.VERSION + " - Active");
+            this.SysTrayIcon.setToolTip("BarcodeOverIP " + SET.VERSION + " - Inactive");
         }
         return val;
     }
@@ -542,70 +543,62 @@ public class MainFrame extends javax.swing.JFrame {
         System.out.println(a + tag + " -- " + info);
     }
 
-    	public static InetAddress getLocalHost_nix() throws UnknownHostException {
-		InetAddress localHost = InetAddress.getLocalHost();
-		if(!localHost.isLoopbackAddress()) return localHost;
-		InetAddress[] addrs = getAllLocalUsingNetworkInterface_nix();
-		for(int i=0; i<addrs.length; i++) {
-			//Check for "." to ensure IPv4
-			if(!addrs[i].isLoopbackAddress() && addrs[i].getHostAddress().contains(".")) return addrs[i];
-		}
-		return localHost;
-	}
+    public static InetAddress getLocalHost_nix() throws UnknownHostException {
+            InetAddress localHost = InetAddress.getLocalHost();
+            if(!localHost.isLoopbackAddress()) return localHost;
+            InetAddress[] addrs = getAllLocalUsingNetworkInterface_nix();
+            for(int i=0; i<addrs.length; i++) {
+                    //Check for "." to ensure IPv4
+                    if(!addrs[i].isLoopbackAddress() && addrs[i].getHostAddress().contains(".")) return addrs[i];
+            }
+            return localHost;
+    }
 
-	public static InetAddress[] getAllLocal_nix() throws UnknownHostException {
-		InetAddress[] iAddresses = InetAddress.getAllByName("127.0.0.1");
-		if(iAddresses.length != 1) return iAddresses;
-		if(!iAddresses[0].isLoopbackAddress()) return iAddresses;
-		return getAllLocalUsingNetworkInterface_nix();
-	}
-	
-	private static InetAddress[] getAllLocalUsingNetworkInterface_nix() throws UnknownHostException {
-		ArrayList addresses = new ArrayList();
-		Enumeration e = null;
-		try {
-			e = NetworkInterface.getNetworkInterfaces();
-		} catch (SocketException ex) {
-			throw new UnknownHostException("127.0.0.1");
-		}
-		while(e.hasMoreElements()) {
-			NetworkInterface ni = (NetworkInterface)e.nextElement();
-			for(Enumeration e2 = ni.getInetAddresses(); e2.hasMoreElements();) {
-				addresses.add(e2.nextElement());
-			}
-		}
-		InetAddress[] iAddresses = new InetAddress[addresses.size()];
-		for(int i=0; i<iAddresses.length; i++) {
-			iAddresses[i] = (InetAddress)addresses.get(i);
-		}
-		return iAddresses;
-	}
+    public static InetAddress[] getAllLocal_nix() throws UnknownHostException {
+            InetAddress[] iAddresses = InetAddress.getAllByName("127.0.0.1");
+            if(iAddresses.length != 1) return iAddresses;
+            if(!iAddresses[0].isLoopbackAddress()) return iAddresses;
+            return getAllLocalUsingNetworkInterface_nix();
+    }
+
+    private static InetAddress[] getAllLocalUsingNetworkInterface_nix() throws UnknownHostException {
+            ArrayList addresses = new ArrayList();
+            Enumeration e = null;
+            try {
+                    e = NetworkInterface.getNetworkInterfaces();
+            } catch (SocketException ex) {
+                    throw new UnknownHostException("127.0.0.1");
+            }
+            while(e.hasMoreElements()) {
+                    NetworkInterface ni = (NetworkInterface)e.nextElement();
+                    for(Enumeration e2 = ni.getInetAddresses(); e2.hasMoreElements();) {
+                            addresses.add(e2.nextElement());
+                    }
+            }
+            InetAddress[] iAddresses = new InetAddress[addresses.size()];
+            for(int i=0; i<iAddresses.length; i++) {
+                    iAddresses[i] = (InetAddress)addresses.get(i);
+            }
+            return iAddresses;
+    }
 
 
-        	public Image getImage(String sImage) {
-		Image imReturn = null;
-		try {
-			if (jar == null) {
-				imReturn = this.toolkit.createImage(this.getClass().getClassLoader().getResource(sImage));
-			} else {
-				//
-				BufferedInputStream bis = new BufferedInputStream(jar.getInputStream(jar.getEntry(sImage)));
-				ByteArrayOutputStream buffer=new ByteArrayOutputStream(4096);
-				int b;
-				while((b=bis.read())!=-1) {
-					buffer.write(b);
-				}
-				byte[] imageBuffer=buffer.toByteArray();
-				imReturn = this.toolkit.createImage(imageBuffer);
-				bis.close();
-				buffer.close();
-			}
-		} catch (IOException ex) {
-
-		}
-		return imReturn;
-	}
-    
+    public Image getImage(String sImage) {
+        Image imgReturn = this.toolkit.createImage(this.getClass().getClassLoader().getResource(sImage));
+        return imgReturn;
+    }
+/*
+    private Image createImage(String path) {
+        java.net.URL imgURL = this.getClass().getResource(path);
+        if (imgURL != null) {
+            Image img = new Image(imgURL);
+            return img;
+        } else {
+            System.err.println("Couldn't find image: " + path);
+            return null;
+        }
+    }
+    */
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAbout;

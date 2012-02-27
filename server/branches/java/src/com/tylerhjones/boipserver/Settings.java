@@ -31,11 +31,11 @@ import  java.util.prefs.*;
 
 public class Settings {
 
-    public static final String VERSION = "0.3.1";
-    public static final String APP_NAME = "BarcodeOverIP-Server";
-    public static final String APP_AUTHOR = "Tyler H. Jones";
-    public static final String APP_WEBSITE = "http://tbsf.me/boip";
-    public static final String APP_INFO = "0.3.1 Beta (Java)";
+    public final String VERSION = "0.3.1";
+    public final String APP_NAME = "BarcodeOverIP-Server";
+    public final String APP_AUTHOR = "Tyler H. Jones";
+    public final String APP_WEBSITE = "http://tbsf.me/boip";
+    public final String APP_INFO = "0.3.1 Beta (Java)";
 
     private static final String PREF_NAME = "boip-server";
     private static final String S_HOST = "host";
