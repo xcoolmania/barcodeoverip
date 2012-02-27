@@ -29,24 +29,35 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.HashMap;
 import java.util.Map;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteException;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.BaseAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
 
 public class EditServersActivity extends Activity {
 	// Constants declarations
@@ -67,6 +78,7 @@ public class EditServersActivity extends Activity {
 	private Database DB;
 
 	// Data storage variable declarations
+	//protected String[] ServerNames;
 	protected Map<Integer, String[]> Servers = new HashMap<Integer, String[]>(); // FieldName, Values in that field
 
 	@Override
@@ -96,6 +108,13 @@ public class EditServersActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.editservers);
 	}
+	
+    @Override
+    public void onStart() {
+    	super.onStart();
+        Servers.size();
+    	setServerList(this.getAllServerNames());
+    }
     
 	/*****************************************************************************************/
 	/*** General FUnctions and Methods ***/
@@ -116,6 +135,13 @@ public class EditServersActivity extends Activity {
 	@Override
 	public void onResume() {
 		super.onResume();
+	}
+	
+	public void setServerList(String[] ServerNames) { // NOTE: This method takes an array of server NAMES only!
+		ItemsAdapter adapter = new ItemsAdapter(this, R.id.listitem_name, ServerNames);
+    	lstServers.setAdapter(adapter);
+        Log.v("EditServersActivity", "EditServersActivity.setServerList() was called!");
+		//Toast.makeText(getApplicationContext(), "Cross-activity communication WORKS!", Toast.LENGTH_LONG).show();
 	}
 
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
@@ -140,23 +166,13 @@ public class EditServersActivity extends Activity {
 		String listItemName = getServer(info.position, CM.S_INDEX);
 		switch (menuItemIndex) {
 		case 0:
-				ShowServerInfo(listItemName);
+			ShowServerInfo(listItemName);
 			break;
 		case 1:
-				res = removeServer(listItemName);
-			if (res) {
-					// Servers = getAllServers();
-					lblListInfo.setText("Total Servers: " + String.valueOf(Servers.size()));
-					// setServers(Servers);
-			}
+			ShowRemoveServer(listItemName);
+			break;
 		case 2:
-			File f = new File(listItemName);
-			try {
-				Core.SetWallpaper(f);
-			} catch (Exception e) {
-				Log.e(TAG, "File not found when executing SetWallpaper()");
-				e.printStackTrace();
-			}
+			ShowEditServer(listItemName);
 			break;
 		default:
 			break;
@@ -167,10 +183,10 @@ public class EditServersActivity extends Activity {
 	
 	private String getNameForIndex(int index) {
 	
-		return this.getServer(index, CM.S_INDEX);
+		return this.getServer(index, Common.S_INDEX);
 	}
 
-	private int getNUmServers() {
+	private int getNumServers() {
 
 		return Servers.get(0).length;
 	}
@@ -203,14 +219,91 @@ public class EditServersActivity extends Activity {
 		DB.close();
 	}
 	
-	private void editServerInfo(String oldname, String name, String index, String host,
-			String port, String pass) {
+	private void editServerInfo(String oldname, String name, String host, String port, String pass) {
 
 		DB.open();
-		DB.editServerInfo(oldname, name, index, host, port, pass);
+		DB.editServerInfo(oldname, name, host, port, pass);
 		DB.close();
 	}
+	
+	
+	/*** Show Dialogs for server list modification and editing **************************/
+	/************************************************************************************/
 
+	private void ShowServerInfo(String name) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage(getText(R.string.editserver_msg_body))
+				.setTitle(getText(R.string.editserver_msg_title))
+				.setCancelable(true)
+				.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int id) {
+						//lblListInfo.setText("Current Dir:" + imageUri.getPath());
+					}
+				})
+				.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int id) {
+						dialog.cancel();
+					}
+				});
+		AlertDialog alert = builder.create();
+		Dialog adialog = alert;
+	}
+	
+	private void ShowEditServer(String name) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage(getText(R.string.editserver_msg_body))
+				.setTitle(getText(R.string.editserver_msg_title))
+				.setCancelable(true)
+				.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int id) {
+						//lblListInfo.setText("Current Dir:" + imageUri.getPath());
+					}
+				})
+				.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int id) {
+						dialog.cancel();
+					}
+				});
+		AlertDialog alert = builder.create();
+		Dialog adialog = alert;
+	}
+
+	private void ShowAddServer(String name) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage(getText(R.string.addserver_msg_body))
+				.setTitle(getText(R.string.addserver_msg_title))
+				.setCancelable(true)
+				.setPositiveButton("Add", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int id) {
+						//lblListInfo.setText("Current Dir:" + imageUri.getPath());
+					}
+				})
+				.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int id) {
+						dialog.cancel();
+					}
+				});
+		AlertDialog alert = builder.create();
+		Dialog adialog = alert;
+	}
+	
+	private void ShowRemoveServer(String name) {
+		return;
+	}
+	
+	private String[] getAllServerNames() {
+		DB.open();
+		String[] tmp = DB.getAllServerNames();
+		DB.close();
+		return tmp;
+	}
+	
 	
 	/*** Get Server values ************************/
 	
@@ -236,87 +329,75 @@ public class EditServersActivity extends Activity {
 		//@format:on;
 	}
 	
-	private
-
-
-	protected Dialog onCreateDialog(int id) {
+	
+	
+	//private Dialog onCreateDialog(int id) {
+	private Dialog CreateDialog(int id) {
+		
 		Dialog adialog = null;
+		AlertDialog alert = null;
+		AlertDialog.Builder builder = null;
+				;
 		switch (id) {
-		case DIALOG_ADDALLDIRS_ID:
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setMessage(getText(R.string.addfileorfolder_msg_body))
-					.setTitle(getText(R.string.addfileorfolder_msg_title))
-					.setCancelable(false)
-					.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+		case D_EDITSERVER_ID:
+			builder = new AlertDialog.Builder(this);
+			builder.setMessage(getText(R.string.editserver_msg_body))
+					.setTitle(getText(R.string.editserver_msg_title))
+					.setCancelable(true)
+					.setPositiveButton("Save", new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int id) {
-							lblListInfo.setText("Current Dir:" + imageUri.getPath());
+							//lblListInfo.setText("Current Dir:" + imageUri.getPath());
 						}
 					})
-					.setNegativeButton("No", new DialogInterface.OnClickListener() {
+					.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int id) {
 							dialog.cancel();
 						}
 					});
-			AlertDialog alert = builder.create();
+			alert = builder.create();
 			adialog = alert;
 			break;
-		case DIALOG_BROKEN_ID:
-			AlertDialog.Builder bbuilder = new AlertDialog.Builder(this);
-			bbuilder.setMessage(getText(R.string.wompwomp_body))
-					.setTitle(getText(R.string.wompwomp_title))
-					.setCancelable(false)
-					.setNegativeButton("Womp womp...", new DialogInterface.OnClickListener() {
+		case D_ADDSERVER_ID:
+			builder = new AlertDialog.Builder(this);
+			builder.setMessage(getText(R.string.addserver_msg_body))
+					.setTitle(getText(R.string.addserver_msg_title))
+					.setCancelable(true)
+					.setPositiveButton("Add Server", new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int id) {
+							//lblListInfo.setText("Current Dir:" + imageUri.getPath());
+						}
+					})
+					.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int id) {
 							dialog.cancel();
 						}
 					});
-			AlertDialog salert = bbuilder.create();
-			adialog = salert;
+			alert = builder.create();
+			adialog = alert;
 			break;
-		case DIALOG_ADDFOLDER_ID:
-			AlertDialog.Builder folderDialog = new AlertDialog.Builder(this);
-
-			// folderDialog.setTitle("Title");
-				folderDialog.setMessage("Add all Servers in folder:");
-
-			final EditText txtFolderPath = new EditText(this);
-			folderDialog.setView(txtFolderPath);
-			txtFolderPath.setText("/mnt/sdcard/Pictures");
-
-			folderDialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int whichButton) {
-					String value = txtFolderPath.getText().toString();
-					File dir = new File(value);
-					if (!dir.isDirectory()) {
-						Toast.makeText(getApplicationContext(),
-								"Directory '" + value + "' not found!", Toast.LENGTH_LONG).show();
-					} else {
-						File[] imgs = dir.listFiles(new FilenameFilter() {
-							@Override
-							public boolean accept(File dir, String name)
-							{
-								return ((name.endsWith(".jpg")) || (name.endsWith(".png")));
-							}
-						});
-							Core.addServers(imgs);
-							Servers = Core.getAllServers();
-							lblListInfo.setText("Total Servers: " + String.valueOf(Servers.size()));
-							setServers(Servers);
-					}
-				}
-			});
-
-			folderDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int whichButton) {
-					// Canceled.
-				}
-			});
-
-			folderDialog.show();
-
+		case D_RMSERVER_ID:
+			builder = new AlertDialog.Builder(this);
+			builder.setMessage(getText(R.string.removeserver_msg_body))
+					.setTitle(getText(R.string.removeserver_msg_title))
+					.setCancelable(true)
+					.setPositiveButton("Remove", new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int id) {
+							//lblListInfo.setText("Current Dir:" + imageUri.getPath());
+						}
+					})
+					.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int id) {
+							dialog.cancel();
+						}
+					});
+			alert = builder.create();
+			adialog = alert;
 			break;
 		default:
 			adialog = null;
@@ -324,5 +405,56 @@ public class EditServersActivity extends Activity {
 		}
 		return adialog;
 	}
+	
+	
+/*****************************************************************************************/
+/*** Private Classes                                                                   ***/
+/*****************************************************************************************/
+
+	    private class ItemsAdapter extends BaseAdapter {
+	    	  String[] items;
+
+	    	  public ItemsAdapter(Context context, int textViewResourceId, String[] items) {
+	    		  this.items = items;
+	    	  }
+
+	    	  @Override
+	    	  public View getView(final int position, View convertView, ViewGroup parent) {
+	    		  TextView txtName;
+	    		  View view = convertView;
+	    		  if (view == null) {
+	    			  LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	    			  view = vi.inflate(R.layout.serverlist_item, null);
+	    		  }
+	    		  txtName = (TextView) view.findViewById(R.id.listitem_name);
+	    	   
+	    		  if(items[position] != null) {
+	    			  String str = new String(items[position]);
+	    			  txtName.setText(str);  
+	    		  }	   
+	    		  return view;
+	    	  }
+
+	    	  public int getCount() {
+	    		  return items.length;
+	    	  }
+
+	    	  public Object getItem(int position) {
+	    		  return position;
+	    	  }
+
+	    	  public long getItemId(int position) {
+	    		  return position;
+	    	  }
+
+		}
+	    
+	    private OnItemClickListener mMessageClickedHandler = new OnItemClickListener() {
+	        public void onItemClick(AdapterView parent, View v, int position, long id)
+	        {
+	        	parent.ShowServerInfo(Servers.get(position));
+	        }
+	    };
+
 	
 }
