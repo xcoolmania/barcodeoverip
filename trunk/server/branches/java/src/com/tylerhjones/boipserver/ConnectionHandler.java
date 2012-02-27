@@ -30,7 +30,8 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
-
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class ConnectionHandler implements Runnable {
     //Communication constants for client<-->server communiction
@@ -38,11 +39,11 @@ public class ConnectionHandler implements Runnable {
     private static final String DLIM = ";";
     private static final String DDATA = "_DATA";
     private static final String DHASH = "_HASH";
-    private static final String THNAKS = "THANKS\n";
+    private static final String THANKS = "THANKS\n";
     private static final String OK = "OK\n";
 
     private static final String TAG = "ConnHandler";
-    private static Settings SETS = new Settings();
+    private static Settings SET = new Settings();
 
     private Socket server;
     private String line,input;
@@ -57,12 +58,25 @@ public class ConnectionHandler implements Runnable {
     public void run () {
         KeypressEmulator KP = new KeypressEmulator();
         input = "";
+
+        try {
+            if(SET.getPass() == null ? "" == null : SET.getPass().equals("")) {
+                server_hash = "NONE";
+            } else {
+                server_hash = SHA1(SET.getPass()).trim().toUpperCase();
+            }
+        } catch (NoSuchAlgorithmException e) {
+            System.out.println("NoSuchAlgorithmException was caught in ConnectionHandler.run()! -- " + e.toString());
+            return;
+        }
+
         try {
             // Get input from the client
             DataInputStream in = new DataInputStream(server.getInputStream());
             PrintStream out = new PrintStream(server.getOutputStream());
-
-            if((input = in.readLine()) != null) {
+            input = in.readLine();
+            //System.out.println("Server sent data: " + input);
+            if(input != null) {
                 System.out.println("Recv'd data from " + this.server.getInetAddress().toString() + ": '" + input + "'");
                 String res = this.ParseData(input.trim());
                 if(res.equals("CHECK_OK")) {
@@ -73,29 +87,31 @@ public class ConnectionHandler implements Runnable {
                     out.println("ERR11\n");
                     server.close();
                     return;
-                } else if(res.equals("VERSION")) {
-                    out.print("\n*******************************************************************\nBarcodeOverIP-server 0.2.2 Beta \nPowered by Python 2.7.2\nThis server is for use with mobile device applications.\nYou must have the right client to use it!\nPlease visit: https://code.google.com/p/barcodeoverip/ for more\ninformation on available clients.\n\nWritten by: Tyler H. Jones (me@tylerjones.me) (C) 2012\nGoogle Code Website: https://code.google.com/p/barcodeoverip/\n*******************************************************************\n\n");
+                } else if(res.equals("ERR1")) {
+                    out.println("ERR1\n");
+                    server.close();
                     return;
+                } else if(res.equals("VERSION")) {
+                    out.print("\n*******************************************************************\nBarcodeOverIP-server " + SET.APP_INFO + " \nThis server is for use with mobile device applications.\nYou must have the right client to use it!\nPlease visit: https://code.google.com/p/barcodeoverip/ for more\ninformation on available clients.\n\nWritten by: Tyler H. Jones (me@tylerjones.me) (C) 2012\nGoogle Code Website: https://code.google.com/p/barcodeoverip/\n*******************************************************************\n\n");
+                    server.close();
+                    return;
+                } else {
+                    if(res == null) { System.out.println("\n***FATAL ERROR!!!*** -- this.ParseData returned NULL string that is supposed to be the barcode data."); return; }
+                    System.out.print("Parse - Sending Keyboard Emulation - Sending keystrokes to system...");
+                    KP.typeString(res, SET.getAppendNL());
+                    out.println(THANKS);
+                    server.close();
                 }
-            }
-            String res  = KP.typeString(input, SETS.getAppendNL());
-            if(!res.trim().equals("")) { System.out.println(TAG + " - " + res + " -- String Sent: '" + input + "'"); }
-            // Update the log
-            System.out.println(TAG + " - Overall message is:" + input);
-            // Respond to the client machine and close the connection
-            out.println("Overall message is:" + input);
-            server.close();
+                if(!server.isClosed()) { server.close(); }
+            }            
         } catch (IOException ioe) {
             System.out.println(TAG + " - IOException on socket listen: " + ioe);
             ioe.printStackTrace();
         }
     }
 
-
-    //TODO: SHA1 the server's password
-
-
     private String ParseData(String data) {
+
         String Udata = data.toUpperCase();
         if(Udata.startsWith("CHECK") && Udata.indexOf(DSEP) < 1 && Udata.endsWith(DLIM)) {
             String[] darray = Udata.split(DSEP);
@@ -104,7 +120,6 @@ public class ConnectionHandler implements Runnable {
             String client_hash = darray[1];
             client_hash = client_hash.split(";$")[0];
             client_hash = client_hash.trim().toUpperCase();
-            server_hash = server_hash.trim().toUpperCase();
             System.out.println("Parse - Remove ';' from the end: " + client_hash);
             if(!server_hash.equals("NONE")) {
                 if(client_hash.equals(server_hash)) {
@@ -121,7 +136,7 @@ public class ConnectionHandler implements Runnable {
                 return "CHECK_OK";
             }
         }
-        if(Udata == "VERSION") {
+        if(Udata.equals("VERSION")) {
             return "VERSION";
         }
         if(!data.endsWith(DLIM)) {
@@ -129,11 +144,82 @@ public class ConnectionHandler implements Runnable {
             return "ERR1";
         }
         data = data.split(";$")[0];
-        darray = data.split(DSEP);
-        if(!data.endsWith(DLIM)) {
-            System.out.println("Invalid data format and/or syntax! - Does not end with '" + DLIM + "'");
+        String[] ddarray = data.split(DSEP);
+        if(data.indexOf(DSEP) < 1 || ddarray.length < 1) {
+            System.out.println("Invalid data format and/or syntax! - Does not end with '" + DLIM + "' or there is not data before the separator.");
             return "ERR1";
         }
-        return "OK";
+        if(server_hash.equals(ddarray[0]) || server_hash.equals("NONE") || server_hash.equals("")) {
+            this.Authed = true;
+            if(server_hash.equals("NONE") || server_hash.equals("NONE")) {
+                System.out.print("Parse - No password is set in settings.conf therefore access is granted to anyone. Using a password is STRONGLY suggested!");
+            } else {
+                System.out.print("Parse - Your password was correct! You have been granted authorization!");
+                return "CHECK_OK";
+            }
+        } else {
+            this.Authed = false;
+            System.out.print("Parse - Invalid password was sent by the client!");
+            return "ERR11";
+        }
+        System.out.print("Parse - Finished Parsing Data - Parsed data: '" + ddarray[1] + "'");
+        return ddarray[1];
+    }
+
+//-----------------------------------------------------------------------------------------
+//--- Make SHA1 Hash for transmitting passwords -------------------------------------------
+
+    public static String convertToHex_better(byte[] data) { // This one may work better than the one below
+        StringBuffer buf = new StringBuffer();
+        for (int i = 0; i < data.length; i++) {
+            int halfbyte = (data[i] >>> 4) & 0x0F;
+            int two_halfs = 0;
+            do {
+                if ((0 <= halfbyte) && (halfbyte <= 9))
+                    buf.append((char) ('0' + halfbyte));
+                else
+                    buf.append((char) ('a' + (halfbyte - 10)));
+                halfbyte = data[i] & 0x0F;
+            } while(two_halfs++ < 1);
+        }
+        return buf.toString();
+    }
+
+    public static String convertToHex(byte[] data) {
+        StringBuffer buf = new StringBuffer();
+        int length = data.length;
+        for(int i = 0; i < length; ++i) {
+            int halfbyte = (data[i] >>> 4) & 0x0F;
+            int two_halfs = 0;
+            do {
+                if((0 <= halfbyte) && (halfbyte <= 9))
+                    buf.append((char) ('0' + halfbyte));
+                else
+                    buf.append((char) ('a' + (halfbyte - 10)));
+                halfbyte = data[i] & 0x0F;
+            }
+            while(++two_halfs < 1);
+        }
+        return buf.toString();
+    }
+
+    public static String SHA1(String text) throws NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance("SHA-1");
+        md.update(text.getBytes());
+
+        byte byteData[] = md.digest();
+
+        //convert the byte to hex format method 1
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < byteData.length; i++) {
+            sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
+        }
+        StringBuffer hexString = new StringBuffer();
+        for (int i=0;i<byteData.length;i++) {
+            String hex=Integer.toHexString(0xff & byteData[i]);
+            if(hex.length()==1) hexString.append('0');
+            hexString.append(hex);
+        }
+        return hexString.toString();
     }
 }
