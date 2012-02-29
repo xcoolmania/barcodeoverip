@@ -207,7 +207,7 @@ public class BoIPActivity extends Activity {
 	/** App goes into background */
 	public void onPause() {
 		super.onPause();
-		//TODO: Make sure all app settings are saved
+		// TODO: Make sure all application settings are saved
 	}
 
 
@@ -216,7 +216,7 @@ public class BoIPActivity extends Activity {
 	
 	public void ApplyServerSettings() {
 		//FIXME: I do not like how I initialize this class three times in the same class. Need to understand how pointers work in Java
-		// as it differs greatly from C (unfortunatley) 
+		// as it differs greatly from C (unfortunately)
 		
 		if(txtHost.getText().toString().trim() == "" || txtHost.getText().toString() == null) {
 			String title = "No Hostname/IP Address Given!";

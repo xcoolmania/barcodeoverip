@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent" android:layout_height="wrap_content"
+	android:orientation="vertical" android:paddingLeft="5dp"
+	android:paddingRight="5dp">
+
+	<TextView
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:gravity="center_horizontal"
+	    android:nextFocusDown="@+id/txtHost"
+	    android:paddingBottom="7dp"
+	    android:paddingTop="7dp"
+	    android:text="@string/server_settings"
+	    android:textSize="16dp"
+	    android:textStyle="normal" />
+
+	<TextView
+	    android:layout_width="fill_parent" android:layout_height="wrap_content" 
+	    android:text="@string/txthost_label" android:paddingBottom="3dp"
+	    android:paddingTop="5dp" android:paddingLeft="6dp" />
+	<EditText android:id="@+id/txtHost" android:layout_width="match_parent"
+		android:layout_height="match_parent" android:nextFocusDown="@+id/txtPort"
+		android:hint="@string/txthost_hint"><requestFocus /></EditText>
+	
+	<TextView
+	    android:layout_width="fill_parent" android:layout_height="wrap_content" 
+	    android:text="@string/txtport_label" android:paddingBottom="3dp"
+	    android:paddingTop="5dp" android:paddingLeft="6dp" />
+	<EditText android:id="@+id/txtPort" android:layout_width="match_parent"
+		android:layout_height="match_parent" android:hint="@string/txtport_hint"
+		android:nextFocusDown="@+id/txtPass" android:inputType="phone" />
+
+	<TextView
+	    android:layout_width="fill_parent" android:layout_height="wrap_content" 
+	    android:text="@string/txtpass_label" android:paddingBottom="3dp"
+	    android:paddingTop="5dp" android:paddingLeft="6dp" />
+	<EditText android:id="@+id/txtPass" android:layout_width="match_parent"
+		android:layout_height="wrap_content" android:hint="@string/txtpass_hint"
+		android:nextFocusDown="@+id/btnSave" />
+
+	<Button
+	    android:id="@+id/btnSave"
+	    android:layout_width="match_parent"
+	    android:layout_height="50dp" android:textSize="14dp"
+	    android:text="@string/btnsave_label" android:textStyle="bold"/>
+
+</LinearLayout>
