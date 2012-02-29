@@ -59,6 +59,7 @@ public class BoIPActivity extends ListActivity {
 	private ProgressDialog ConnectingProgress = null;
 	private ArrayList<Server> Servers = null;
 	private ServerAdapter theAdapter;
+	private Database DB = new Database(this);
 	
 	// private Runnable ConnectServer;
 	
@@ -136,6 +137,9 @@ public class BoIPActivity extends ListActivity {
 
 	private void UpdateList() {
 		
+		DB.open();
+		Servers.clear();
+		Servers = DB.getAllServers();
 		if (Servers != null && Servers.size() > 0) {
 			theAdapter.notifyDataSetChanged();
 			for (int i = 0; i < Servers.size(); i++) {
@@ -156,9 +160,12 @@ public class BoIPActivity extends ListActivity {
 			s2.setName("Server 2");
 			s2.setHost("192.168.1.5");
 			s2.setPort(41788);
+			DB.open();
+			DB.addServer(s1);
+			DB.addServer(s2);
+			DB.close();
 			Servers.add(s1);
 			Servers.add(s2);
-			Thread.sleep(5000);
 			Log.i("ARRAY", "" + Servers.size());
 		} catch (Exception e) {
 			Log.e("BACKGROUND_PROC", e.getMessage());
@@ -274,19 +281,23 @@ public class BoIPActivity extends ListActivity {
 	/******************************************************************************************/
 	/** Launch ServerInfoActivity *************************************************************/
 	
-	private void showServerInfo() {  // No server object given, add new server
-
-	}
-	
 	private void showServerInfo(Server s) { // Server object given, edit server
-		Intent intent = new Intent("com.tylerhjones.boip.client.ServerInfoActivity");
-		intent.putExtra("name", s.getName());
-		intent.putExtra("requestCode", 99);
-		startActivityForResult(intent, IntentIntegrator.REQUEST_CODE);
+		Intent intent = new Intent();
+		intent.setClassName("com.tylerhjones.boip.client", "com.tylerhjones.boip.client.ServerInfoActivity");
+		intent.putExtra("com.tylerhjones.boip.client.ServerName", s.getName());
+		intent.putExtra("com.tylerhjones.boip.client.Action", Common.EDIT_SREQ);
+		startActivityForResult(intent, Common.EDIT_SREQ);
 	}
 	
+	private void showServerInfo() {  // No server object given, add new server
+		Intent intent = new Intent();
+		intent.setClassName("com.tylerhjones.boip.client", "com.tylerhjones.boip.client.ServerInfoActivity");
+		intent.putExtra("com.tylerhjones.boip.client.Action", Common.ADD_SREQ);
+		startActivityForResult(intent, Common.ADD_SREQ);
+	}
+
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-		if (requestCode == 99) {
+		if (requestCode == Common.ADD_SREQ) {
 			if (resultCode == RESULT_OK) {
 				this.UpdateList();
 				Toast.makeText(this, "Server(s) updated successfully!", 5);
@@ -294,14 +305,24 @@ public class BoIPActivity extends ListActivity {
 				Toast.makeText(this, "No changes were made.", 3);
 			}
 		}
-		if (resultCode == RESULT_OK) {
-			IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
-			String barcode = result.getContents().toString();
-			if (barcode != null) {
-				// this.SendBarcode(s, barcode);
+		if (requestCode == Common.EDIT_SREQ) {
+			if (resultCode == RESULT_OK) {
+				this.UpdateList();
+				Toast.makeText(this, "Server edited successfully!", 5);
+			} else {
+				Toast.makeText(this, "No changes were made.", 3);
+			}
+		}
+		if (resultCode == Common.BARCODE_SREQ) {
+			if (resultCode == RESULT_OK) {
+				IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
+				String barcode = result.getContents().toString();
+				if (barcode != null) {
+					// this.SendBarcode(s, barcode);
+				}
 			}
 		} else {
-			Toast.makeText(this, "No barcode was scanned.", 6);
+			Toast.makeText(this, "No activity called!", 6);
 		}
 	}
 

@@ -72,17 +72,17 @@ public class Database {
 	/*** END -  Open & CLose the DB ************/
 	/******************************************************************************/
 
-	public long addServer(String name, String host, String port, String pass) {
+	public long addServer(Server s) {
 		try {
 			Log.v(TAG, "addImage()");
-			if(host.trim() == "" || host == null) { return -1; }
-			if(port.trim() == "" || port == null) { return -2; }
-			if(name.trim() == "" || name == null) { return -3; }
+			if (s.getHost().trim() == "" || s.getHost() == null) { return -1; }
+			if (s.getPort() == 0 || s.getPort() == 0) { return -2; }
+			if (s.getName().trim() == "" || s.getName() == null) { return -3; }
 			ContentValues values = new ContentValues();
-			values.put(Common.S_FIELD_NAME, name);
-			values.put(Common.S_FIELD_HOST, host);
-			values.put(Common.S_FIELD_PORT, port);
-			values.put(Common.S_FIELD_PASS, pass);
+			values.put(Common.S_FIELD_NAME, s.getName());
+			values.put(Common.S_FIELD_HOST, s.getHost());
+			values.put(Common.S_FIELD_PORT, s.getPort());
+			values.put(Common.S_FIELD_PASS, s.getPassword());
 			return theDB.insert(Common.TABLE_SERVERS, null, values);
 		} catch(SQLiteException e) {
 			Log.e(TAG, "addServer() threw an exception!", e);
@@ -149,35 +149,39 @@ public class Database {
 		}
 	}
 
-	public boolean deleteServer(String name) {
+	public boolean deleteServer(Server s) {
 		Log.v(TAG, "deleteServer()");
-		return theDB.delete(Common.TABLE_SERVERS, Common.S_FIELD_NAME + "=" + name, null) > 0;
+		return theDB.delete(Common.TABLE_SERVERS, Common.S_FIELD_NAME + "=" + s.getName(), null) > 0;
 	}
 	
-	public boolean deleteAllServers() {
-		Log.v(TAG, "deleteAllServers()");
-		return theDB.delete(Common.TABLE_SERVERS, Common.S_FIELD_INDEX + "> -1", null) > 0;
-	}
-
-	public Cursor getServerFromIndex(int idx) throws SQLiteException {
+	public Server getServerFromIndex(int idx) throws SQLiteException {
+		Server s = new Server();
 		Log.v(TAG, "getServerFromIndex()");
-		Cursor mCursor = theDB.query(true, Common.TABLE_SERVERS, new String[] { Common.S_FIELD_NAME, Common.S_FIELD_HOST, Common.S_FIELD_PORT, Common.S_FIELD_PASS }, Common.S_FIELD_INDEX + "=" + idx, null, null, null, null, null);
-		if (mCursor != null) { mCursor.moveToFirst(); }
-		return mCursor;
+		Cursor mCursor = theDB.query(true, Common.TABLE_SERVERS, new String[] { Common.S_FIELD_NAME, Common.S_FIELD_HOST, Common.S_FIELD_PORT,
+				Common.S_FIELD_PASS }, Common.S_FIELD_INDEX + "=" + idx, null, null, null, null, null);
+		if (mCursor.moveToFirst()) {
+			s.setName(mCursor.getString(0));
+			s.setHost(mCursor.getString(1));
+			s.setPort(Integer.valueOf(mCursor.getString(2)));
+			s.setPassword(mCursor.getString(3));
+			s.setIndex(idx);
+		}
+		return s;
 	}
 	
-	public Cursor getServerFromHost(String path) throws SQLiteException {
-		Log.v(TAG, "getServerFromHost()");
-		Cursor mCursor = theDB.query(true, Common.TABLE_SERVERS, new String[] { Common.S_FIELD_NAME, Common.S_FIELD_INDEX, Common.S_FIELD_PORT, Common.S_FIELD_PASS }, Common.S_FIELD_HOST + "=" + path, null, null, null, null, null);
-		if (mCursor != null) { mCursor.moveToFirst(); }
-		return mCursor;
-	}
-	
-	public Cursor getServerFromName(String name) throws SQLiteException {
+	public Server getServerFromName(String name) throws SQLiteException {
+		Server s = new Server();
 		Log.v(TAG, "getServerFromName()");
-		Cursor mCursor = theDB.query(true, Common.TABLE_SERVERS, new String[] { Common.S_FIELD_HOST, Common.S_FIELD_INDEX, Common.S_FIELD_PORT, Common.S_FIELD_PASS }, Common.S_FIELD_NAME + "=" + name, null, null, null, null, null);
-		if (mCursor != null) { mCursor.moveToFirst(); }
-		return mCursor;
+		Cursor mCursor = theDB.query(true, Common.TABLE_SERVERS, new String[] { Common.S_FIELD_HOST, Common.S_FIELD_INDEX, Common.S_FIELD_PORT,
+				Common.S_FIELD_PASS }, Common.S_FIELD_NAME + "=" + name, null, null, null, null, null);
+		if (mCursor.moveToFirst()) {
+			s.setHost(mCursor.getString(0));
+			s.setIndex(Integer.valueOf(mCursor.getString(1)));
+			s.setPort(Integer.valueOf(mCursor.getString(2)));
+			s.setPassword(mCursor.getString(3));
+			s.setName(name);
+		}
+		return s;
 	}
 }
 

@@ -22,8 +22,11 @@
         </activity>
         <activity
             android:label="@string/server_info"
-            android:name=".ServerInfoActivity">
-
+            android:name=".ServerInfoActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </activity>
     </application>
     

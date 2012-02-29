@@ -37,7 +37,7 @@ public class Common {
 //-----------------------------------------------------------------------------------------
 //--- Constant variable declarations -------------------------------------------------------
 	public static final Integer NET_PORT = 41788;
-	public static final String NET_HOST = "127.0.0.1";
+	public static final String NET_HOST = "0.0.0.0";
 
 	/** The Constant APP_AUTHOR. */
 	public static final String APP_AUTHOR = "@string/author";
@@ -63,6 +63,11 @@ public class Common {
 	public static final String DSEP = "||"; // Data and values separator
 	public static final String CHECK = "CHECK"; // Command to ask the server to authenticate us
 	public static final String ERR = "ERR"; // Prefix for errors returned by the server
+	
+	// Constants for keeping track of activities
+	public static final int ADD_SREQ = 91;
+	public static final int EDIT_SREQ = 105;
+	public static final int BARCODE_SREQ = 11;
 
 //-----------------------------------------------------------------------------------------
 //--- Server return error codes and descriptions ------------------------------------------
