@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 
 public class ServerInfoActivity extends Activity {
@@ -17,12 +18,14 @@ public class ServerInfoActivity extends Activity {
 	private String Host = "";
 	private int Port = 0;
 	private String Pass = "";
+	Database DB = new Database(this);
 	
 	/** Widget definitions ******************8 */
 	private EditText txtHost;
 	private EditText txtPort;
 	private EditText txtPass;
 	private Button btnSave;	
+	private TextView lblTitle;
 	
 	// Default class constructor with initial Server object 
 	public ServerInfoActivity(Server s) {
@@ -44,7 +47,19 @@ public class ServerInfoActivity extends Activity {
 	    Log.i(TAG, "onCreate called!");
 	    
 		setContentView(R.layout.serverinfo); // Setup the window form layout
-	    
+		lblTitle = (TextView)this.findViewById(R.id.lblTitle);
+		
+		int action = this.getIntent().getIntExtra("com.tylerhjones.boip.client.Action", Common.ADD_SREQ);
+	    if(action == Common.EDIT_SREQ) {
+			lblTitle.setText("Edit Server Settings");
+			String name = this.getIntent().getStringExtra("com.tylerhjones.boip.client.ServerName");
+
+
+	    } else {
+			lblTitle.setText("Add New Server");
+
+	    }
+		
 	    /** Setup TextEdits ********************************************** */
 		txtHost = (EditText)this.findViewById(R.id.txtHost);
 		if (Host != "") {
