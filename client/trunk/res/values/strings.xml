@@ -35,9 +35,11 @@
 	<string name="editservers_msg_body">Edit servers activity is not done yet! Try again later!</string>
 
 	<string name="server_settings">Server Connection Settings</string>
+	<string name="txtname_hint">Name the server</string>
 	<string name="txthost_hint">Hostname/IP</string>
 	<string name="txtport_hint">Port (Default 41788)</string>
 	<string name="txtpass_hint">Password (If Enabled)</string>
+	<string name="txtname_label">Server Name:</string>
 	<string name="txthost_label">Hostname or IP Address:</string>
 	<string name="txtport_label">Port # (Blank for default):</string>
 	<string name="txtpass_label">Password (Blank for none):</string>
