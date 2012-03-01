@@ -33,7 +33,7 @@ public class Server {
 	private String Name;
 	private String Host;
 	private String Pass; // NOTE: When this value is set into this class, it MUST and WILL always be hashed!
-	private int Index; // For database lookups, probably never get used
+	private int Index = 0;; // For database lookups, probably never get used
 	private int Port;
 	
 	// Default server class constructor
@@ -42,7 +42,7 @@ public class Server {
 		this.Host = Common.NET_HOST;
 		this.Port = Common.NET_PORT;
 		this.Pass = "";
-		this.Index = 1;
+		this.Index = 0;
 	}
 	
 	// Detailed server class constructor
@@ -52,6 +52,15 @@ public class Server {
 		this.Port = Port;
 		this.Pass = Pass;
 		this.Index = Index;
+	}
+
+	// Detailed server class constructor
+	public Server(String Name, String Host, String Pass, int Port) {
+		this.Name = Name;
+		this.Host = Host;
+		this.Port = Port;
+		this.Pass = Pass;
+		this.Index = 0;
 	}
 
 	public String getName() {

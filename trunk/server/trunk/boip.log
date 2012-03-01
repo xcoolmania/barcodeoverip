@@ -79,3 +79,5 @@
 2012-02-06 17:02:20,253 INFO Sending Keyboard Emulation - Sending keystrokes to system...
 2012-02-06 17:02:20,446 INFO Sending Keyboard Emulation... DONE! - Sending keystrokes to system... FINISHED!
 2012-02-06 17:02:20,446 INFO Sending 'THANKS' To Client - Sending a thank you to the client to inform of successful receipt.
+2012-02-29 18:54:06,099 INFO Config file found... Loaded OK!
+2012-02-29 18:54:06,111 INFO Server Socket Created successfully! - Listening Host/IP: 0.0.0.0 (Port: 41788)
