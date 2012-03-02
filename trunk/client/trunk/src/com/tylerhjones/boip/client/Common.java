@@ -64,7 +64,8 @@ public class Common {
 	
 	/** Network communication message constants ******************************************** */
 	public static final String OK = "OK"; // Server's client/user authorization pass message
-	public static final String DLIM = ";"; // Deliniator and end-of-data/cmd marker
+	public static final String THANKS = "THANKS"; // Server's 'all ok' reponse message
+	public static final String DTERM = ";"; // Data string terminator
 	public static final String DSEP = "||"; // Data and values separator
 	public static final String CHECK = "CHECK"; // Command to ask the server to authenticate us
 	public static final String ERR = "ERR"; // Prefix for errors returned by the server
