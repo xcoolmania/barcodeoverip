@@ -81,3 +81,10 @@
 2012-02-06 17:02:20,446 INFO Sending 'THANKS' To Client - Sending a thank you to the client to inform of successful receipt.
 2012-02-29 18:54:06,099 INFO Config file found... Loaded OK!
 2012-02-29 18:54:06,111 INFO Server Socket Created successfully! - Listening Host/IP: 0.0.0.0 (Port: 41788)
+2012-03-01 23:29:21,744 INFO Config file found... Loaded OK!
+2012-03-01 23:29:53,443 INFO Config file found... Loaded OK!
+2012-03-01 23:30:52,825 INFO Keyboard Interupt - Received keyboard interrupt, quitting threads
+2012-03-01 23:31:13,157 INFO Config file found... Loaded OK!
+2012-03-01 23:31:13,168 INFO Server Socket Created successfully! - Listening Host/IP: 0.0.0.0 (Port: 41788)
+2012-03-02 00:13:23,482 INFO Incoming Connection! - From: ('192.168.1.68', 60156)
+2012-03-02 00:13:23,497 INFO BoIP Client Verification - BoIP cilent has verified its server settings OK

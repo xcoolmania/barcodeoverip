@@ -59,7 +59,9 @@ public class BoIPActivity extends ListActivity {
 	private ArrayList<Server> Servers = new ArrayList<Server>();
 	private ServerAdapter theAdapter;
 	private Database DB = new Database(this);
+	private Server SelectedServer;
 	
+	// private BoIPClient client = new BoIPClient(this);
 	// private Runnable ConnectServer;
 	
 	/** Called when the activity is first created. */
@@ -80,7 +82,8 @@ public class BoIPActivity extends ListActivity {
 			
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				showServerInfo(Servers.get(position));
+				SelectedServer = Servers.get(position);
+				showScanBarcode();
 			}
 		});
 	}
@@ -131,7 +134,6 @@ public class BoIPActivity extends ListActivity {
 	public boolean onContextItemSelected(MenuItem item) {
 		final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
 		int menuItemIndex = item.getItemId();
-		// String[] menuItems = getResources().getStringArray(R.array.cmenu_serverlist);
 		if (menuItemIndex == 1) {
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setMessage(getText(R.string.deleteserver_msg_body)).setTitle(getText(R.string.deleteserver_msg_title)).setCancelable(false)
@@ -174,9 +176,7 @@ public class BoIPActivity extends ListActivity {
 			for (int i = 0; i < Servers.size(); i++) {
 				theAdapter.add(Servers.get(i));
 			}
-			// getListView().setAdapter(new ServerAdapter(this, R.layout.serverlist_item, Servers));
 		}
-		// theAdapter.notifyDataSetChanged();
 	}
 
 	private class ServerAdapter extends ArrayAdapter<Server> {
@@ -213,30 +213,53 @@ public class BoIPActivity extends ListActivity {
 
 	/******************************************************************************************/
 	/** Send Barcode to Server ****************************************************************/
+/*
+ * public boolean ValidateConnection(Server s) {
+ * 
+ * //final BoIPClient client = new BoIPClient(s, this);
+ * 
+ * Runnable ConnectServer = new Runnable() {
+ * 
+ * @Override
+ * public void run() {
+ * client.connect();
+ * client.Validate();
+ * if(client.CanConnect) {
+ * client.sendBarcode(code);
+ * }
+ * client.close();
+ * ConnectingProgress.dismiss();
+ * }
+ * };
+ * 
+ * Thread thread = new Thread(null, ConnectServer, "MagentoBackground");
+ * thread.start();
+ * ConnectingProgress = ProgressDialog.show(BoIPActivity.this, "Please wait.", "Validating client with the server...", true);
+ * }
+ */
 
-	public void SendBarcode(Server s, String code) {
-		/*
-		 * ConnectServer = new Runnable() {
-		 * 
-		 * @Override
-		 * public void run() {
-		 * getServers();
-		 * }
-		 * };
-		 */
+	public void SendBarcode(Server s, final String code) {
 		
+		final BoIPClient client = new BoIPClient(this);
+		client.setServer(s);
+
 		Runnable ConnectServer = new Runnable() {
 			
 			@Override
 			public void run() {
-
+				client.connect();
+				client.Validate();
+				if (client.CanConnect) {
+					client.sendBarcode(code);
+				}
+				client.close();
 				ConnectingProgress.dismiss();
 			}
 		};
 		
 		Thread thread = new Thread(null, ConnectServer, "MagentoBackground");
 		thread.start();
-		ConnectingProgress = ProgressDialog.show(BoIPActivity.this, "Please wait...", "Connecting to server...", true);
+		ConnectingProgress = ProgressDialog.show(BoIPActivity.this, "Please wait.", "Sending barcode to server...", true);
 	}
 	
 
@@ -276,7 +299,7 @@ public class BoIPActivity extends ListActivity {
 				startActivity(new Intent(Intent.ACTION_VIEW, uri));
 				return true;
 			case R.id.mnuMainAddServer:
-				this.showServerInfo();
+				this.addServer();
 				return true;
 			default:
 				return super.onOptionsItemSelected(item);
@@ -294,7 +317,7 @@ public class BoIPActivity extends ListActivity {
 		startActivityForResult(intent, Common.EDIT_SREQ);
 	}
 	
-	private void showServerInfo() {  // No server object given, add new server
+	private void addServer() {
 		Intent intent = new Intent();
 		intent.setClassName("com.tylerhjones.boip.client", "com.tylerhjones.boip.client.ServerInfoActivity");
 		intent.putExtra("com.tylerhjones.boip.client.Action", Common.ADD_SREQ);
@@ -335,7 +358,7 @@ public class BoIPActivity extends ListActivity {
 				IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
 				String barcode = result.getContents().toString();
 				if (barcode != null) {
-					// this.SendBarcode(s, barcode);
+					this.SendBarcode(SelectedServer, barcode);
 				}
 			}
 		} else {
