@@ -1,8 +1,8 @@
 /*
  * 
- * BarcodeOverIP (BoIP-Android) Version 0.3.1
+ * BarcodeOverIP (Android < v3.2) Version 0.9.2
  * Copyright (C) 2012, Tyler H. Jones (me@tylerjones.me)
- * http://boip.tbsf.me/
+ * http://boip.tylerjones.me/
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

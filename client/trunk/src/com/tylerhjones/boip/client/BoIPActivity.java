@@ -1,6 +1,6 @@
 /*
  * 
- * BarcodeOverIP Client (Android < v3.2) Version 0.3.1 Beta
+ * BarcodeOverIP (Android < v3.2) Version 0.9.2
  * Copyright (C) 2012, Tyler H. Jones (me@tylerjones.me)
  * http://boip.tylerjones.me/
  * 
