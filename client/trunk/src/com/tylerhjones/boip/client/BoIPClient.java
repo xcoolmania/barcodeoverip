@@ -43,16 +43,6 @@ public class BoIPClient {
 	private static final String TAG = "BoIPClient";	//Tag name for logging (function name usually)
 	
 //-----------------------------------------------------------------------------------------
-//--- Client-server communication data parsing constants ----------------------------------
-	
-	private static final String DTERM = ";"; // Data string terminator
-	private static final String DSEP = "||"; // Data and values separator
-	private static final String CHECK = "CHECK"; // Command to ask the server to authenticate us
-	private static final String ERR = "ERR"; // Prefix for errors returned by the server
-	private static final String THANKS = "THANKS"; // The server's response and receipt message for barcode data received
-	private static final String OK = "OK"; // Server's client/user authorization pass message
-
-//-----------------------------------------------------------------------------------------
 //--- Settings and general variables declarations -----------------------------------------
 	
 	//Settings variables
@@ -72,7 +62,7 @@ public class BoIPClient {
 	//This stores the result of connection attempt and tells us if me need to re-auth with the server
 	public boolean CanConnect = false;
 
-	public BoIPClient(Context c) {
+	public BoIPClient(Context c, Server s) {
 		this.c = c;
 	}
 	
@@ -112,40 +102,40 @@ public class BoIPClient {
 		}
 	}
 	
-	//Check if server is up and if we are authorized and if you password is correct.
+	//Common.DCHECK if server is up and if we are authorized and if you password is correct.
 	public String Validate() {
-		Log.i(TAG,"checkConnection() - Test the server settings...");
+		Log.i(TAG,"Common.DCHECKConnection() - Test the server settings...");
 		try {
 			this.connect();
-			this.output.print(CHECK + DSEP + this.pass + DTERM); // Send a CHECK command to the server
+			this.output.print(Common.CHECK + Common.DSEP + this.pass + Common.DTERM); // Send a Common.DCHECK command to the server
 			
 			String responseLine;
             while ((responseLine = input.readLine()) != null) {
-                Log.i(TAG, "checkConnection() - Server: " + responseLine);
-                if (responseLine.indexOf(OK) != -1) {
+                Log.i(TAG, "Common.DCHECKConnection() - Server: " + responseLine);
+                if (responseLine.indexOf(Common.OK) != -1) {
         			CanConnect = true;
-        			Toast.makeText(c, "Server settings applied & your client verified/authed OK!", Toast.LENGTH_SHORT).show();		
-                } else if(responseLine.indexOf(ERR) != -1) {
-                	int idx = responseLine.indexOf(ERR);
-                	String errmsg = responseLine.substring(idx, 5);
-			    	if(errmsg == "ERR11") {
+        			Toast.makeText(c, "Server settings applied & your client verified/authed Common.OK!", Toast.LENGTH_SHORT).show();		
+				} else if (responseLine.indexOf(Common.ERR) != -1) {
+					int idx = responseLine.indexOf(Common.ERR);
+					String errmsg = responseLine.substring(idx, 5);
+					if (errmsg == "ERR11") {
 			    		CanConnect = false;
 	        			this.close();
-				    	return "ERR11";
-			    	} else if(errmsg == "ERR1") {    
+						return "ERR11";
+					} else if (errmsg == "ERR1") {
 	                	CanConnect = false;
 			    		Toast.makeText(c, "Invalid data and/or request syntax!", 4).show();
 						this.close();
-				    	return "ERR1";
-			    	} else if(errmsg == "ERR2") {  
+						return "ERR1";
+					} else if (errmsg == "ERR2") {
 	                	CanConnect = false;
 			    		Toast.makeText(c, "Server received a blank request.", 4).show();
 						this.close();
-			    		return "ERR2";
+						return "ERR2";
 			    	} else {
 	                	CanConnect = false;
-			    		Toast.makeText(c, Common.errorCodes().get(errmsg), 4).show();;
-			    		return errmsg;
+						Toast.makeText(c, Common.errorCodes().get(errmsg), 4).show();;
+						return errmsg;
 			    	}
                 }
             }
@@ -153,7 +143,7 @@ public class BoIPClient {
     		return "0";
 		} catch(IOException e) {
 			this.close();
-			Log.e(TAG, "checkConnection() - IO Exception: " + e);
+			Log.e(TAG, "Common.DCHECKConnection() - IO Exception: " + e);
 			e.printStackTrace();
 			return "99";
 		}
@@ -161,13 +151,13 @@ public class BoIPClient {
 	
 	//Show a message box given the title and message
 	private void showMsgBox(String title, String msg, String type) {
-		if(type == null || type == "") { type = OK; }
+		if(type == null || type == "") { type = Common.OK; }
 		AlertDialog ad = new AlertDialog.Builder(this.c).create();  
 		ad.setCancelable(false); // This blocks the 'BACK' button  
 		ad.setMessage(msg);
 		ad.setTitle(TAG + " - " + title);
-		if(type==OK) {
-			ad.setButton(OK, new DialogInterface.OnClickListener() {  
+		if(type==Common.OK) {
+			ad.setButton(Common.OK, new DialogInterface.OnClickListener() {  
 				public void onClick(DialogInterface dialog, int which) {  
 					dialog.dismiss();
 				}
@@ -181,33 +171,33 @@ public class BoIPClient {
     		this.connect();
     		Toast.makeText(c, "Sending scanned barcode data to the target server...", 2).show();
 			Log.v(TAG, "***** sendBarcode() - passhash: " + this.pass);
-			String servermsg = this.pass + DSEP + barcode + DTERM;
+			String servermsg = this.pass + Common.DSEP + barcode + Common.DTERM;
         	Log.v(TAG, "***** sendBarcode() - servermsg: " + servermsg);
         	this.output.println(servermsg);
         	
         	String responseLine;
 			while ((responseLine = input.readLine()) != null) {
-			    Log.i(TAG, "checkConnection() - Server: " + responseLine);
-			    if (responseLine.indexOf(THANKS) != -1) {
+			    Log.i(TAG, "Common.DCHECKConnection() - Server: " + responseLine);
+			    if (responseLine.indexOf(Common.THANKS) != -1) {
 					Toast.makeText(c, "Barcode sent successfully!", 3).show();
 					break;
-			    } else if(responseLine.indexOf(ERR) != -1) {
-			    	int idx = responseLine.indexOf(ERR);
-			    	String errmsg = responseLine.substring(idx, 5);
-			    	if(errmsg == "ERR11") {
-				    	showMsgBox("Wrong Password!", "The password you gave does not match the on on the server. Please change it on your app and press 'Apply Server Settings' and then try again.'", OK);
+				} else if (responseLine.indexOf(Common.ERR) != -1) {
+					int idx = responseLine.indexOf(Common.ERR);
+					String errmsg = responseLine.substring(idx, 5);
+					if (errmsg == "ERR11") {
+				    	showMsgBox("Wrong Password!", "The password you gave does not match the on on the server. Please change it on your app and press 'Apply Server Settings' and then try again.'", Common.OK);
 				    	break;
-			    	} else if(errmsg == "ERR1") {    
+					} else if (errmsg == "ERR1") {
 			    		Toast.makeText(c, "Invalid data and/or request syntax!", 4);
 				    	break;
-			    	} else if(errmsg == "ERR2") {    
+					} else if (errmsg == "ERR2") {
 			    		Toast.makeText(c, "Server received a blank request.", 4);
 				    	break;
 			    	} else {
-			    		Toast.makeText(c, Common.errorCodes().get(errmsg), 4);
+						Toast.makeText(c, Common.errorCodes().get(errmsg), 4);
 			    	}
- 					Toast.makeText(c, Common.errorCodes().get(errmsg), 3).show();
-			    	//showMsgBox("sendBarcode()", "Server gave back an error: '" + errmsg + "' -- '" + Common.errorCodes().get(errmsg) + "'", OK);
+					Toast.makeText(c, Common.errorCodes().get(errmsg), 3).show();
+					// showMsgBox("sendBarcode()", "Server gave back an error: '" + errmsg + "' -- '" + Common.errorCodes().get(errmsg) + "'", Common.OK);
 			    	break;
 			    } else {
 			    	Log.v(TAG, "*** responseLine ***  " + responseLine);
@@ -217,7 +207,7 @@ public class BoIPClient {
 		} catch (IOException e) {
 	    		this.close();
 				Log.e(TAG, "sendBarcode() - Unknown Exception occured: " + e);
-			    System.err.println("sendBarcode() - " + e);
+			System.err.println("sendBarcode() - " + e);
 	    		e.printStackTrace();
 		}
 	}

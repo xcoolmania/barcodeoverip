@@ -70,7 +70,7 @@ public class BoIPActivity extends ListActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
-		Log.i(TAG, "onCreate called!");
+		lv("onCreate() called!");
 
 		//runOnUiThread(ConnectResult);
 		this.theAdapter = new ServerAdapter(this, R.layout.serverlist_item, Servers);
@@ -86,11 +86,6 @@ public class BoIPActivity extends ListActivity {
 				showScanBarcode();
 			}
 		});
-	}
-	
-	/** OS kills process */
-	public void onDestroy() {
-		super.onDestroy();
 	}
 	
 	/** App starts anything it needs to start */
@@ -119,8 +114,7 @@ public class BoIPActivity extends ListActivity {
 	
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-		int lv = getListView().getId();
-		if (v.getId() == lv) {
+		if (v.getId() == getListView().getId()) {
 			AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
 			menu.setHeaderTitle(Servers.get(info.position).getName());
 			String[] menuItems = getResources().getStringArray(R.array.cmenu_serverlist);
@@ -168,9 +162,10 @@ public class BoIPActivity extends ListActivity {
 		Servers.clear();
 		Servers = DB.getAllServers();
 		DB.close();
+		lv("UpdateList(): Got Servers, clearing adapter...");
 		theAdapter.clear();
 
-		Log.i(TAG, "UpdateList(): Got servers. Count: " + Servers.size());
+		lv("UpdateList(): Got servers. Count: " + Servers.size());
 		if (Servers != null && Servers.size() > 0) {
 			theAdapter.notifyDataSetChanged();
 			for (int i = 0; i < Servers.size(); i++) {
@@ -240,8 +235,9 @@ public class BoIPActivity extends ListActivity {
 
 	public void SendBarcode(Server s, final String code) {
 		
-		final BoIPClient client = new BoIPClient(this);
-		client.setServer(s);
+		Log.v(TAG, "SendBarcode called! Barcode: '" + code + "'");
+		final BoIPClient client = new BoIPClient(this, s);
+		// client.setServer(s);
 
 		Runnable ConnectServer = new Runnable() {
 			
@@ -365,5 +361,47 @@ public class BoIPActivity extends ListActivity {
 			Toast.makeText(this, "No activity called!", 6);
 		}
 	}
+	
+	
+	/** Logging shortcut functions **************************************************** */
+	
+	public void ld(String msg) { // Debug message
+		Log.d(TAG, msg);
+	}
 
+	public void ld(String msg, String val) { // Debug message with one string value passed
+		Log.d(TAG, msg + val);
+	}
+	
+	public void ld(String msg, String val1, String val2) { // Debug message with two string values passed
+		Log.d(TAG, msg + val1 + " - " + val2);
+	}
+	
+	public void ld(String msg, int val) { // Debug message with one integer value passed
+		Log.d(TAG, msg + String.valueOf(val));
+	}
+	
+	public void lv(String msg) { // Verbose message
+		Log.v(TAG, msg);
+	}
+	
+	public void lv(String msg, String val) { // Verbose message with one string value passed
+		Log.v(TAG, msg + val);
+	}
+	
+	public void lv(String msg, String val1, String val2) { // Verbose message with two string values passed
+		Log.v(TAG, msg + val1 + " - " + val2);
+	}
+	
+	public void lv(String msg, int val) { // Verbose message with one integer value passed
+		Log.v(TAG, msg + String.valueOf(val));
+	}
+	
+	public void li(String msg) { // Info message
+		Log.v(TAG, msg);
+	}
+	
+	public void li(String msg, String val) { // Info message with one string value passed
+		Log.v(TAG, msg + val);
+	}
 }

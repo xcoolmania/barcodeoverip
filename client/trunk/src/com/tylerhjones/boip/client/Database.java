@@ -51,7 +51,7 @@ public class Database {
 	
 	public Database open() throws SQLiteException {
 		try {
-			Log.v(TAG, "Opening database...");
+			// Log.v(TAG, "Opening database...");
 			dbhelper = new DBHelper(context);
 			theDB = dbhelper.getWritableDatabase();
 			Log.v(TAG, "Database opened!");
@@ -63,7 +63,7 @@ public class Database {
 	}
 
 	public void close() {
-		Log.v(TAG, "Closing database...");
+		// Log.v(TAG, "Closing database...");
 		try {
 			dbhelper.close();
 		} catch(SQLiteException e) {
@@ -96,9 +96,6 @@ public class Database {
 	public long editServer(int index, String name, String host, String port, String pass) {
 		try {
 			Log.v(TAG, "editServer()");
-			if(host.trim() == "" || host == null) { return -1; }
-			if(port.trim() == "" || port == null) { return -2; }
-			if(name.trim() == "" || name == null) { return -3; }
 			if(pass.trim() == "" || pass == null) { pass = "none"; }
 			ContentValues values = new ContentValues();
 			String where = Common.S_FIELD_INDEX + " = '" + String.valueOf(index) + "'";
@@ -117,9 +114,6 @@ public class Database {
 	
 		try {
 			Log.v(TAG, "editServerInfo()");
-			if (host.trim() == "" || host == null) { return -1; }
-			if (port.trim() == "" || port == null) { return -2; }
-			if (name.trim() == "" || name == null) { return -3; }
 			if (pass.trim() == "" || pass == null) {
 				pass = "none";
 			}
