@@ -235,30 +235,41 @@ public class BoIPActivity extends ListActivity {
 
 	public void SendBarcode(Server s, final String code) {
 		
-		Log.v(TAG, "SendBarcode called! Barcode: '" + code + "'");
-		final BoIPClient client = new BoIPClient(this, s);
-		// client.setServer(s);
-
-		Runnable ConnectServer = new Runnable() {
-			
-			@Override
-			public void run() {
-				lv("run() called");
-				// client.connect();
-				client.Validate();
-				if (client.CanConnect) {
-					client.sendBarcode(code);
-				}
-				// client.close();
-				ConnectingProgress.dismiss();
-			}
-		};
-		
-		lv("SendBarcode(): about to start thread");
-		Thread thread = new Thread(null, ConnectServer, "MagentoBackground");
-		thread.start();
 		ConnectingProgress = ProgressDialog.show(BoIPActivity.this, "Please wait.", "Sending barcode to server...", true);
+		Log.v(TAG, "SendBarcode called! Barcode: '" + code + "'");
+		final BoIPClient client = new BoIPClient(s);
+		// client.setServer(s);
+		String res = client.Validate();
+		if (res.equals("ERR11")) {
+			showMsgBox(
+				"Wrong Password!",
+				"The password you gave does not match the on on the server. Please change it on your app and press 'Apply Server Settings' and then try again.'",
+				Common.OK);
+		} else if (res.equals("ERR1")) {
+			Toast.makeText(getApplicationContext(), "Invalid data and/or request syntax!", 4);
+		} else if (res.equals("ERR2")) {
+			Toast.makeText(getApplicationContext(), "Server received a blank request.", 4);
+		} else if (res.equals(Common.OK)) {
+			String res2 = client.sendBarcode(code);
+			if (res2.equals("ERR11")) {
+				showMsgBox(
+					"Wrong Password!",
+					"The password you gave does not match the on on the server. Please change it on your app and press 'Apply Server Settings' and then try again.'",
+					Common.OK);
+			} else if (res2.equals("ERR1")) {
+				Toast.makeText(getApplicationContext(), "Invalid data and/or request syntax!", 4);
+			} else if (res2.equals("ERR2")) {
+				Toast.makeText(getApplicationContext(), "Server received a blank request.", 4);
+			} else if (res2.equals(Common.OK)) {
+				lv("sendBarcode(): OK");
+			} else {
+				lv("client.Validate returned: ", Common.errorCodes().get(res2).toString());
+			}
+		} else {
+			lv("client.Validate returned: ", Common.errorCodes().get(res).toString());
+		}
 
+		ConnectingProgress.dismiss();
 	}
 	
 
@@ -365,6 +376,27 @@ public class BoIPActivity extends ListActivity {
 		}
 	}
 	
+	// Show a message box given the title and message
+	
+	private void showMsgBox(String title, String msg, String type) {
+		if (type == null || type == "") {
+			type = Common.OK;
+		}
+		AlertDialog ad = new AlertDialog.Builder(this).create();
+		ad.setCancelable(false); // This blocks the 'BACK' button
+		ad.setMessage(msg);
+		ad.setTitle(title);
+		if (type == Common.OK) {
+			ad.setButton(Common.OK, new DialogInterface.OnClickListener() {
+				
+				public void onClick(DialogInterface dialog, int which) {
+					dialog.dismiss();
+				}
+			});
+		}
+		ad.show();
+	}
+
 	
 	/** Logging shortcut functions **************************************************** */
 	

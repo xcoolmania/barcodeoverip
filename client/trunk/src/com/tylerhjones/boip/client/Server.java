@@ -113,7 +113,7 @@ public class Server {
 	}
 	
 	public void setPassword(String Pass) {
-		if (Pass.trim() == "" || Pass == null) {
+		if (Pass.trim().equals("") || Pass == null) {
 			this.Pass = "none";
 		} else {
 			this.Pass = Pass;
@@ -130,7 +130,7 @@ public class Server {
 
 	public String getPassHash() { // Get the SHA1 hash of the server password
 		try {
-			if (this.Pass == "none") {
+			if (this.Pass.trim().equals("none") || this.Pass.trim().equals("")) {
 				return Common.DEFAULT_PASS;
 			} else {
 				return Common.SHA1(this.Pass);

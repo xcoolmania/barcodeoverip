@@ -248,8 +248,12 @@ public class ServerInfoActivity extends Activity {
 			return false;
 		}
 		if (!txtPass.getText().toString().equals(Server.getPass())) {
-			Log.i(TAG, "Pass value changed!");
-			return false;
+			if (txtPass.getText().toString().equals("") && Server.getPass().equals(Common.DEFAULT_PASS)) {
+				
+			} else {
+				Log.i(TAG, "Pass value changed!");
+				return false;
+			}
 		}
 		if (Integer.valueOf(txtPort.getText().toString()) != Port) {
 			Log.i(TAG, "Port value changed!");

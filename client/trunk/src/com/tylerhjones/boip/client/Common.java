@@ -95,6 +95,9 @@ public class Common {
 		errors.put("ERR13", "Incorrect Username/Password!");
 		errors.put("ERR14", "Invalid Login Command Syntax.");
 		errors.put("ERR19", "Unknown Auth Error");
+		errors.put("ERR99", "Unknown exception occured.");
+		errors.put("ERR100", "Invalid Host/IP.");
+		errors.put("ERR101", "Cannont connect to server.");
 		return errors;
 	}
 	
