@@ -33,8 +33,13 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -69,10 +74,19 @@ public class BoIPActivity extends ListActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-
 		lv("onCreate() called!");
 
 		//runOnUiThread(ConnectResult);
+		
+		lv("*** VERSION *** | ", Common.getAppVersion(this, getClass()));
+		SharedPreferences sVal = getSharedPreferences(Common.PREFS, 0);
+		Editor sEdit;
+		if (!sVal.getString(Common.PREF_VERSION, "0.0").equals(Common.getAppVersion(this, getClass()))) {
+			this.showAbout();
+			sEdit = sVal.edit();
+			sEdit.putString(Common.PREF_VERSION, Common.getAppVersion(this, getClass()));
+			sEdit.apply();
+		}
 		this.theAdapter = new ServerAdapter(this, R.layout.serverlist_item, Servers);
 		setListAdapter(theAdapter);
 		UpdateList();
@@ -82,15 +96,16 @@ public class BoIPActivity extends ListActivity {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				SelectedServer = Servers.get(position);
-				//showScanBarcode();
-				SendBarcode(SelectedServer, "123456789");
+				// ---- ZXing Product Lookup Window -------------------------------------
+				Intent intent = new Intent("com.google.zxing.client.android.SCAN");
+				intent.putExtra("SCAN_MODE", "PRODUCT_MODE");
+				intent.putExtra("SCAN_WIDTH", 800);
+				intent.putExtra("SCAN_HEIGHT", 200);
+				intent.putExtra("RESULT_DISPLAY_DURATION_MS", 500L);
+				intent.putExtra("PROMPT_MESSAGE", "BarcodeOverIP -  Scan a barcode for transmission to target system");
+				startActivityForResult(intent, IntentIntegrator.REQUEST_CODE);
 			}
 		});
-	}
-	
-	/** App starts anything it needs to start */
-	public void onStart() {
-		super.onStart();
 	}
 	
 	/** App kills anything it started */
@@ -104,14 +119,10 @@ public class BoIPActivity extends ListActivity {
 		this.UpdateList();
 	}
 	
-	/** App goes into background */
-	public void onPause() {
-		super.onPause();
-	}
-
-	/*************************************************************************/
-	/** Event handler functions ******************************************** */
 	
+	/*******************************************************************************************************/
+	/** Event handler functions ************************************************************************** */
+
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		if (v.getId() == getListView().getId()) {
@@ -208,30 +219,6 @@ public class BoIPActivity extends ListActivity {
 
 	/******************************************************************************************/
 	/** Send Barcode to Server ****************************************************************/
-/*
- * public boolean ValidateConnection(Server s) {
- * 
- * //final BoIPClient client = new BoIPClient(s, this);
- * 
- * Runnable ConnectServer = new Runnable() {
- * 
- * @Override
- * public void run() {
- * client.connect();
- * client.Validate();
- * if(client.CanConnect) {
- * client.sendBarcode(code);
- * }
- * client.close();
- * ConnectingProgress.dismiss();
- * }
- * };
- * 
- * Thread thread = new Thread(null, ConnectServer, "MagentoBackground");
- * thread.start();
- * ConnectingProgress = ProgressDialog.show(BoIPActivity.this, "Please wait.", "Validating client with the server...", true);
- * }
- */
 
 	public void SendBarcode(Server s, final String code) {
 		
@@ -241,10 +228,10 @@ public class BoIPActivity extends ListActivity {
 		// client.setServer(s);
 		String res = client.Validate();
 		if (res.equals("ERR11")) {
-			showMsgBox(
+			Common.showMsgBox(
+				this,
 				"Wrong Password!",
-				"The password you gave does not match the on on the server. Please change it on your app and press 'Apply Server Settings' and then try again.'",
-				Common.OK);
+				"The password you gave does not match the on on the server. Please change it on your app and press 'Apply Server Settings' and then try again.'");
 		} else if (res.equals("ERR1")) {
 			Toast.makeText(getApplicationContext(), "Invalid data and/or request syntax!", 4);
 		} else if (res.equals("ERR2")) {
@@ -252,10 +239,10 @@ public class BoIPActivity extends ListActivity {
 		} else if (res.equals(Common.OK)) {
 			String res2 = client.sendBarcode(code);
 			if (res2.equals("ERR11")) {
-				showMsgBox(
+				Common.showMsgBox(
+					this,
 					"Wrong Password!",
-					"The password you gave does not match the on on the server. Please change it on your app and press 'Apply Server Settings' and then try again.'",
-					Common.OK);
+					"The password you gave does not match the on on the server. Please change it on your app and press 'Apply Server Settings' and then try again.'");
 			} else if (res2.equals("ERR1")) {
 				Toast.makeText(getApplicationContext(), "Invalid data and/or request syntax!", 4);
 			} else if (res2.equals("ERR2")) {
@@ -273,8 +260,8 @@ public class BoIPActivity extends ListActivity {
 	}
 	
 
-	// ------------------------------------------------------------------------------------
-	// --- Setup Menus --------------------------------------------------------------------
+	/******************************************************************************************/
+	/** Setup Menus ***************************************************************************/
 	
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
@@ -291,18 +278,7 @@ public class BoIPActivity extends ListActivity {
 				this.finish();
 				return true;
 			case R.id.mnuMainAbout:
-				AlertDialog adialog = null;
-				adialog = new AlertDialog.Builder(this).create();
-				adialog.setCancelable(true); // If 'false' This blocks the 'BACK' button
-				adialog.setMessage(getText(R.string.about_msg_body));
-				adialog.setTitle(getText(R.string.about_msg_title));
-				adialog.setButton("OK", new DialogInterface.OnClickListener() {
-					
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.dismiss();
-					}
-				});
-				adialog.show();
+				this.showAbout();
 				return true;
 			case R.id.mnuMainDonate:
 				Uri uri = Uri.parse("http://" + getText(R.string.project_donate_site));
@@ -333,21 +309,11 @@ public class BoIPActivity extends ListActivity {
 		intent.putExtra("com.tylerhjones.boip.client.Action", Common.ADD_SREQ);
 		startActivityForResult(intent, Common.ADD_SREQ);
 	}
-	
-	public void showScanBarcode() {
-		// ---- ZXing Product Lookup Window -------------------------------------
-		Intent intent = new Intent("com.google.zxing.client.android.SCAN");
-		intent.putExtra("SCAN_MODE", "PRODUCT_MODE");
-		intent.putExtra("SCAN_WIDTH", 800);
-		intent.putExtra("SCAN_HEIGHT", 200);
-		intent.putExtra("RESULT_DISPLAY_DURATION_MS", 500L);
-		intent.putExtra("PROMPT_MESSAGE", "BarcodeOverIP -  Scan a barcode for transmission to target system");
-		startActivityForResult(intent, IntentIntegrator.REQUEST_CODE);
-	}
 
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-		this.UpdateList();
+		lv("Activity result", String.valueOf(requestCode), String.valueOf(resultCode));
 		if (requestCode == Common.ADD_SREQ) {
+			lv("AddServer Activity result");
 			if (resultCode == RESULT_OK) {
 				this.UpdateList();
 				Toast.makeText(this, "Server(s) updated successfully!", 5);
@@ -356,6 +322,7 @@ public class BoIPActivity extends ListActivity {
 			}
 		}
 		if (requestCode == Common.EDIT_SREQ) {
+			lv("EditServer Activity result");
 			if (resultCode == RESULT_OK) {
 				this.UpdateList();
 				Toast.makeText(this, "Server edited successfully!", 5);
@@ -363,38 +330,31 @@ public class BoIPActivity extends ListActivity {
 				Toast.makeText(this, "No changes were made.", 3);
 			}
 		}
-		if (resultCode == Common.BARCODE_SREQ) {
+		if (requestCode == IntentIntegrator.REQUEST_CODE) {
+			lv("Barcode Activity result");
 			if (resultCode == RESULT_OK) {
 				IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
 				String barcode = result.getContents().toString();
-				if (barcode != null) {
-					this.SendBarcode(SelectedServer, barcode);
-				}
+				this.SendBarcode(SelectedServer, barcode);
 			}
 		} else {
 			Toast.makeText(this, "No activity called!", 6);
 		}
 	}
-	
-	// Show a message box given the title and message
-	
-	private void showMsgBox(String title, String msg, String type) {
-		if (type == null || type == "") {
-			type = Common.OK;
-		}
-		AlertDialog ad = new AlertDialog.Builder(this).create();
-		ad.setCancelable(false); // This blocks the 'BACK' button
-		ad.setMessage(msg);
-		ad.setTitle(title);
-		if (type == Common.OK) {
-			ad.setButton(Common.OK, new DialogInterface.OnClickListener() {
-				
-				public void onClick(DialogInterface dialog, int which) {
-					dialog.dismiss();
-				}
-			});
-		}
-		ad.show();
+
+
+	public void showAbout() {
+		final TextView message = new TextView(this);
+		final SpannableString s = new SpannableString(this.getText(R.string.about_msg_body));
+		Linkify.addLinks(s, Linkify.WEB_URLS);
+		message.setText(s);
+		message.setMovementMethod(LinkMovementMethod.getInstance());
+		
+		AlertDialog adialog = new AlertDialog.Builder(this).setTitle(R.string.about_msg_title).setCancelable(true)
+								.setIcon(android.R.drawable.ic_dialog_info)
+								.setPositiveButton(R.string.close, null).setView(message).create();
+		adialog.show();
+		((TextView) message).setMovementMethod(LinkMovementMethod.getInstance());
 	}
 
 	

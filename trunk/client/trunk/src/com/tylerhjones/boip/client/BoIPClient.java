@@ -122,24 +122,6 @@ public class BoIPClient {
 		}
 	}
 	
-	//Show a message box given the title and message
-	/*
-	 * private void showMsgBox(String title, String msg, String type) {
-	 * if(type == null || type == "") { type = Common.OK; }
-	 * AlertDialog ad = new AlertDialog.Builder(this.c).create();
-	 * ad.setCancelable(false); // This blocks the 'BACK' button
-	 * ad.setMessage(msg);
-	 * ad.setTitle(TAG + " - " + title);
-	 * if(type==Common.OK) {
-	 * ad.setButton(Common.OK, new DialogInterface.OnClickListener() {
-	 * public void onClick(DialogInterface dialog, int which) {
-	 * dialog.dismiss();
-	 * }
-	 * });
-	 * }
-	 * ad.show();
-	 * }
-	 */
 	public String sendBarcode(String barcode) {
         try {
     		this.connect();
