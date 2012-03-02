@@ -105,8 +105,7 @@ else:
 
 print "\nPassword (SHA1 Hex Digest): " + server_hash + "\n" 
 
-error_codes = {'ERR1':'Invalid data format and/or syntax!', 'ERR2':'No data was sent!', 'ERR3':'Invalid Command Sent!', 'ERR4':'Missing/Empty Command Argument(s) Recvd.', 'ERR5':'Invalid command syntax!', 'ERR6':'Invalid Auth Syntax!', 'ERR7':'Access Denied!', 'ERR8':'Server Timeout, Too Busy to Handle Request!', 'ERR9':'Unknown Data Transmission Error',
-		'ERR10':'Auth required.', 'ERR11':'Invalid Password.', 'ERR12':'Not logged in.', 'ERR13':'Incorrect Username/Password!', 'ERR14':'Invalid Login Command Syntax.', 'ERR19':'Unknown Auth Error'
+error_codes = {'ERR1':'Invalid data format and/or syntax!', 'ERR2':'No data was sent!', 'ERR3':'Invalid Command Sent!', 'ERR4':'Missing/Empty Command Argument(s) Recvd.', 'ERR5':'Invalid command syntax!', 'ERR6':'Invalid Auth Syntax!', 'ERR7':'Access Denied!', 'ERR8':'Server Timeout, Too Busy to Handle Request!', 'ERR11':'Invalid Password.', 'ERR14':'Invalid Login Command Syntax.', 'ERR19':'Unknown Auth Error'
 	}
 
 ###############################################################################################
