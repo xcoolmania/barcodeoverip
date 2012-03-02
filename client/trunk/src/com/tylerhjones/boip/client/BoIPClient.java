@@ -151,7 +151,7 @@ public class BoIPClient {
 			return "none";
 		}
 	}
-	
+
 	//Check if server is up and if we are authorized and if you password is correct.
 	public String checkConnection() {
 		lblStatus.setText("Checking for, validating and authenticating the server..."); 

@@ -144,6 +144,8 @@ public class Database {
 			Cursor curs = theDB.query(Common.TABLE_SERVERS, new String[] { Common.S_FIELD_NAME, Common.S_FIELD_HOST, Common.S_FIELD_PORT,
 					Common.S_FIELD_PASS, Common.S_FIELD_INDEX }, null, null, null, null, null);
 			while (curs.moveToNext()) {
+				s = new Server();
+				Log.v(TAG, "** Cursor (name): " + curs.getString(0));
 				s.setName(curs.getString(0));
 				s.setHost(curs.getString(1));
 				s.setPort(Integer.valueOf(curs.getString(2)));
