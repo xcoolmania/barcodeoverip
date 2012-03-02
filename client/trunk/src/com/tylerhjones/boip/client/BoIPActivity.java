@@ -28,7 +28,6 @@ package com.tylerhjones.boip.client;
 
 import java.util.ArrayList;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -74,7 +73,6 @@ public class BoIPActivity extends ListActivity {
 		Servers = new ArrayList<Server>();
 		this.theAdapter = new ServerAdapter(this, R.layout.serverlist_item, Servers);
 		setListAdapter(this.theAdapter);
-		getServers();
 		//runOnUiThread(ConnectResult);
 		UpdateList();
 		
@@ -110,7 +108,6 @@ public class BoIPActivity extends ListActivity {
 		int menuItemIndex = item.getItemId();
 		String[] menuItems = getResources().getStringArray(R.array.cmenu_serverlist);
 		if (menuItems[menuItemIndex] == "Delete") {
-			Dialog adialog = null;
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setMessage(getText(R.string.deleteserver_msg_body)).setTitle(getText(R.string.deleteserver_msg_title)).setCancelable(false)
 									.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -126,8 +123,7 @@ public class BoIPActivity extends ListActivity {
 											dialog.cancel();
 										}
 									});
-			AlertDialog alert = builder.create();
-			adialog = alert;
+			builder.create();
 			return true;
 		} else {
 			showServerInfo(Servers.get(info.position));
@@ -140,6 +136,7 @@ public class BoIPActivity extends ListActivity {
 		DB.open();
 		Servers.clear();
 		Servers = DB.getAllServers();
+		Log.i(TAG, "UpdateList(): Got servers. Count: " + Servers.size());
 		if (Servers != null && Servers.size() > 0) {
 			theAdapter.notifyDataSetChanged();
 			for (int i = 0; i < Servers.size(); i++) {
@@ -148,31 +145,6 @@ public class BoIPActivity extends ListActivity {
 		}
 		theAdapter.notifyDataSetChanged();
 	}
-
-	private void getServers(){
-		try{
-			Servers = new ArrayList<Server>();
-			Server s1 = new Server();
-			s1.setName("Server 1");
-			s1.setHost("192.168.1.8");
-			s1.setPort(41788);
-			Server s2 = new Server();
-			s2.setName("Server 2");
-			s2.setHost("192.168.1.5");
-			s2.setPort(41788);
-			DB.open();
-			DB.addServer(s1);
-			DB.addServer(s2);
-			DB.close();
-			Servers.add(s1);
-			Servers.add(s2);
-			Log.i("ARRAY", "" + Servers.size());
-		} catch (Exception e) {
-			Log.e("BACKGROUND_PROC", e.getMessage());
-		}
-		// runOnUiThread(ConnectResult);
-	}
-	
 
 	private class ServerAdapter extends ArrayAdapter<Server> {
 		
@@ -255,7 +227,7 @@ public class BoIPActivity extends ListActivity {
 			case R.id.mnuMainAbout:
 				AlertDialog adialog = null;
 				adialog = new AlertDialog.Builder(this).create();
-				adialog.setCancelable(false); // This blocks the 'BACK' button
+				adialog.setCancelable(true); // If 'false' This blocks the 'BACK' button
 				adialog.setMessage(getText(R.string.about_msg_body));
 				adialog.setTitle(getText(R.string.about_msg_title));
 				adialog.setButton("OK", new DialogInterface.OnClickListener() {

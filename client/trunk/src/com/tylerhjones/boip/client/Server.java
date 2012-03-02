@@ -27,21 +27,22 @@
 package com.tylerhjones.boip.client;
 
 
+
 public class Server {
 	
 	// Private class property variables
-	private String Name;
-	private String Host;
-	private String Pass; // NOTE: When this value is set into this class, it MUST and WILL always be hashed!
-	private int Index = 0;; // For database lookups, probably never get used
-	private int Port;
-	
+	private String Name = Common.DEFAULT_NAME;
+	private String Host = Common.DEFAULT_HOST;
+	private String Pass = Common.DEFAULT_PASS; // NOTE: When this value is set into this class, it MUST and WILL always be hashed!
+	private int Port = Common.DEFAULT_PORT;
+	private int Index = 0; // For database lookups, will probably never get used
+
 	// Default server class constructor
 	public Server() {
-		this.Name = "New Server";
-		this.Host = Common.NET_HOST;
-		this.Port = Common.NET_PORT;
-		this.Pass = "";
+		this.Name = Common.DEFAULT_NAME;
+		this.Host = Common.DEFAULT_HOST;
+		this.Port = Common.DEFAULT_PORT;
+		this.Pass = Common.DEFAULT_PASS;
 		this.Index = 0;
 	}
 	
@@ -63,6 +64,7 @@ public class Server {
 		this.Index = 0;
 	}
 
+	/** Server name properties ************************************ */
 	public String getName() {
 		return this.Name;
 	}
@@ -71,14 +73,23 @@ public class Server {
 		this.Name = Name;
 	}
 	
+	/** Server port properties ************************************ */
 	public int getPort() {
 		return this.Port;
 	}
 	
 	public void setPort(int Port) {
+		try {
+			Common.isValidPort(String.valueOf(Port));
+		}
+		catch (Exception e) {
+			this.Port = Common.DEFAULT_PORT;
+			return;
+		}
 		this.Port = Port;
 	}
 	
+	/** Server index properties ************************************ */
 	public int getIndex() {
 		return this.Index;
 	}
@@ -87,6 +98,7 @@ public class Server {
 		this.Index = Index;
 	}
 
+	/** Server host properties ************************************ */
 	public String getHost() {
 		return this.Host;
 	}
@@ -95,12 +107,37 @@ public class Server {
 		this.Host = Host;
 	}
 	
+	/** Server password properties ************************************ */
 	public String getPassword() {
 		return this.Pass;
 	}
 	
 	public void setPassword(String Pass) {
-		this.Pass = Pass;
+		if (Pass.trim() == "" || Pass == null) {
+			this.Pass = "none";
+		} else {
+			this.Pass = Pass;
+		}
 	}
 
+	public String getPass() { // Just a copy of setPassword, this makes for easier coding when I always want to type 'getPass'
+		return this.getPassword();
+	}
+	
+	public void setPass(String Pass) { // Just a copy of setPassword, this makes for easier coding when I always want to type 'getPass'
+		this.setPassword(Pass);
+	}
+
+	public String getPassHash() { // Get the SHA1 hash of the server password
+		try {
+			if (this.Pass == "none") {
+				return Common.DEFAULT_PASS;
+			} else {
+				return Common.SHA1(this.Pass);
+			}
+		}
+		catch (Exception e) {
+			return Common.DEFAULT_PASS;
+		}
+	}
 }

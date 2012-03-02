@@ -36,35 +36,40 @@ import android.content.DialogInterface;
 public class Common {
 //-----------------------------------------------------------------------------------------
 //--- Constant variable declarations -------------------------------------------------------
-	public static final Integer NET_PORT = 41788;
-	public static final String NET_HOST = "0.0.0.0";
 
-	/** The Constant APP_AUTHOR. */
+	/** Application constants ************************************************************ */
 	public static final String APP_AUTHOR = "@string/author";
-	/** The Constant APP_VERSION. */
 	public static final String APP_VERSION = "@string/versionnum";	
 	
+	/** Database constants *************************************************************** */
 	public static final String DB_NAME = "servers";
 	public static final int DB_VERSION = 1;
 	public static final String TABLE_SERVERS = "servers";
-	public static final String S_FIELD_INDEX = "index";
+	public static final String S_FIELD_INDEX = "idx";
 	public static final String S_FIELD_NAME = "name";
 	public static final String S_FIELD_HOST = "host";
 	public static final String S_FIELD_PORT = "port";
 	public static final String S_FIELD_PASS = "pass";
-	public static final String S_INDEX = "index";
+	public static final String S_INDEX = "idx";
 	public static final String S_NAME = "name";
 	public static final String S_HOST = "host";
 	public static final String S_PORT = "port";
 	public static final String S_PASS = "pass";
 	
+	/** Default value constants *********************************************************** */
+	public static final int DEFAULT_PORT = 41788;
+	public static final String DEFAULT_HOST = "0.0.0.0";
+	public static final String DEFAULT_PASS = "none";
+	public static final String DEFAULT_NAME = "Untitled";
+	
+	/** Network communication message constants ******************************************** */
 	public static final String OK = "OK"; // Server's client/user authorization pass message
 	public static final String DLIM = ";"; // Deliniator and end-of-data/cmd marker
 	public static final String DSEP = "||"; // Data and values separator
 	public static final String CHECK = "CHECK"; // Command to ask the server to authenticate us
 	public static final String ERR = "ERR"; // Prefix for errors returned by the server
 	
-	// Constants for keeping track of activities
+	/** Constants for keeping track of activities ****************************************** */
 	public static final int ADD_SREQ = 91;
 	public static final int EDIT_SREQ = 105;
 	public static final int BARCODE_SREQ = 11;

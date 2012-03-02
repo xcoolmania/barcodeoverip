@@ -38,7 +38,6 @@ import android.content.DialogInterface;
 import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
-//import android.util.Base64;
 
 public class BoIPClient {
 	
@@ -47,12 +46,12 @@ public class BoIPClient {
 //-----------------------------------------------------------------------------------------
 //--- Client-server communication data parsing constants ----------------------------------
 	
-	private static final String OK = "OK"; //Server's client/user authorization pass message
-	private static final String DLIM = ";"; //Deliminator and end-of-data/cmd marker
-	private static final String DSEP = "||"; //Data and values separator
-	private static final String CHECK = "CHECK"; //Command to ask the server to authenticate us
-	private static final String ERR = "ERR"; //Prefix for errors returned by the server
-	private static final String THANKS = "THANKS"; //The server's response and receipt message for barcode data received
+	private static final String OK = "OK"; // Server's client/user authorization pass message
+	private static final String DTERM = ";"; // Data string terminator
+	private static final String DSEP = "||"; // Data and values separator
+	private static final String CHECK = "CHECK"; // Command to ask the server to authenticate us
+	private static final String ERR = "ERR"; // Prefix for errors returned by the server
+	private static final String THANKS = "THANKS"; // The server's response and receipt message for barcode data received
 	
 	//Points to the same label in BoIPActivity -- Server status label
 	private TextView lblStatus;
@@ -61,10 +60,10 @@ public class BoIPClient {
 //--- Settings and general variables declarations -----------------------------------------
 	
 	//Settings variables
-	private String port = String.valueOf(Common.NET_PORT);
-	private String host = Common.NET_HOST;
-	private String pass = "";
-	private String authkey = "none";
+	private String port = String.valueOf(Common.DEFAULT_PORT);
+	private String host = Common.DEFAULT_HOST;
+	private String pass = Common.DEFAULT_PASS;
+	private String authkey = Common.DEFAULT_PASS;
    
 	//Stores the context of BoIPActivity when it is passed over in the object constructor at app load
 	//This allows us to directly call and use Dialog and Alert boxes ans Toasts from inside this class
@@ -159,7 +158,7 @@ public class BoIPClient {
 		Log.i(TAG,"checkConnection() - Test the server settings...");
 		try {
 			this.connect();
-			this.output.print(CHECK + DSEP + getAuthKey() + DLIM); //Send a CHECK command to the server
+			this.output.print(CHECK + DSEP + getAuthKey() + DTERM); // Send a CHECK command to the server
 			
 			String responseLine;
             while ((responseLine = input.readLine()) != null) {
@@ -230,7 +229,7 @@ public class BoIPClient {
     		Toast.makeText(c, "Sending scanned barcode data to the target server...", 2).show();
         	lblStatus.setText("Sending barcode data to the target system...");
         	Log.v(TAG, "***** sendBarcode() - authkey: " + authkey);
-        	String servermsg = authkey + DSEP + barcode + DLIM;
+			String servermsg = authkey + DSEP + barcode + DTERM;
         	Log.v(TAG, "***** sendBarcode() - servermsg: " + servermsg);
         	this.output.println(servermsg);
         	
