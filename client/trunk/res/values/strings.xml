@@ -15,6 +15,7 @@
 	<string name="es_listinfo_label">Saved Servers Browser</string>
 	<string name="servername">Server Name</string>
 	<string name="serverinfo_save">Save</string>
+	<string name="close">Close</string>
 
 	<!-- Application General Information -->
 	<string name="about">About</string>
@@ -23,7 +24,13 @@
 
 	<!-- Message box and alert dialog strings -->
 	<string name="about_msg_title">About BarcodeOverIP</string>
-	<string name="about_msg_body">Version 0.3.1 Beta (&#169;)2012 - Tyler H. Jones http://boip.tbsf.me/</string>	
+	<string name="about_msg_body"><b>BarcodeOverIP 0.3.1 Beta</b>\n(&#169;)2012 - Tyler H. Jones\nProject Home: http://boip.tbsf.me\n\nWelcome to BarcodeOverIP for Android!\nTo get started you must add a server by pressing \'Menu\' > \'Add Server\'. 
+	    Once you have added one or more servers, to scan a barcode,
+	    simply touch the desired server on the list and scan away!\nTo edit/remove a server, press and hold 
+	    the target server in the list and a menu will appear.\n\n
+	    http://code.google.com/p/barcodeoverip\n
+	    http://boip.tbsf.me/donate\n
+	</string>	
 	<string name="beta_msg_title">Beta Version!</string>
 	<string name="beta_msg_body">This is a possibly unstable beta version of
 		BarcodeOverIP. Please record all bugs and backup you system before running!</string>

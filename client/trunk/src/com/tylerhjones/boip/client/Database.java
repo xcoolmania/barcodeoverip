@@ -51,7 +51,6 @@ public class Database {
 	
 	public Database open() throws SQLiteException {
 		try {
-			// Log.v(TAG, "Opening database...");
 			dbhelper = new DBHelper(context);
 			theDB = dbhelper.getWritableDatabase();
 			Log.v(TAG, "Database opened!");
@@ -63,7 +62,6 @@ public class Database {
 	}
 
 	public void close() {
-		// Log.v(TAG, "Closing database...");
 		try {
 			dbhelper.close();
 		} catch(SQLiteException e) {

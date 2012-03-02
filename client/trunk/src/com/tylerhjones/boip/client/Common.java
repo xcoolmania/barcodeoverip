@@ -30,8 +30,10 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Hashtable;
 import android.app.AlertDialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.pm.PackageInfo;
 
 public class Common {
 //-----------------------------------------------------------------------------------------
@@ -56,6 +58,10 @@ public class Common {
 	public static final String S_PORT = "port";
 	public static final String S_PASS = "pass";
 	
+	// Our one and only preference, set after the first run of the application
+	public static final String PREFS = "boip_client";
+	public static final String PREF_VERSION = "version";
+
 	/** Default value constants *********************************************************** */
 	public static final int DEFAULT_PORT = 41788;
 	public static final String DEFAULT_HOST = "0.0.0.0";
@@ -88,11 +94,7 @@ public class Common {
 		errors.put("ERR6", "Invalid Auth Syntax!");
 		errors.put("ERR7", "Access Denied!");
 		errors.put("ERR8", "Server Timeout, Too Busy to Handle Request!");
-		errors.put("ERR9", "Unknown Data Transmission Error");
-		errors.put("ERR10", "Auth required.");
 		errors.put("ERR11", "Invalid Auth.");
-		errors.put("ERR12", "Not logged in.");
-		errors.put("ERR13", "Incorrect Username/Password!");
 		errors.put("ERR14", "Invalid Login Command Syntax.");
 		errors.put("ERR19", "Unknown Auth Error");
 		errors.put("ERR99", "Unknown exception occured.");
@@ -101,52 +103,45 @@ public class Common {
 		return errors;
 	}
 	
-	public static void showMsgBox(Context c, String title, String msg, String type) {
-		if (type == null || type == "") {
-			type = OK;
-		}
+	public static void showMsgBox(Context c, String title, String msg) {
 		AlertDialog ad = new AlertDialog.Builder(c).create();
 		ad.setCancelable(false); // This blocks the 'BACK' button
 		ad.setMessage(msg);
 		ad.setTitle(title);
-		if (type == OK) {
 			ad.setButton(OK, new DialogInterface.OnClickListener() {
 				
 				public void onClick(DialogInterface dialog, int which) {
 					dialog.dismiss();
 				}
 			});
-		}
 		ad.show();
 	}
 	
-//-----------------------------------------------------------------------------------------
-//--- Value type conversion functions -----------------------------------------------------
-	
-	/**
-	 * b2s.
-	 *
-	 * @param val, boolean value
-	 * @return the string
-	 */
-	public static String b2s(boolean val) {  //bool2str
-		if(val) { return "TRUE"; } else { return "FALSE"; }
+	public static String getAppVersion(Context c, @SuppressWarnings("rawtypes") Class cls) {
+		try {
+			ComponentName comp = new ComponentName(c, cls);
+			PackageInfo pinfo = c.getPackageManager().getPackageInfo(comp.getPackageName(), 0);
+			return pinfo.versionName;
+		}
+		catch (android.content.pm.PackageManager.NameNotFoundException e) {
+			return null;
+		}
 	}
 	
-	/**
-	 * s2b.
-	 *
-	 * @param val the val
-	 * @return true, if successful
-	 */
-	public static boolean s2b(String val) {  //str2bool
-		if(val.toUpperCase() == "TRUE") { return true; } 
-		if(val.toUpperCase() == "FALSE") { return false; }
-		return false;
+// -----------------------------------------------------------------------------------------
+// --- Validate settings values functions --------------------------------------------------
+	
+	// Check that the barcode string contains only letters and numbers
+	public static boolean isValidBarcode(String s) {
+		if (!s.matches("^[a-zA-Z0-9]+$") || s.length() < 1) { return false; }
+		return true;
 	}
 	
-//-----------------------------------------------------------------------------------------
-//--- Validate settings values functions --------------------------------------------------
+	// Check that the host/ip string is valid
+	public static boolean isValidHost(String s) {
+		// if (!s.matches("^[a-zA-Z0-9]+$") || s.length() < 1) { return false; }
+		return true;
+	}
 	
 	public static void isValidIP(String ip) throws Exception {
 		try {

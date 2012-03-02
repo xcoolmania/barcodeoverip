@@ -17,12 +17,8 @@ public class ServerInfoActivity extends Activity {
 	
 	private static final String TAG = "ServerInfoActivity";
 	
-	private Server Server = new Server();
+	private Server Server = new Server(Common.DEFAULT_NAME, Common.DEFAULT_HOST, Common.DEFAULT_PASS, Common.DEFAULT_PORT);
 	
-	private String Host = Common.DEFAULT_HOST;
-	private int Port = Common.DEFAULT_PORT;
-	private String Pass = Common.DEFAULT_PASS;
-	private String Name = Common.DEFAULT_NAME;
 	private Database DB = new Database(this);
 	private int thisAction = 0;
 	
@@ -37,10 +33,6 @@ public class ServerInfoActivity extends Activity {
 	// Default class constructor with initial Server object 
 	public ServerInfoActivity(Server s) {
 		this.Server = s;
-		this.Host = s.getHost();
-		this.Port = s.getPort();
-		this.Pass = s.getPassword();
-		this.Name = s.getName();
 	}
 	
 	// Empty default class constructor
@@ -86,57 +78,16 @@ public class ServerInfoActivity extends Activity {
 				Log.wtf(TAG, "DB gave null value!");
 				return;
 			}
-			this.Name = Server.getName();
-			this.Host = Server.getHost();
-			this.Pass = Server.getPassword();
-			this.Port = Server.getPort();
-			txtName.setText(this.Name);
-			txtHost.setText(this.Host);
-			txtPass.setText(this.Pass);
-			txtPort.setText(String.valueOf(this.Port));
+			txtName.setText(Server.getName());
+			txtHost.setText(Server.getHost());
+			txtPass.setText(Server.getPass());
+			txtPort.setText(String.valueOf(Server.getPort()));
 		} else {
 			lblTitle.setText("Add New Server");
-			Log.d(TAG, this.Name + "," + this.Host + "," + this.Port + "," + this.Pass);
+			Log.d(TAG, Server.getName() + "," + Server.getHost() + "," + Server.getPort() + "," + Server.getPass());
 		}
 
 	}
-	
-	/** OS kills process */
-	public void onDestroy() {
-		super.onDestroy();
-	}
-	
-	/** App starts anything it needs to start */
-	public void onStart() {
-		super.onStart();
-	}
-
-	/** App kills anything it started */
-	public void onStop() {
-		super.onStop();
-	}
-	
-	/** App starts displaying things */
-	public void onResume() {
-		super.onResume();
-	}
-
-	/** App goes into background */
-	public void onPause() {
-		super.onPause();
-	}
-
-	/*
-	@Override
-	public void onBackPressed() {
-		if (!this.CheckSaved()) {
-			UnsavedWarning();
-		}
-
-		return;
-	}
-	*/
-	
 	
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -150,9 +101,8 @@ public class ServerInfoActivity extends Activity {
 		return super.onKeyDown(keyCode, event);
 	}
 	 
-
 	private void Save() {
-		String oldn = this.Name;
+		String oldn = Server.getName();
 		boolean boolres;
 		
 		if (!ValidateSettings()) {
@@ -160,18 +110,18 @@ public class ServerInfoActivity extends Activity {
 			return;
 		}
 
-		if (txtPass.getText().toString().trim() == "" || txtPass.getText().toString() == null) {
-			this.Pass = Common.DEFAULT_PASS;
+		if (txtPass.getText().toString().trim().equals("") || txtPass.getText().toString() == null) {
+			Server.setPass(Common.DEFAULT_PASS);
 		} else {
-			this.Pass = txtPass.getText().toString().trim();
+			Server.setPass(txtPass.getText().toString().trim());
 		}
-		if (txtPort.getText().toString().trim() == "" || txtPort.getText().toString() == null) {
-			this.Port = Common.DEFAULT_PORT;
+		if (txtPort.getText().toString().trim().equals("") || txtPort.getText().toString() == null) {
+			Server.setPort(Common.DEFAULT_PORT);
 		} else {
-			this.Port = Integer.valueOf(txtPort.getText().toString().trim());
+			Server.setPort(Integer.valueOf(txtPort.getText().toString().trim()));
 		}
-		if (txtName.getText().toString().trim() == "" || txtName.getText().toString() == null) {
-			this.Name = this.Host;
+		if (txtName.getText().toString().trim().equals("") || txtName.getText().toString() == null) {
+			Server.setName(Server.getHost());
 		} else {
 			if (!txtName.getText().toString().trim().equals(Server.getName())) {
 				DB.open();
@@ -182,10 +132,10 @@ public class ServerInfoActivity extends Activity {
 					return;
 				}
 			}
-			this.Name = txtName.getText().toString().trim();
+			Server.setName(txtName.getText().toString().trim());
 
 		}
-		Log.d(TAG, txtHost.getText().toString() + "," + Server.getHost() + "," + this.Host);
+		Log.d(TAG, txtHost.getText().toString() + "," + Server.getHost() + "," + Server.getHost());
 		if (!txtHost.getText().toString().trim().equals(Server.getHost())) {
 			DB.open();
 			boolres = DB.getHostExits(txtHost.getText().toString().trim());
@@ -195,16 +145,10 @@ public class ServerInfoActivity extends Activity {
 				return;
 			}
 		}
-		this.Host = txtHost.getText().toString().trim();
-		this.Port = Integer.valueOf(txtPort.getText().toString().trim());
-		Server.setName(this.Name);
-		Server.setHost(this.Host);
-		Server.setPort(this.Port);
-		Server.setPassword(this.Pass);
 
 		DB.open();
 		if (this.thisAction == Common.EDIT_SREQ) {
-			long res = DB.editServerInfo(oldn, this.Name, this.Host, String.valueOf(this.Port), this.Pass);
+			long res = DB.editServerInfo(oldn, Server.getName(), Server.getHost(), String.valueOf(Server.getPort()), Server.getPass());
 			Log.i(TAG, "editServerInfo returned: '" + Long.toString(res) + "'!");
 			Toast.makeText(this, getText(R.string.settings_saved), 4).show();
 		} else {
@@ -221,18 +165,21 @@ public class ServerInfoActivity extends Activity {
 	}
 	
 	private boolean ValidateSettings() {
-		if (txtHost.getText().toString().trim() == "" || txtHost.getText().toString() == null) {
-			Toast.makeText(this, "No host/IP given; it is required!", 6).show();
+		if (txtHost.getText().toString().trim().equals("") || txtHost.getText().toString().equals(null)) {
+			this.MsgBox("No host/IP given; it is required!");
 			return false;
 		}
-		try {
-			if (txtPort.getText().toString().trim() != "" || txtPort.getText().toString() != null) {
+		// if (Common.isValidHost(txtHost.getText().toString().trim())) {
+		// this.MsgBox("No host/IP given; it is required!");
+		// }
+		if (!txtPort.getText().toString().trim().equals("") && !txtPort.getText().toString().equals(null)) {
+			try {
 				Common.isValidPort(txtPort.getText().toString().trim());
 			}
-		}
-		catch (Exception e) {
-			Toast.makeText(this, "Invalid port! Numbers only (1024 - 65535)", 6).show();
-			return false;
+			catch (Exception e) {
+				this.MsgBox("Invalid Port", "Invalid port! The port can only be a number between 1024 and 65535)");
+				return false;
+			}
 		}
 			
 		return true;
@@ -255,13 +202,38 @@ public class ServerInfoActivity extends Activity {
 				return false;
 			}
 		}
-		if (Integer.valueOf(txtPort.getText().toString()) != Port) {
-			Log.i(TAG, "Port value changed!");
-			return false;
+		if (!txtPort.getText().toString().trim().equals("") && !txtPort.getText().toString().equals(null)) {
+			if (Integer.valueOf(txtPort.getText().toString()) != Server.getPort()) {
+				Log.i(TAG, "Port value changed!");
+				return false;
+			}
+		} else {
+			if (Server.getPort() != Common.DEFAULT_PORT) {
+				Log.i(TAG, "Port value changed!");
+				return false;
+			}
 		}
 		return true;
 	}
 	
+	private void MsgBox(String msg) {
+		this.MsgBox("Server Settings", msg);
+	}
+	
+	private void MsgBox(String title, String msg) {
+		AlertDialog ad = new AlertDialog.Builder(this).create();
+		ad.setCancelable(true);
+		ad.setMessage(msg);
+		ad.setTitle(title);
+		ad.setButton("Ok", new DialogInterface.OnClickListener() {
+			
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+			}
+		});
+		ad.show();
+	}
+
 	private void UnsavedWarning() {
 		// Warn of unsaved settings
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
