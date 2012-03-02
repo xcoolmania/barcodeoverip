@@ -2,7 +2,7 @@
  *
  *  BarcodeOverIP-Server (Java) Version 0.3.x
  *  Copyright (C) 2012, Tyler H. Jones (me@tylerjones.me)
- *  http://tbsf.me/boip
+ *  http://boip.tylerjones.me
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.

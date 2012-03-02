@@ -2,7 +2,7 @@
  *
  *  BarcodeOverIP-Server (Java) Version 0.3.x
  *  Copyright (C) 2012, Tyler H. Jones (me@tylerjones.me)
- *  http://tbsf.me/boip
+ *  http://boip.tylerjones.me
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -81,7 +81,7 @@ public class ConnectionHandler implements Runnable {
                 String res = this.ParseData(input.trim());
                 if(res.equals("CHECK_OK")) {
                     out.println(OK);
-                    server.close();
+                    server.close();input = in.readLine();
                     return;
                 } else if(res.equals("ERR11")) {
                     out.println("ERR11\n");
