@@ -10,8 +10,7 @@
     
 	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 		android:layout_width="fill_parent" android:layout_height="wrap_content"
-		android:orientation="vertical" android:paddingLeft="5dp"
-		android:paddingRight="5dp">
+		android:orientation="vertical" android:padding="5dp">
 	
 		<TextView
 		    android:id="@+id/lblTitle"
@@ -21,14 +20,18 @@
 		    android:nextFocusDown="@+id/txtName"
 		    android:paddingBottom="7dp"
 		    android:paddingTop="7dp"
-		    android:text="@string/server_settings"
+		    android:text=""
 		    android:textSize="16dp"
 		    android:textStyle="normal" />
 
 		<TextView
-		    android:layout_width="fill_parent" android:layout_height="wrap_content" 
-		    android:text="@string/txtname_label" android:paddingBottom="3dp"
-		    android:paddingTop="5dp" android:paddingLeft="6dp" />
+		    android:layout_width="match_parent"
+		    android:layout_height="wrap_content"
+		    android:paddingBottom="3dp"
+		    android:paddingLeft="6dp"
+		    android:paddingTop="5dp"
+		    android:text="@string/txtname_label" />
+
 		<EditText android:id="@+id/txtName" android:layout_width="match_parent"
 			android:layout_height="match_parent" android:nextFocusDown="@+id/txtHost"
 			android:hint="@string/txtname_hint"><requestFocus /></EditText>
@@ -39,7 +42,7 @@
 		    android:paddingTop="5dp" android:paddingLeft="6dp" />
 		<EditText android:id="@+id/txtHost" android:layout_width="match_parent"
 			android:layout_height="match_parent" android:nextFocusDown="@+id/txtPort"
-			android:hint="@string/txthost_hint"><requestFocus /></EditText>
+			android:hint="@string/txthost_hint" />
 		
 		<TextView
 		    android:layout_width="fill_parent" android:layout_height="wrap_content" 

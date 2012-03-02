@@ -40,8 +40,8 @@ public class DBTableClass {
 		+ Common.TABLE_SERVERS + " (" 
 		+ Common.S_FIELD_INDEX + " INTEGER PRIMARY KEY, " 
 		+ Common.S_FIELD_NAME + " TEXT, " 
-		+ Common.S_FIELD_HOST + " TEXT, " 
-		+ Common.S_FIELD_PORT + " TEXT DEFAULT '41788', " 
+		+ Common.S_FIELD_HOST + " TEXT, "
+		+ Common.S_FIELD_PORT + " INTEGER DEFAULT '41788', "
 		+ Common.S_FIELD_PASS + " TEXT DEFAULT '')";   
 	
 	/**

@@ -47,13 +47,14 @@ public class Database {
 	}
 	
 	/******************************************************************************/
-	/*** Open & CLose the DB ************/
+	/** Open & CLose the DB ***************************************************** */
 	
 	public Database open() throws SQLiteException {
 		try {
 			Log.v(TAG, "Opening database...");
 			dbhelper = new DBHelper(context);
 			theDB = dbhelper.getWritableDatabase();
+			Log.v(TAG, "Database opened!");
 			return this;
 		} catch(SQLiteException e) {
 			Log.e(TAG, "Database.open() threw an exception!", e);
@@ -62,15 +63,17 @@ public class Database {
 	}
 
 	public void close() {
+		Log.v(TAG, "Closing database...");
 		try {
 			dbhelper.close();
 		} catch(SQLiteException e) {
 			Log.e(TAG, "Database.close() threw an exception!", e);
 		}
+		Log.v(TAG, "Database closed!");
 	}
 	
-	/*** END -  Open & CLose the DB ************/
 	/******************************************************************************/
+	/** Database value/record modification functions **************************** */
 
 	public long addServer(Server s) {
 		try {
@@ -85,25 +88,27 @@ public class Database {
 			values.put(Common.S_FIELD_PASS, s.getPassword());
 			return theDB.insert(Common.TABLE_SERVERS, null, values);
 		} catch(SQLiteException e) {
-			Log.e(TAG, "addServer() threw an exception!", e);
+			Log.e(TAG, "addServer() threw an exception!");
 			return -4;
 		}
 	}
-
+	
 	public long editServer(int index, String name, String host, String port, String pass) {
 		try {
 			Log.v(TAG, "editServer()");
 			if(host.trim() == "" || host == null) { return -1; }
 			if(port.trim() == "" || port == null) { return -2; }
 			if(name.trim() == "" || name == null) { return -3; }
+			if(pass.trim() == "" || pass == null) { pass = "none"; }
 			ContentValues values = new ContentValues();
+			String where = Common.S_FIELD_INDEX + " = '" + String.valueOf(index) + "'";
 			values.put(Common.S_FIELD_NAME, name);
 			values.put(Common.S_FIELD_HOST, host);
 			values.put(Common.S_FIELD_PORT, port);
 			values.put(Common.S_FIELD_PASS, pass);
-			return theDB.insert(Common.TABLE_SERVERS, null, values);
+			return theDB.update(Common.TABLE_SERVERS, values, where, null);
 		} catch(SQLiteException e) {
-			Log.e(TAG, "editServer() threw an exception!", e);
+			Log.e(TAG, "editServer() threw an exception!");
 			return -4;
 		}
 	}
@@ -115,12 +120,16 @@ public class Database {
 			if (host.trim() == "" || host == null) { return -1; }
 			if (port.trim() == "" || port == null) { return -2; }
 			if (name.trim() == "" || name == null) { return -3; }
+			if (pass.trim() == "" || pass == null) {
+				pass = "none";
+			}
 			ContentValues values = new ContentValues();
+			String where = Common.S_FIELD_NAME + " = '" + oldname + "'";
 			values.put(Common.S_FIELD_NAME, name);
 			values.put(Common.S_FIELD_HOST, host);
 			values.put(Common.S_FIELD_PORT, port);
 			values.put(Common.S_FIELD_PASS, pass);
-			return theDB.insert(Common.TABLE_SERVERS, null, values);
+			return theDB.update(Common.TABLE_SERVERS, values, where, null);
 		} catch (SQLiteException e) {
 			Log.e(TAG, "editServer() threw an exception!", e);
 			return -4;
@@ -130,10 +139,11 @@ public class Database {
 	public ArrayList<Server> getAllServers() {
 		Server s = new Server();
 		ArrayList<Server> sarray = new ArrayList<Server>();
+		Log.v(TAG, "Servers()");
 		try {
-			Log.v(TAG, "Servers()");
-			Cursor curs = theDB.query(Common.TABLE_SERVERS, new String[] {  Common.S_FIELD_NAME, Common.S_FIELD_HOST, Common.S_FIELD_PORT, Common.S_FIELD_PASS, Common.S_FIELD_INDEX }, null, null, null, null, null);
-			do {
+			Cursor curs = theDB.query(Common.TABLE_SERVERS, new String[] { Common.S_FIELD_NAME, Common.S_FIELD_HOST, Common.S_FIELD_PORT,
+					Common.S_FIELD_PASS, Common.S_FIELD_INDEX }, null, null, null, null, null);
+			while (curs.moveToNext()) {
 				s.setName(curs.getString(0));
 				s.setHost(curs.getString(1));
 				s.setPort(Integer.valueOf(curs.getString(2)));
@@ -141,7 +151,6 @@ public class Database {
 				s.setIndex(Integer.valueOf(curs.getString(4)));
 				sarray.add(s);
 			}
-			while (curs.moveToNext());
 			return sarray;
 		} catch(SQLiteException e) {
 			Log.e(TAG, "getAllServers() threw an exception!", e);
@@ -150,15 +159,15 @@ public class Database {
 	}
 
 	public boolean deleteServer(Server s) {
-		Log.v(TAG, "deleteServer()");
-		return theDB.delete(Common.TABLE_SERVERS, Common.S_FIELD_NAME + "=" + s.getName(), null) > 0;
+		Log.v(TAG, "deleteServer(s)");
+		return theDB.delete(Common.TABLE_SERVERS, Common.S_FIELD_NAME + "='" + s.getName() + "'", null) > 0;
 	}
 	
 	public Server getServerFromIndex(int idx) throws SQLiteException {
 		Server s = new Server();
-		Log.v(TAG, "getServerFromIndex()");
+		Log.v(TAG, "getServerFromIndex(idx)");
 		Cursor mCursor = theDB.query(true, Common.TABLE_SERVERS, new String[] { Common.S_FIELD_NAME, Common.S_FIELD_HOST, Common.S_FIELD_PORT,
-				Common.S_FIELD_PASS }, Common.S_FIELD_INDEX + "=" + idx, null, null, null, null, null);
+				Common.S_FIELD_PASS }, Common.S_FIELD_INDEX + "='" + idx + "'", null, null, null, null, null);
 		if (mCursor.moveToFirst()) {
 			s.setName(mCursor.getString(0));
 			s.setHost(mCursor.getString(1));
@@ -171,9 +180,9 @@ public class Database {
 	
 	public Server getServerFromName(String name) throws SQLiteException {
 		Server s = new Server();
-		Log.v(TAG, "getServerFromName()");
+		Log.v(TAG, "getServerFromName(name)");
 		Cursor mCursor = theDB.query(true, Common.TABLE_SERVERS, new String[] { Common.S_FIELD_HOST, Common.S_FIELD_INDEX, Common.S_FIELD_PORT,
-				Common.S_FIELD_PASS }, Common.S_FIELD_NAME + "=" + name, null, null, null, null, null);
+				Common.S_FIELD_PASS }, Common.S_FIELD_NAME + "='" + name + "'", null, null, null, null, null);
 		if (mCursor.moveToFirst()) {
 			s.setHost(mCursor.getString(0));
 			s.setIndex(Integer.valueOf(mCursor.getString(1)));
@@ -182,6 +191,28 @@ public class Database {
 			s.setName(name);
 		}
 		return s;
+	}
+	
+	public boolean getNameExits(String name) throws SQLiteException {
+		Log.v(TAG, "getNameExits(name)");
+		Cursor mCursor = theDB.query(true, Common.TABLE_SERVERS, new String[] { Common.S_FIELD_HOST, Common.S_FIELD_INDEX, Common.S_FIELD_PORT,
+				Common.S_FIELD_PASS }, Common.S_FIELD_NAME + "='" + name + "'", null, null, null, null, null);
+		if (mCursor.getCount() < 1) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	public boolean getHostExits(String host) throws SQLiteException {
+		Log.v(TAG, "getNameExits(name)");
+		Cursor mCursor = theDB.query(true, Common.TABLE_SERVERS, new String[] { Common.S_FIELD_NAME, Common.S_FIELD_INDEX, Common.S_FIELD_PORT,
+				Common.S_FIELD_PASS }, Common.S_FIELD_HOST + "='" + host + "'", null, null, null, null, null);
+		if (mCursor.getCount() < 1) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 }
 

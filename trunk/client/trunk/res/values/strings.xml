@@ -12,12 +12,16 @@
 	<string name="developer_site">http://tylerjones.me</string>
 	<string name="author">Tyler H. Jones</string>
 	<string name="server_info">Add/Modify Server</string>
+	<string name="es_listinfo_label">Saved Servers Browser</string>
+	<string name="servername">Server Name</string>
+	<string name="serverinfo_save">Save</string>
 
 	<!-- Application General Information -->
 	<string name="about">About</string>
 	<string name="website">Website</string>
 	<string name="donate">Donate</string>
 
+	<!-- Message box and alert dialog strings -->
 	<string name="about_msg_title">About BarcodeOverIP</string>
 	<string name="about_msg_body">Version 0.3.1 Beta (&#169;)2012 - Tyler H. Jones http://boip.tbsf.me/</string>	
 	<string name="beta_msg_title">Beta Version!</string>
@@ -34,43 +38,41 @@
 	<string name="editservers_msg_title">Edit Servers</string>
 	<string name="editservers_msg_body">Edit servers activity is not done yet! Try again later!</string>
 
-	<string name="server_settings">Server Connection Settings</string>
-	<string name="txtname_hint">Name the server</string>
-	<string name="txthost_hint">Hostname/IP</string>
-	<string name="txtport_hint">Port (Default 41788)</string>
-	<string name="txtpass_hint">Password (If Enabled)</string>
+	<!-- Widget text and hints -->
+	<string name="txtname_hint">Untitled Server</string>
+	<string name="txthost_hint">Host or IP</string>
+	<string name="txtport_hint">41788</string>
+	<string name="txtpass_hint">Password</string>
 	<string name="txtname_label">Server Name:</string>
 	<string name="txthost_label">Hostname or IP Address:</string>
-	<string name="txtport_label">Port # (Blank for default):</string>
+	<string name="txtport_label">Port Number (Blank for default):</string>
 	<string name="txtpass_label">Password (Blank for none):</string>
 	<string name="btnsave_label">Save Server</string>
 	
+	<!-- Menus text and info -->
 	<string name="mnuMainExit_title">Exit</string>
-	<string name="mnuMainAddServer_title">About</string>
-	<string name="mnuMainAbout_title">Donate</string>
-	<string name="mnuMainDonate_title">Website</string>
-
-	<string name="mnuESDeleteAll_title">Delete All</string>
+	<string name="mnuMainAddServer_title">Add Server</string>
+	<string name="mnuMainAbout_title">About</string>
+	<string name="mnuMainDonate_title">Donate</string>
 	<string name="mnuESDelete_title">Delete</string>
-	<string name="mnuESAdd_title">Add</string>
 	<string name="mnuESEdit_title">Edit</string>
 
-	<string name="es_listinfo_label">Saved Servers Browser</string>
-	<string name="servername">Server Name</string>
-
-	<string name="serverinfo_remove">Delete</string>
-	<string name="serverinfo_save">Save</string>
-	<string name="serverinfo_close">Close</string>
-
-	<string name="addserver_msg_body">Enter the new server\'s details and click \'Add\' to continue.</string>
+	<string name="addserver_msg_body">Enter the new server\'s details and click \'Save Server\' to continue.</string>
 	<string name="addserver_msg_title">Add New Server</string>
-	<string name="editserver_msg_body">Change the desired values and the click \'Save\' to continue.</string>
+	<string name="editserver_msg_body">Change the desired values and the click \'Save Server\' to continue.</string>
 	<string name="editserver_msg_title">Edit Server Info</string>
 	<string name="deleteserver_msg_body">Are you sure you want to delete the selected server?</string>
 	<string name="deleteserver_msg_title">Confirm Deletion</string>
-	<string name="app_icon_desc">BarcodeOverIP Icon</string>
+	<string name="unsaved_msg_body">There are unsaved changes to the current server! Would you like to save them now?</string>
+	<string name="unsaved_msg_title">Unsaved Settings!</string>
 
-	<string name="main_no_items">No Servers Here<![CDATA[&&;#8230;]]></string>
+	<string name="settings_not_saved">Save Settings ERROR! (Error -4)</string>	
+	<string name="settings_saved">Settings Saved!</string>
+	<string name="server_deleted">Server Deleted!</string>
+	<string name="server_not_deleted">Server Delete ERROR!</string>
+				
+	<string name="app_icon_desc">BarcodeOverIP Icon</string>
+	<string name="main_no_items">No Servers Defined! Press the \'Menu\' button and add one.</string>
 
 	<string-array name="cmenu_serverlist">
 		<item>Edit</item>
@@ -78,6 +80,6 @@
 	</string-array>
 
 	<string-array name="cboServers_array">
-		<item>Choose Server<![CDATA[&&;#8230;]]></item>
+		<item>Choose Server</item>
 	</string-array>
 </resources>
