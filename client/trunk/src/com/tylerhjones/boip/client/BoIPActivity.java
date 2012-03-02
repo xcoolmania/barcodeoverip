@@ -59,7 +59,7 @@ public class BoIPActivity extends ListActivity {
 	private ArrayList<Server> Servers = new ArrayList<Server>();
 	private ServerAdapter theAdapter;
 	private Database DB = new Database(this);
-	private Server SelectedServer;
+	private Server SelectedServer = new Server();
 	
 	// private BoIPClient client = new BoIPClient(this);
 	// private Runnable ConnectServer;
@@ -76,14 +76,14 @@ public class BoIPActivity extends ListActivity {
 		this.theAdapter = new ServerAdapter(this, R.layout.serverlist_item, Servers);
 		setListAdapter(theAdapter);
 		UpdateList();
-		
 		registerForContextMenu(getListView());
 		getListView().setOnItemClickListener(new OnItemClickListener() {
 			
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				SelectedServer = Servers.get(position);
-				showScanBarcode();
+				//showScanBarcode();
+				SendBarcode(SelectedServer, "123456789");
 			}
 		});
 	}
@@ -243,19 +243,22 @@ public class BoIPActivity extends ListActivity {
 			
 			@Override
 			public void run() {
-				client.connect();
+				lv("run() called");
+				// client.connect();
 				client.Validate();
 				if (client.CanConnect) {
 					client.sendBarcode(code);
 				}
-				client.close();
+				// client.close();
 				ConnectingProgress.dismiss();
 			}
 		};
 		
+		lv("SendBarcode(): about to start thread");
 		Thread thread = new Thread(null, ConnectServer, "MagentoBackground");
 		thread.start();
 		ConnectingProgress = ProgressDialog.show(BoIPActivity.this, "Please wait.", "Sending barcode to server...", true);
+
 	}
 	
 

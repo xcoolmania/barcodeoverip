@@ -64,6 +64,9 @@ public class BoIPClient {
 
 	public BoIPClient(Context c, Server s) {
 		this.c = c;
+		this.port = s.getPort();
+		this.host = s.getHost();
+		this.pass = s.getPassHash();
 	}
 	
 	public void setServer(Server s) {

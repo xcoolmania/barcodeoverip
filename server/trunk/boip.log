@@ -88,3 +88,15 @@
 2012-03-01 23:31:13,168 INFO Server Socket Created successfully! - Listening Host/IP: 0.0.0.0 (Port: 41788)
 2012-03-02 00:13:23,482 INFO Incoming Connection! - From: ('192.168.1.68', 60156)
 2012-03-02 00:13:23,497 INFO BoIP Client Verification - BoIP cilent has verified its server settings OK
+2012-03-02 02:38:36,457 INFO Incoming Connection! - From: ('192.168.1.47', 36399)
+2012-03-02 02:41:42,600 WARNING handleConnection - No data sent!
+2012-03-02 02:41:42,600 INFO Incoming Connection! - From: ('192.168.1.47', 36558)
+2012-03-02 02:41:42,600 INFO BoIP Client Verification - BoIP cilent has verified its server settings OK
+2012-03-02 02:41:49,481 INFO Incoming Connection! - From: ('192.168.1.47', 54177)
+2012-03-02 02:42:48,348 INFO Keyboard Interupt - Received keyboard interrupt, quitting threads
+2012-03-02 02:42:51,686 INFO Config file found... Loaded OK!
+2012-03-02 02:42:51,727 INFO Server Socket Created successfully! - Listening Host/IP: 0.0.0.0 (Port: 41788)
+2012-03-02 02:43:56,355 INFO Incoming Connection! - From: ('192.168.1.47', 38227)
+2012-03-02 02:43:56,355 INFO BoIP Client Verification - BoIP cilent has verified its server settings OK
+2012-03-02 02:52:37,669 INFO Incoming Connection! - From: ('192.168.1.47', 52810)
+2012-03-02 02:52:37,669 INFO BoIP Client Verification - BoIP cilent has verified its server settings OK
