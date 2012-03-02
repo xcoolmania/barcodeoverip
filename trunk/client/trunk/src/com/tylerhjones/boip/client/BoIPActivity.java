@@ -56,7 +56,7 @@ public class BoIPActivity extends ListActivity {
 	
 	private static final String TAG = "BoIPActivity";
 	private ProgressDialog ConnectingProgress = null;
-	private ArrayList<Server> Servers = null;
+	private ArrayList<Server> Servers = new ArrayList<Server>();
 	private ServerAdapter theAdapter;
 	private Database DB = new Database(this);
 	
@@ -70,10 +70,9 @@ public class BoIPActivity extends ListActivity {
 
 		Log.i(TAG, "onCreate called!");
 
-		Servers = new ArrayList<Server>();
-		this.theAdapter = new ServerAdapter(this, R.layout.serverlist_item, Servers);
-		setListAdapter(this.theAdapter);
 		//runOnUiThread(ConnectResult);
+		this.theAdapter = new ServerAdapter(this, R.layout.serverlist_item, Servers);
+		setListAdapter(theAdapter);
 		UpdateList();
 		
 		registerForContextMenu(getListView());
@@ -86,6 +85,32 @@ public class BoIPActivity extends ListActivity {
 		});
 	}
 	
+	/** OS kills process */
+	public void onDestroy() {
+		super.onDestroy();
+	}
+	
+	/** App starts anything it needs to start */
+	public void onStart() {
+		super.onStart();
+	}
+	
+	/** App kills anything it started */
+	public void onStop() {
+		super.onStop();
+	}
+	
+	/** App starts displaying things */
+	public void onResume() {
+		super.onResume();
+		this.UpdateList();
+	}
+	
+	/** App goes into background */
+	public void onPause() {
+		super.onPause();
+	}
+
 	/*************************************************************************/
 	/** Event handler functions ******************************************** */
 	
@@ -104,17 +129,20 @@ public class BoIPActivity extends ListActivity {
 	
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+		final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
 		int menuItemIndex = item.getItemId();
-		String[] menuItems = getResources().getStringArray(R.array.cmenu_serverlist);
-		if (menuItems[menuItemIndex] == "Delete") {
+		// String[] menuItems = getResources().getStringArray(R.array.cmenu_serverlist);
+		if (menuItemIndex == 1) {
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setMessage(getText(R.string.deleteserver_msg_body)).setTitle(getText(R.string.deleteserver_msg_title)).setCancelable(false)
 									.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 										
 										@Override
 										public void onClick(DialogInterface dialog, int id) {
-											// DB.deleteServer(Servers.get(info.position));
+											DB.open();
+											DB.deleteServer(Servers.get(info.position));
+											DB.close();
+											UpdateList();
 										}
 									}).setNegativeButton("No", new DialogInterface.OnClickListener() {
 										
@@ -123,7 +151,8 @@ public class BoIPActivity extends ListActivity {
 											dialog.cancel();
 										}
 									});
-			builder.create();
+			AlertDialog adialog = builder.create();
+			adialog.show();
 			return true;
 		} else {
 			showServerInfo(Servers.get(info.position));
@@ -136,14 +165,18 @@ public class BoIPActivity extends ListActivity {
 		DB.open();
 		Servers.clear();
 		Servers = DB.getAllServers();
+		DB.close();
+		theAdapter.clear();
+
 		Log.i(TAG, "UpdateList(): Got servers. Count: " + Servers.size());
 		if (Servers != null && Servers.size() > 0) {
 			theAdapter.notifyDataSetChanged();
 			for (int i = 0; i < Servers.size(); i++) {
 				theAdapter.add(Servers.get(i));
 			}
+			// getListView().setAdapter(new ServerAdapter(this, R.layout.serverlist_item, Servers));
 		}
-		theAdapter.notifyDataSetChanged();
+		// theAdapter.notifyDataSetChanged();
 	}
 
 	private class ServerAdapter extends ArrayAdapter<Server> {
@@ -267,8 +300,20 @@ public class BoIPActivity extends ListActivity {
 		intent.putExtra("com.tylerhjones.boip.client.Action", Common.ADD_SREQ);
 		startActivityForResult(intent, Common.ADD_SREQ);
 	}
+	
+	public void showScanBarcode() {
+		// ---- ZXing Product Lookup Window -------------------------------------
+		Intent intent = new Intent("com.google.zxing.client.android.SCAN");
+		intent.putExtra("SCAN_MODE", "PRODUCT_MODE");
+		intent.putExtra("SCAN_WIDTH", 800);
+		intent.putExtra("SCAN_HEIGHT", 200);
+		intent.putExtra("RESULT_DISPLAY_DURATION_MS", 500L);
+		intent.putExtra("PROMPT_MESSAGE", "BarcodeOverIP -  Scan a barcode for transmission to target system");
+		startActivityForResult(intent, IntentIntegrator.REQUEST_CODE);
+	}
 
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+		this.UpdateList();
 		if (requestCode == Common.ADD_SREQ) {
 			if (resultCode == RESULT_OK) {
 				this.UpdateList();

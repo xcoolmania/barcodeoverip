@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -85,12 +86,17 @@ public class ServerInfoActivity extends Activity {
 				Log.wtf(TAG, "DB gave null value!");
 				return;
 			}
-			txtName.setText(Server.getName());
-			txtHost.setText(Server.getHost());
-			txtPass.setText(Server.getPassword());
-			txtPort.setText(String.valueOf(Server.getPort()));
+			this.Name = Server.getName();
+			this.Host = Server.getHost();
+			this.Pass = Server.getPassword();
+			this.Port = Server.getPort();
+			txtName.setText(this.Name);
+			txtHost.setText(this.Host);
+			txtPass.setText(this.Pass);
+			txtPort.setText(String.valueOf(this.Port));
 		} else {
 			lblTitle.setText("Add New Server");
+			Log.d(TAG, this.Name + "," + this.Host + "," + this.Port + "," + this.Pass);
 		}
 
 	}
@@ -108,10 +114,6 @@ public class ServerInfoActivity extends Activity {
 	/** App kills anything it started */
 	public void onStop() {
 		super.onStop();
-		// Warn of unsaved settings
-		if (!this.CheckSaved()) {
-			UnsavedWarning();
-		}
 	}
 	
 	/** App starts displaying things */
@@ -122,13 +124,33 @@ public class ServerInfoActivity extends Activity {
 	/** App goes into background */
 	public void onPause() {
 		super.onPause();
-		
-		// Warn of unsaved settings
+	}
+
+	/*
+	@Override
+	public void onBackPressed() {
 		if (!this.CheckSaved()) {
 			UnsavedWarning();
 		}
+
+		return;
 	}
+	*/
 	
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (!this.CheckSaved()) {
+			if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+				UnsavedWarning();
+				return false;
+			}
+		}
+		this.finish();
+		return super.onKeyDown(keyCode, event);
+	}
+	 
+
 	private void Save() {
 		String oldn = this.Name;
 		boolean boolres;
@@ -151,21 +173,27 @@ public class ServerInfoActivity extends Activity {
 		if (txtName.getText().toString().trim() == "" || txtName.getText().toString() == null) {
 			this.Name = this.Host;
 		} else {
-			DB.open();
-			boolres = DB.getNameExits(txtName.getText().toString().trim());
-			DB.close();
-			if (boolres) {
-				Toast.makeText(this, "Server already name exists! Save aborted!", 6).show();
-				return;
+			if (!txtName.getText().toString().trim().equals(Server.getName())) {
+				DB.open();
+				boolres = DB.getNameExits(txtName.getText().toString().trim());
+				DB.close();
+				if (boolres) {
+					Toast.makeText(this, "Server name exists! Save aborted!", 6).show();
+					return;
+				}
 			}
 			this.Name = txtName.getText().toString().trim();
+
 		}
-		DB.open();
-		boolres = DB.getHostExits(txtHost.getText().toString().trim());
-		DB.close();
-		if (boolres) {
-			Toast.makeText(this, "Server name already exists! Save aborted!", 6).show();
-			return;
+		Log.d(TAG, txtHost.getText().toString() + "," + Server.getHost() + "," + this.Host);
+		if (!txtHost.getText().toString().trim().equals(Server.getHost())) {
+			DB.open();
+			boolres = DB.getHostExits(txtHost.getText().toString().trim());
+			DB.close();
+			if (boolres) {
+				Toast.makeText(this, "Server host/IP already exists! Save aborted!", 6).show();
+				return;
+			}
 		}
 		this.Host = txtHost.getText().toString().trim();
 		this.Port = Integer.valueOf(txtPort.getText().toString().trim());
@@ -178,6 +206,7 @@ public class ServerInfoActivity extends Activity {
 		if (this.thisAction == Common.EDIT_SREQ) {
 			long res = DB.editServerInfo(oldn, this.Name, this.Host, String.valueOf(this.Port), this.Pass);
 			Log.i(TAG, "editServerInfo returned: '" + Long.toString(res) + "'!");
+			Toast.makeText(this, getText(R.string.settings_saved), 4).show();
 		} else {
 			long res2 = DB.addServer(Server);
 			if (res2 == -4) {
@@ -197,7 +226,9 @@ public class ServerInfoActivity extends Activity {
 			return false;
 		}
 		try {
-			Common.isValidPort(txtPort.getText().toString().trim());
+			if (txtPort.getText().toString().trim() != "" || txtPort.getText().toString() != null) {
+				Common.isValidPort(txtPort.getText().toString().trim());
+			}
 		}
 		catch (Exception e) {
 			Toast.makeText(this, "Invalid port! Numbers only (1024 - 65535)", 6).show();
@@ -208,15 +239,15 @@ public class ServerInfoActivity extends Activity {
 	}
 
 	private boolean CheckSaved() {
-		if (txtName.getText().toString() != Name) {
+		if (!txtName.getText().toString().equals(Server.getName())) {
 			Log.i(TAG, "Name value changed!");
 			return false;
 		}
-		if (txtHost.getText().toString() != Host) {
+		if (!txtHost.getText().toString().equals(Server.getHost())) {
 			Log.i(TAG, "Host value changed!");
 			return false;
 		}
-		if (txtPass.getText().toString() != Pass) {
+		if (!txtPass.getText().toString().equals(Server.getPass())) {
 			Log.i(TAG, "Pass value changed!");
 			return false;
 		}
@@ -229,24 +260,25 @@ public class ServerInfoActivity extends Activity {
 	
 	private void UnsavedWarning() {
 		// Warn of unsaved settings
-		if (!this.CheckSaved()) {
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setMessage(getText(R.string.unsaved_msg_body)).setTitle(getText(R.string.unsaved_msg_title)).setCancelable(false) // Block 'Back' button
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage(getText(R.string.unsaved_msg_body)).setTitle(getText(R.string.unsaved_msg_title)).setCancelable(false) // Block 'Back' button
 									.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 										
 										@Override
 										public void onClick(DialogInterface dialog, int id) {
 											Save();
+										finish();
 										}
 									}).setNegativeButton("No", new DialogInterface.OnClickListener() {
 										
 										@Override
 										public void onClick(DialogInterface dialog, int id) {
 											dialog.cancel();
+										finish();
 										}
 									});
-			builder.create();;
-		}
+		AlertDialog adialog = builder.create();
+		adialog.show();
 	}
 
 }
