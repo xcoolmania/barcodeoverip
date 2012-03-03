@@ -60,16 +60,30 @@ public class ServerCore implements Runnable {
     private static final String THANKS = "THANKS\n";
     private static final String OK = "OK\n";
 
-    private static String server_hash = "";
+    private static String server_hash = "NONE";
 
     KeypressEmulator KP = new KeypressEmulator();
 
     
     public ServerCore() {
+
+    }
+
+    public void setWindow(MainFrame s) {
+        MAINWIN = s;
+    }
+
+    public void setInfoLabel(JLabel lbl) {
+        lblLastClient = lbl;
+    }
+
+    public void run() {
+        input = "";
+        System.out.println(TAG + " - Thread started");
         try {
             try {
                 if(SETS.getPass() == null ? "" == null : SETS.getPass().equals("")) {
-                server_hash = "NONE";
+                    server_hash = "NONE";
                 } else {
                     server_hash = SHA1(SETS.getPass()).trim().toUpperCase();
                 }
@@ -87,20 +101,6 @@ public class ServerCore implements Runnable {
         } catch(IOException ioe) {
             System.out.println(ioe);
         }
-    }
-
-    public void setWindow(MainFrame s) {
-        MAINWIN = s;
-    }
-
-    public void setInfoLabel(JLabel lbl) {
-        lblLastClient = lbl;
-    }
-
-    public void run() {
-        input = "";
-        System.out.println(TAG + " - Thread started");
-
         while (thread != null) {
             try {
                 System.out.println(TAG + " - Waiting for a client ...");
@@ -182,7 +182,7 @@ public class ServerCore implements Runnable {
                 }
             } else {
                 System.out.println("Parse - BoIP cilent has verified its server settings OK");
-                return "CHECK_OK";
+                return "CH9ECK_OK";
             }
         }
         if(Udata.equals("VERSION")) {
@@ -198,12 +198,11 @@ public class ServerCore implements Runnable {
             System.out.println("Invalid data format and/or syntax! - Does not end with '" + DLIM + "' or there is not data before the separator.");
             return "ERR1";
         }
-        if(server_hash.equals(ddarray[0]) || server_hash.equals("NONE") || server_hash.equals("")) {
+        if(server_hash.equals(ddarray[0].toUpperCase().trim()) || server_hash.equals("NONE") || server_hash.equals("")) {
             if(server_hash.equals("NONE") || server_hash.equals("")) {
                 System.out.println("Parse - No password is set in settings.conf therefore access is granted to anyone. Using a password is STRONGLY suggested!");
             } else {
                 System.out.println("Parse - Your password was correct! You have been granted authorization!");
-                return "CHECK_OK";
             }
         } else {
             System.out.println("Parse - Invalid password was sent by the client!");
