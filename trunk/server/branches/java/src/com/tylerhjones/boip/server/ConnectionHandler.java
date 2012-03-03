@@ -1,6 +1,6 @@
 /*
  *
- *  BarcodeOverIP-Server (Java) Version 0.3.x
+ *  BarcodeOverIP-Server (Java) Version 0.4.x
  *  Copyright (C) 2012, Tyler H. Jones (me@tylerjones.me)
  *  http://boip.tylerjones.me
  *
@@ -16,9 +16,9 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- *  Filename: ${nameAndExt}.java
- *  Package Name: ${package}
- *  Created By: ${user} on ${date} ${time}
+ *  Filename: ConnectionHandler.java
+ *  Package Name: com.tylerhjones.boip.server
+ *  Created By: Tyler H. Jones <me@tylerjones.me> on Feb 26, 2012 9:50:26 AM
  *
  *  Description: TODO
  *
