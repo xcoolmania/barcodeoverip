@@ -301,6 +301,7 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="0.0.0.0"/>
             <Property name="toolTipText" type="java.lang.String" value="Default = 0.0.0.0 (All interfaces)"/>
+            <Property name="enabled" type="boolean" value="false"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="lblHostTitle">
