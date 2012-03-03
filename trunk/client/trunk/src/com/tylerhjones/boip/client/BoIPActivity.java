@@ -103,20 +103,7 @@ public class BoIPActivity extends ListActivity {
 		
 		if (!Common.isNetworked(this)) {
 			Common.showMsgBox(this, "No Network", "No active network connection was found! You must be connected to a network to use BarcodeOverIP!");
-		} else {
-			Toast.makeText(this, "Select a server!", 5).show();
 		}
-	}
-	
-	/** App kills anything it started */
-	public void onStop() {
-		super.onStop();
-	}
-	
-	/** App starts displaying things */
-	public void onResume() {
-		super.onResume();
-		// this.UpdateList();
 	}
 	
 	
@@ -368,8 +355,8 @@ public class BoIPActivity extends ListActivity {
 				}
 			}
 		} else {
-			Toast.makeText(this, "An error occured (Code 20)", 5).show();
-			Log.wtf(TAG, "Activity request code not found?!?");
+			// Toast.makeText(this, "An error occured (Code 20)", 5).show();
+			// Log.wtf(TAG, "Activity request code not found?!?");
 		}
 	}
 	
