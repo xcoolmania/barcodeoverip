@@ -16,9 +16,9 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- *  Filename: ${nameAndExt}.java
- *  Package Name: ${package}
- *  Created By: ${user} on ${date} ${time}
+ *  Filename: ServerCore.java
+ *  Package Name: com.tylerhjones.boip.server
+ *  Created By: Tyler H. Jones on ${date} ${time}
  *
  *  Description: TODO
  *
@@ -26,7 +26,6 @@
 
 package com.tylerhjones.boip.server;
 
-import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -43,8 +42,7 @@ public class ServerCore implements Runnable {
     private static final String TAG = "ServerCore";
     private static MainFrame MAINWIN;
     private static Settings SETS = new Settings();
-    private static int MaxConns = 5;
-    private static boolean stopNOW = false;
+    //private static int MaxConns = 5;
 
     private DataInputStream  streamIn  =  null;
     private PrintStream streamOut = null;
@@ -52,13 +50,11 @@ public class ServerCore implements Runnable {
     private ServerSocket listener;
     private Socket socket;
 
-    private String line,input;
+    private String input;
 
     //Communication constants for client<-->server communiction
     private static final String DSEP = "||";
     private static final String DLIM = ";";
-    private static final String DDATA = "_DATA";
-    private static final String DHASH = "_HASH";
     private static final String THANKS = "THANKS\n";
     private static final String OK = "OK\n";
 
@@ -66,33 +62,27 @@ public class ServerCore implements Runnable {
 
     KeypressEmulator KP = new KeypressEmulator();
 
-
-
-
+    
     public ServerCore() {
-        //MAINWIN.LogI(TAG, "Class constructor initialized!");
-       // parent = p;
         try {
             try {
                 if(SETS.getPass() == null ? "" == null : SETS.getPass().equals("")) {
                 server_hash = "NONE";
-            } else {
-                server_hash = SHA1(SETS.getPass()).trim().toUpperCase();
+                } else {
+                    server_hash = SHA1(SETS.getPass()).trim().toUpperCase();
+                }
+                if(SETS.getHost().equals("") || SETS.getHost().equals("0.0.0.0")) {
+                    listener = new ServerSocket(SETS.getPort());
+                    System.out.println(TAG + " - Server started: " + listener);
+                } else {
+                    listener = new ServerSocket(SETS.getPort(), 2, InetAddress.getByName(SETS.getHost()));
+                    System.out.println(TAG + " - Server started: " + listener);
+                }
+            } catch (NoSuchAlgorithmException e) {
+                System.out.println("NoSuchAlgorithmException was caught in ConnectionHandler.run()! -- " + e.toString());
+                return;
             }
-            if(SETS.getHost().equals("") || SETS.getHost().equals("0.0.0.0")) {
-                listener = new ServerSocket(SETS.getPort());
-                System.out.println(TAG + " - Server started: " + listener);
-            } else {
-                listener = new ServerSocket(SETS.getPort(), 2, InetAddress.getByName(SETS.getHost()));
-                System.out.println(TAG + " - Server started: " + listener);
-            }
-
-        } catch (NoSuchAlgorithmException e) {
-            System.out.println("NoSuchAlgorithmException was caught in ConnectionHandler.run()! -- " + e.toString());
-            return;
-        }
-        }
-        catch(IOException ioe) {
+        } catch(IOException ioe) {
             System.out.println(ioe);
         }
     }
@@ -105,94 +95,41 @@ public class ServerCore implements Runnable {
         input = "";
         System.out.println(TAG + " - Thread started");
 
-        while (thread != null)
-        {
+        while (thread != null) {
             try {
-
                 System.out.println(TAG + " - Waiting for a client ...");
                 socket = listener.accept();
                 System.out.println(TAG + " - Client accepted: " + socket);
                 open();
-                //boolean done = false;
-               // while (!done)
-                //{
-                            try {
-                                // Get input from the client
-                                //DataInputStream in = new DataInputStream(socket.getInputStream());
-                                //PrintStream out = new PrintStream(socket.getOutputStream());
-                                input = streamIn.readLine();
-                                System.out.println("Server sent data: " + input);
-                                if(input != null) {
-                                    System.out.println("Recv'd data from " + this.socket.getInetAddress().toString() + ": '" + input + "'");
-                                    String res = this.ParseData(input.trim());
-                                    if(res.equals("CHECK_OK")) {
-                                        streamOut.println(OK);
-                                        //close();input = streamIn.readLine();
-                                        //return;
-                                    } else if(res.equals("ERR11")) {
-                                        streamOut.println("ERR11\n");
-                                        //close();
-                                        //return;
-                                    } else if(res.equals("ERR1")) {
-                                        streamOut.println("ERR1\n");
-                                        //close();
-                                        //return;
-                                    } else if(res.equals("VERSION")) {
-                                        streamOut.print("\n*******************************************************************\nBarcodeOverIP-server " + SETS.APP_INFO + " \nThis server is for use with mobile device applications.\nYou must have the right client to use it!\nPlease visit: https://code.google.com/p/barcodeoverip/ for more\ninformation on available clients.\n\nWritten by: Tyler H. Jones (me@tylerjones.me) (C) 2012\nGoogle Code Website: https://code.google.com/p/barcodeoverip/\n*******************************************************************\n\n");
-                                        //close();
-                                       // return;
-                                    } else {
-                                        if(res == null) { System.out.println("\n***FATAL ERROR!!!*** -- this.ParseData returned NULL string that is supposed to be the barcode data."); return; }
-                                        System.out.print("Parse - Sending Keyboard Emulation - Sending keystrokes to system...");
-                                        KP.typeString(res, SETS.getAppendNL());
-                                        streamOut.println(THANKS);
-                                        //close();
-                                    }
-                                    //close();
-                                    //done  = true;
-                                }
-                            } catch (IOException ioe) {
-                                System.out.println(TAG + " - IOException on socket listen: " + ioe);
-                                ioe.printStackTrace();
-                                //done  = true;
+                    try {
+                        input = streamIn.readLine();
+                        System.out.println("Server sent data: " + input);
+                        if(input != null) {
+                            System.out.println("Recv'd data from " + this.socket.getInetAddress().toString() + ": '" + input + "'");
+                            String res = ParseData(input);
+                            if(res.equals("CHECK_OK")) {
+                                streamOut.println(OK);
+                            } else if(res.equals("ERR11")) {
+                                streamOut.println("ERR11\n");
+                            } else if(res.equals("ERR1")) {
+                                streamOut.println("ERR1\n");
+                            } else if(res.equals("VERSION")) {
+                                streamOut.print("\n*******************************************************************\nBarcodeOverIP-server " + SETS.APP_INFO + " \nThis server is for use with mobile device applications.\nYou must have the right client to use it!\nPlease visit: https://code.google.com/p/barcodeoverip/ for more\ninformation on available clients.\n\nWritten by: Tyler H. Jones (me@tylerjones.me) (C) 2012\nGoogle Code Website: https://code.google.com/p/barcodeoverip/\n*******************************************************************\n\n");
+                            } else {
+                                if(res == null) { System.out.println("\n***FATAL ERROR!!!*** -- this.ParseData returned NULL string that is supposed to be the barcode data."); return; }
+                                System.out.print("Parse - Sending Keyboard Emulation - Sending keystrokes to system...");
+                                KP.typeString(res, SETS.getAppendNL());
+                                streamOut.println(THANKS);
                             }
-                //}
+                        }
+                    } catch (IOException ioe) {
+                        System.out.println(TAG + " - IOException on socket listen: " + ioe);
+                        ioe.printStackTrace();
+                    }
                 close();
-            }
-         catch(IOException ie)
-         {  System.out.println(TAG + " - cceptance Error: " + ie);  }
-      }
-
-
-
-       /*
-
-        int i = 0;
-
-        try{
-
-
-            
-            
-            while((i++ < MaxConns) || (MaxConns == 0)){
-                if(stopNOW) {
-                    stopNOW = false;
-                    return;
-                }
-                System.out.println("Listening");
-                server = listener.accept();
-                MAINWIN.LogI(TAG, "Connection recieved from: " + server.getInetAddress().toString());
-                ConnectionHandler CONN_C = new ConnectionHandler(server);
-                Thread t = new Thread(CONN_C);
-                t.start();
-            }
-        } catch (IOException ioe) {
-            System.out.println("IOException on socket listen: " + ioe);
-            ioe.printStackTrace();
-        } catch (Exception e) {
-            System.out.println("Unknown exception");
-            e.printStackTrace();
-        } */
+            } catch(IOException ie) {
+             System.out.println(TAG + " - cceptance Error: " + ie);  }
+        }
     }
 
     public void start() {
@@ -221,44 +158,18 @@ public class ServerCore implements Runnable {
        if (streamOut != null)  streamOut.close();
     }
 
-    /*
-    public void ActivateServer() {
-        MAINWIN.LogI(TAG, "Activating server...");
-        stopNOW = false;
-        this.StartServer();
-    }
-    
-
-    public void DeactivateServer() {
-        
-        MAINWIN.LogI(TAG, "Deactivating server...");
-        stopNOW = true;
-    }
-
-    // Sets the class variable for the MainWindow of the application
-    public void setWindow(MainFrame s) {
-        MAINWIN = s;
-    }
-     */
-
     private String ParseData(String data) {
 
         String Udata = data.toUpperCase();
-        if(Udata.startsWith("CHECK") && Udata.indexOf(DSEP) < 1 && Udata.endsWith(DLIM)) {
-            String[] darray = Udata.split(DSEP);
-            //FIXME - Remove the line below before release
-            System.out.println("Parse - Split the data: " + darray[0] + " - " + darray[1]);
-            String client_hash = darray[1];
-            client_hash = client_hash.split(";$")[0];
-            client_hash = client_hash.trim().toUpperCase();
-            System.out.println("Parse - Remove ';' from the end: " + client_hash);
+        if(Udata.startsWith("CHECK") && Udata.indexOf(DSEP) > 1 && Udata.endsWith(DLIM)) {
+            Udata = Udata.split(";$")[0];
+            String darray[] = Udata.split("\\|");
+            String client_hash = darray[2];
             if(!server_hash.equals("NONE")) {
                 if(client_hash.equals(server_hash)) {
-                    //this.Authed = true;
                     System.out.println("Parse - BoIP cilent has verified its server settings OK");
                     return "CHECK_OK";
                 } else {
-                    //this.Authed = false;
                     System.out.println("Parse - Invalid password was sent by the client!");
                     return "ERR11";
                 }
@@ -275,26 +186,24 @@ public class ServerCore implements Runnable {
             return "ERR1";
         }
         data = data.split(";$")[0];
-        String[] ddarray = data.split(DSEP);
+        String ddarray[] = data.split("\\|");
         if(data.indexOf(DSEP) < 1 || ddarray.length < 1) {
             System.out.println("Invalid data format and/or syntax! - Does not end with '" + DLIM + "' or there is not data before the separator.");
             return "ERR1";
         }
         if(server_hash.equals(ddarray[0]) || server_hash.equals("NONE") || server_hash.equals("")) {
-            //this.Authed = true;
-            if(server_hash.equals("NONE") || server_hash.equals("NONE")) {
-                System.out.print("Parse - No password is set in settings.conf therefore access is granted to anyone. Using a password is STRONGLY suggested!");
+            if(server_hash.equals("NONE") || server_hash.equals("")) {
+                System.out.println("Parse - No password is set in settings.conf therefore access is granted to anyone. Using a password is STRONGLY suggested!");
             } else {
-                System.out.print("Parse - Your password was correct! You have been granted authorization!");
+                System.out.println("Parse - Your password was correct! You have been granted authorization!");
                 return "CHECK_OK";
             }
         } else {
-           // this.Authed = false;
-            System.out.print("Parse - Invalid password was sent by the client!");
+            System.out.println("Parse - Invalid password was sent by the client!");
             return "ERR11";
         }
-        System.out.print("Parse - Finished Parsing Data - Parsed data: '" + ddarray[1] + "'");
-        return ddarray[1];
+        System.out.println("Parse - Finished Parsing Data - Parsed data: '" + ddarray[2] + "'");
+        return ddarray[2];
     }
 
 //-----------------------------------------------------------------------------------------
