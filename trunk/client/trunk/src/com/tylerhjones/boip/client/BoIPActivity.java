@@ -36,9 +36,6 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.SpannableString;
-import android.text.method.LinkMovementMethod;
-import android.text.util.Linkify;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -65,23 +62,18 @@ public class BoIPActivity extends ListActivity {
 	private Database DB = new Database(this);
 	private Server SelectedServer = new Server();
 	
-	// private BoIPClient client = new BoIPClient(this);
-	// private Runnable ConnectServer;
-	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 		lv("onCreate() called!");
-
-		//runOnUiThread(ConnectResult);
 		
 		lv("*** VERSION *** | ", Common.getAppVersion(this, getClass()));
 		SharedPreferences sVal = getSharedPreferences(Common.PREFS, 0);
 		Editor sEdit;
 		if (!sVal.getString(Common.PREF_VERSION, "0.0").equals(Common.getAppVersion(this, getClass()))) {
-			this.showAbout();
+			Common.showAbout(this);
 			sEdit = sVal.edit();
 			sEdit.putString(Common.PREF_VERSION, Common.getAppVersion(this, getClass()));
 			sEdit.apply();
@@ -95,6 +87,7 @@ public class BoIPActivity extends ListActivity {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				SelectedServer = Servers.get(position);
+				lv("SelectedServer", SelectedServer.getHost());
 				if (ValidateServer(Servers.get(position))) {
 					// ---- ZXing Product Lookup Window -------------------------------------
 					Intent intent = new Intent("com.google.zxing.client.android.SCAN");
@@ -103,10 +96,14 @@ public class BoIPActivity extends ListActivity {
 					intent.putExtra("SCAN_HEIGHT", 200);
 					intent.putExtra("RESULT_DISPLAY_DURATION_MS", 500L);
 					intent.putExtra("PROMPT_MESSAGE", "BarcodeOverIP -  Scan a barcode for transmission to target system");
-					startActivityForResult(intent, IntentIntegrator.REQUEST_CODE);
+					startActivityForResult(intent, IntentIntegrator.REQUEST_CODE + position);
 				}
 			}
 		});
+		
+		if (!Common.isNetworked(this)) {
+			Common.showMsgBox(this, "No Network", "No active network connection was found! You must be connected to a network to use BarcodeOverIP!");
+		}
 	}
 	
 	/** App kills anything it started */
@@ -117,7 +114,7 @@ public class BoIPActivity extends ListActivity {
 	/** App starts displaying things */
 	public void onResume() {
 		super.onResume();
-		this.UpdateList();
+		// this.UpdateList();
 	}
 	
 	
@@ -170,8 +167,8 @@ public class BoIPActivity extends ListActivity {
 
 	private void UpdateList() {
 		
-		DB.open();
 		Servers.clear();
+		DB.open();
 		Servers = DB.getAllServers();
 		DB.close();
 		lv("UpdateList(): Got Servers, clearing adapter...");
@@ -224,7 +221,6 @@ public class BoIPActivity extends ListActivity {
 	public boolean ValidateServer(Server s) {
 		Log.v(TAG, "ValidateServer called!");
 		final BoIPClient client = new BoIPClient(s);
-		// client.setServer(s);
 		String res = client.Validate();
 		if (res.equals("ERR11")) {
 			Common.showMsgBox(this, "Wrong Password!",
@@ -245,8 +241,8 @@ public class BoIPActivity extends ListActivity {
 		
 		// ConnectingProgress = ProgressDialog.show(BoIPActivity.this, "Please wait.", "Sending barcode to server...", true);
 		Log.v(TAG, "SendBarcode called! Barcode: '" + code + "'");
+		lv(s.getName());
 		final BoIPClient client = new BoIPClient(s);
-		// client.setServer(s);
 		String res = client.Validate();
 		if (res.equals("ERR11")) {
 			Common.showMsgBox(
@@ -299,7 +295,7 @@ public class BoIPActivity extends ListActivity {
 				this.finish();
 				return true;
 			case R.id.mnuMainAbout:
-				this.showAbout();
+				Common.showAbout(this);
 				return true;
 			case R.id.mnuMainDonate:
 				Uri uri = Uri.parse("http://" + getText(R.string.project_donate_site));
@@ -332,13 +328,14 @@ public class BoIPActivity extends ListActivity {
 	}
 
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-		lv("Activity result", String.valueOf(requestCode), String.valueOf(resultCode));
+		lv("Activity result -- ", String.valueOf(requestCode), String.valueOf(resultCode));
 		if (requestCode == Common.ADD_SREQ) {
 			lv("AddServer Activity result");
 			if (resultCode == RESULT_OK) {
 				this.UpdateList();
 				Toast.makeText(this, "Server(s) updated successfully!", 5);
 			} else {
+				this.UpdateList();
 				Toast.makeText(this, "No changes were made.", 3);
 			}
 		}
@@ -348,36 +345,24 @@ public class BoIPActivity extends ListActivity {
 				this.UpdateList();
 				Toast.makeText(this, "Server edited successfully!", 5);
 			} else {
+				this.UpdateList();
 				Toast.makeText(this, "No changes were made.", 3);
 			}
 		}
-		if (requestCode == IntentIntegrator.REQUEST_CODE) {
+		if (requestCode >= IntentIntegrator.REQUEST_CODE) {
 			lv("Barcode Activity result");
 			if (resultCode == RESULT_OK) {
-				IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
-				String barcode = result.getContents().toString();
-				this.SendBarcode(SelectedServer, barcode);
+				int sint = requestCode - IntentIntegrator.REQUEST_CODE;
+				if (sint < Servers.size()) {
+					IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
+					String barcode = result.getContents().toString();
+					this.SendBarcode(Servers.get(sint), barcode);
+				}
 			}
 		} else {
 			Toast.makeText(this, "No activity called!", 6);
 		}
 	}
-
-
-	public void showAbout() {
-		final TextView message = new TextView(this);
-		final SpannableString s = new SpannableString(this.getText(R.string.about_msg_body));
-		Linkify.addLinks(s, Linkify.WEB_URLS);
-		message.setText(s);
-		message.setMovementMethod(LinkMovementMethod.getInstance());
-		
-		AlertDialog adialog = new AlertDialog.Builder(this).setTitle(R.string.about_msg_title).setCancelable(true)
-								.setIcon(android.R.drawable.ic_dialog_info)
-								.setPositiveButton(R.string.close, null).setView(message).create();
-		adialog.show();
-		((TextView) message).setMovementMethod(LinkMovementMethod.getInstance());
-	}
-
 	
 	/** Logging shortcut functions **************************************************** */
 	

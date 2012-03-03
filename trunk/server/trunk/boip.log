@@ -229,3 +229,75 @@
 2012-03-02 19:39:38,175 INFO Sending Keyboard Emulation... DONE! - Sending keystrokes to system... FINISHED!
 2012-03-02 19:39:38,175 INFO Sending 'THANKS' To Client - Sending a thank you to the client to inform of successful receipt.
 2012-03-03 13:40:09,316 INFO Keyboard Interupt - Received keyboard interrupt, quitting threads
+2012-03-03 15:29:00,605 INFO Config file found... Loaded OK!
+2012-03-03 15:29:00,617 INFO Server Socket Created successfully! - Listening Host/IP: 0.0.0.0 (Port: 41788)
+2012-03-03 15:29:04,768 INFO Incoming Connection! - From: ('192.168.1.47', 59627)
+2012-03-03 15:29:04,777 INFO BoIP Client Verification - BoIP cilent has verified its server settings OK
+2012-03-03 15:29:16,638 INFO Incoming Connection! - From: ('192.168.1.47', 55168)
+2012-03-03 15:29:16,639 INFO BoIP Client Verification - BoIP cilent has verified its server settings OK
+2012-03-03 15:29:24,310 INFO Keyboard Interupt - Received keyboard interrupt, quitting threads
+2012-03-03 16:35:36,711 INFO Config file found... Loaded OK!
+2012-03-03 16:35:36,715 INFO Server Socket Created successfully! - Listening Host/IP: 0.0.0.0 (Port: 41788)
+2012-03-03 16:35:46,430 INFO Incoming Connection! - From: ('192.168.1.47', 59786)
+2012-03-03 16:35:46,430 INFO BoIP Client Verification - BoIP cilent has verified its server settings OK
+2012-03-03 16:38:55,864 INFO Incoming Connection! - From: ('192.168.1.47', 33735)
+2012-03-03 16:38:55,864 INFO BoIP Client Verification - BoIP cilent has verified its server settings OK
+2012-03-03 16:39:02,214 INFO Incoming Connection! - From: ('192.168.1.47', 45659)
+2012-03-03 16:39:02,214 INFO BoIP Client Verification - BoIP cilent has verified its server settings OK
+2012-03-03 16:39:02,328 INFO Incoming Connection! - From: ('192.168.1.47', 60301)
+2012-03-03 16:39:02,328 INFO No Password Set - No password is set in settings.conf therefore access is granted to anyone. Using a password is STRONGLY suggested!
+2012-03-03 16:39:02,328 INFO Finished Parsing Data - Parsed data: '9780201703535'
+2012-03-03 16:39:02,328 INFO Sending Keyboard Emulation - Sending keystrokes to system...
+2012-03-03 16:39:02,475 INFO Sending Keyboard Emulation... DONE! - Sending keystrokes to system... FINISHED!
+2012-03-03 16:39:02,475 INFO Sending 'THANKS' To Client - Sending a thank you to the client to inform of successful receipt.
+2012-03-03 17:01:53,959 INFO Incoming Connection! - From: ('192.168.1.47', 45624)
+2012-03-03 17:01:53,972 INFO BoIP Client Verification - BoIP cilent has verified its server settings OK
+2012-03-03 17:03:07,171 INFO Incoming Connection! - From: ('192.168.1.47', 51611)
+2012-03-03 17:03:07,171 INFO BoIP Client Verification - BoIP cilent has verified its server settings OK
+2012-03-03 17:03:29,904 INFO Incoming Connection! - From: ('192.168.1.47', 60378)
+2012-03-03 17:03:29,905 INFO BoIP Client Verification - BoIP cilent has verified its server settings OK
+2012-03-03 17:03:30,016 INFO Incoming Connection! - From: ('192.168.1.47', 60426)
+2012-03-03 17:03:30,016 INFO No Password Set - No password is set in settings.conf therefore access is granted to anyone. Using a password is STRONGLY suggested!
+2012-03-03 17:03:30,017 INFO Finished Parsing Data - Parsed data: '9780201703535'
+2012-03-03 17:03:30,017 INFO Sending Keyboard Emulation - Sending keystrokes to system...
+2012-03-03 17:03:30,196 INFO Sending Keyboard Emulation... DONE! - Sending keystrokes to system... FINISHED!
+2012-03-03 17:03:30,196 INFO Sending 'THANKS' To Client - Sending a thank you to the client to inform of successful receipt.
+2012-03-03 17:05:08,412 INFO Incoming Connection! - From: ('192.168.1.47', 43746)
+2012-03-03 17:05:08,412 INFO BoIP Client Verification - BoIP cilent has verified its server settings OK
+2012-03-03 17:07:13,646 INFO Incoming Connection! - From: ('192.168.1.47', 45629)
+2012-03-03 17:07:13,647 INFO BoIP Client Verification - BoIP cilent has verified its server settings OK
+2012-03-03 17:07:57,370 INFO Incoming Connection! - From: ('192.168.1.47', 41375)
+2012-03-03 17:07:57,370 INFO BoIP Client Verification - BoIP cilent has verified its server settings OK
+2012-03-03 17:07:57,487 INFO Incoming Connection! - From: ('192.168.1.47', 38050)
+2012-03-03 17:07:57,487 INFO No Password Set - No password is set in settings.conf therefore access is granted to anyone. Using a password is STRONGLY suggested!
+2012-03-03 17:07:57,488 INFO Finished Parsing Data - Parsed data: '9780201703535'
+2012-03-03 17:07:57,488 INFO Sending Keyboard Emulation - Sending keystrokes to system...
+2012-03-03 17:07:57,594 INFO Sending Keyboard Emulation... DONE! - Sending keystrokes to system... FINISHED!
+2012-03-03 17:07:57,594 INFO Sending 'THANKS' To Client - Sending a thank you to the client to inform of successful receipt.
+2012-03-03 17:11:09,677 INFO Incoming Connection! - From: ('192.168.1.47', 43055)
+2012-03-03 17:11:09,677 INFO BoIP Client Verification - BoIP cilent has verified its server settings OK
+2012-03-03 17:15:47,487 INFO Incoming Connection! - From: ('192.168.1.47', 56888)
+2012-03-03 17:15:47,487 INFO BoIP Client Verification - BoIP cilent has verified its server settings OK
+2012-03-03 17:23:54,399 INFO Incoming Connection! - From: ('192.168.1.47', 45445)
+2012-03-03 17:23:54,399 INFO BoIP Client Verification - BoIP cilent has verified its server settings OK
+2012-03-03 17:27:49,715 INFO Incoming Connection! - From: ('192.168.1.47', 33817)
+2012-03-03 17:27:49,715 INFO BoIP Client Verification - BoIP cilent has verified its server settings OK
+2012-03-03 17:27:59,237 INFO Incoming Connection! - From: ('192.168.1.47', 47599)
+2012-03-03 17:27:59,237 INFO BoIP Client Verification - BoIP cilent has verified its server settings OK
+2012-03-03 17:27:59,407 INFO Incoming Connection! - From: ('192.168.1.47', 59049)
+2012-03-03 17:27:59,409 INFO No Password Set - No password is set in settings.conf therefore access is granted to anyone. Using a password is STRONGLY suggested!
+2012-03-03 17:27:59,409 INFO Finished Parsing Data - Parsed data: '9780201703535'
+2012-03-03 17:27:59,409 INFO Sending Keyboard Emulation - Sending keystrokes to system...
+2012-03-03 17:27:59,474 INFO Sending Keyboard Emulation... DONE! - Sending keystrokes to system... FINISHED!
+2012-03-03 17:27:59,474 INFO Sending 'THANKS' To Client - Sending a thank you to the client to inform of successful receipt.
+2012-03-03 17:29:15,110 INFO Incoming Connection! - From: ('192.168.1.47', 34135)
+2012-03-03 17:29:15,111 INFO BoIP Client Verification - BoIP cilent has verified its server settings OK
+2012-03-03 17:29:23,107 INFO Incoming Connection! - From: ('192.168.1.47', 37245)
+2012-03-03 17:29:23,108 INFO BoIP Client Verification - BoIP cilent has verified its server settings OK
+2012-03-03 17:29:23,359 INFO Incoming Connection! - From: ('192.168.1.47', 33277)
+2012-03-03 17:29:23,359 INFO No Password Set - No password is set in settings.conf therefore access is granted to anyone. Using a password is STRONGLY suggested!
+2012-03-03 17:29:23,359 INFO Finished Parsing Data - Parsed data: '9780201703535'
+2012-03-03 17:29:23,359 INFO Sending Keyboard Emulation - Sending keystrokes to system...
+2012-03-03 17:29:23,426 INFO Sending Keyboard Emulation... DONE! - Sending keystrokes to system... FINISHED!
+2012-03-03 17:29:23,426 INFO Sending 'THANKS' To Client - Sending a thank you to the client to inform of successful receipt.
+2012-03-03 17:29:34,583 INFO Keyboard Interupt - Received keyboard interrupt, quitting threads
