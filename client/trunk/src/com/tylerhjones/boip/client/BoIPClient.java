@@ -60,7 +60,7 @@ public class BoIPClient {
 		this.pass = s.getPassHash();
 	}
 
-	//Connect to a server given the host/ip and port number. 
+	// Connect to a server given the host/IP and port number.
 	public String connect() {
 		Log.i(TAG, "connect() - Attempting to connect to the server...");
 	    try {

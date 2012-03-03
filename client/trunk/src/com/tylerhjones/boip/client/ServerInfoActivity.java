@@ -170,6 +170,7 @@ public class ServerInfoActivity extends Activity {
 				Toast.makeText(this, "Server host/IP already exists! Save aborted!", 6).show();
 				return;
 			}
+			Server.setHost(txtHost.getText().toString().trim());
 		}
 
 		DB.open();

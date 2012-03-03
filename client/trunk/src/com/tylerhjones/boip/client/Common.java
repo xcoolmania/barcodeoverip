@@ -34,6 +34,12 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageInfo;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.text.SpannableString;
+import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
+import android.widget.TextView;
 
 public class Common {
 //-----------------------------------------------------------------------------------------
@@ -164,6 +170,27 @@ public class Common {
 		}
 	}
 	
+	public static void showAbout(Context c) {
+		final TextView message = new TextView(c);
+		final SpannableString s = new SpannableString(c.getText(R.string.about_msg_body));
+		Linkify.addLinks(s, Linkify.WEB_URLS);
+		message.setText(s);
+		message.setMovementMethod(LinkMovementMethod.getInstance());
+		
+		AlertDialog adialog = new AlertDialog.Builder(c).setTitle(R.string.about_msg_title).setCancelable(true)
+								.setIcon(android.R.drawable.ic_dialog_info).setPositiveButton(R.string.close, null).setView(message).create();
+		adialog.show();
+		((TextView) message).setMovementMethod(LinkMovementMethod.getInstance());
+	}
+	
+	public static boolean isNetworked(Context c) { // Check if we are on a network
+		ConnectivityManager mManager = (ConnectivityManager) c.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo current = mManager.getActiveNetworkInfo();
+		if (current == null) { return false; }
+		return (current.getState() == NetworkInfo.State.CONNECTED);
+	}
+
+
 //-----------------------------------------------------------------------------------------
 //--- Make SHA1 Hash for transmitting passwords -------------------------------------------
 	
