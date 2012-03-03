@@ -71,6 +71,7 @@ public class MainFrame extends javax.swing.JFrame {
     public MainFrame(ServerCore c) {
         CORE = c;
         initComponents();
+        CORE.setInfoLabel(lblLastClient);
         //Save the current settings to a dictionary so we can compare them later
         OrigSets.put("host", new String(SET.getHost()));
         OrigSets.put("port", new Integer(SET.getPort()));
@@ -84,18 +85,18 @@ public class MainFrame extends javax.swing.JFrame {
 
         String ip = this.FindSystemIP();
         if(ip.equals("NO")) {
-            int n = JOptionPane.showConfirmDialog(this, "The IP address of the current system could not be determined. Either there is no network connection or you need to set the IP manually.", "Can't Determine IP Address", JOptionPane.OK_OPTION);
+            JOptionPane.showConfirmDialog(this, "The IP address of the current system could not be determined. Either there is no network connection or you need to set the IP manually.", "Can't Determine IP Address", JOptionPane.OK_OPTION);
             chkAutoSet.setSelected(false);
-            lblHostTitle.enable(true);
-            txtHost.enable(true);
-            lblPortTitle.enable(true);
-            txtPort.enable(true);
+            lblHostTitle.setEnabled(true);
+            txtHost.setEnabled(true);
+            lblPortTitle.setEnabled(true);
+            txtPort.setEnabled(true);
         } else {
             chkAutoSet.setSelected(true);
-            lblHostTitle.enable(false);
-            txtHost.enable(false);
-            lblPortTitle.enable(false);
-            txtPort.enable(false);
+            lblHostTitle.setEnabled(false);
+            txtHost.setEnabled(false);
+            lblPortTitle.setEnabled(false);
+            txtPort.setEnabled(false);
             SET.setHost(ip);
             SET.setPort(41788);
             lblHost.setText("Host/IP = " + ip);
@@ -181,8 +182,8 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
-        jLabel1.setFont(new java.awt.Font("DejaVu Sans", 0, 12));
-        jLabel1.setText("<html>\nEnter the following values into your mobile device (follow the steps your device gives you) to connect to this computer to start scanning barcodes! It's that easy!<br>\n<br> - If the big button below says \"Activate\", you need press it to activate the listening server before you can start sending barcodes.\n</html>");
+        jLabel1.setFont(new java.awt.Font("DejaVu Sans", 0, 12)); // NOI18N
+        jLabel1.setText("<html> Enter the following values into your mobile device (follow the steps your device gives you) to connect to this computer to start scanning barcodes! It's that easy!<br> <br> - If the big button below says \"Activate Server\", you need press it to start the server before you can start sending barcodes.</html>");
         jLabel1.setVerticalAlignment(javax.swing.SwingConstants.TOP);
         jLabel1.setFocusable(false);
         jLabel1.setMaximumSize(new java.awt.Dimension(402, 45));
@@ -402,24 +403,24 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void btnOkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOkActionPerformed
         this.saveChanges();
-        this.hide();
+        this.setVisible(false);
     }//GEN-LAST:event_btnOkActionPerformed
 
     private void btnAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAboutActionPerformed
-        //TODO: Add an about dialog with some info in it here...
+        JOptionPane.showConfirmDialog(this, "Written by Tyler H. Jones (http://tylerjones.me) -- BarcodeOverIP project site: http://boip.tylerjones.me", "About BarcodeOverIP-Server 0.4.1", JOptionPane.PLAIN_MESSAGE);
     }//GEN-LAST:event_btnAboutActionPerformed
 
     private void chkAutoSetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkAutoSetActionPerformed
         if(chkAutoSet.isSelected()) {
-            lblHostTitle.enable(false);
-            txtHost.enable(false);
-            lblPortTitle.enable(false);
-            txtPort.enable(false);
+            lblHostTitle.setEnabled(false);
+            txtHost.setEnabled(false);
+            lblPortTitle.setEnabled(false);
+            txtPort.setEnabled(false);
         } else {
-            lblHostTitle.enable(true);
-            txtHost.enable(true);
-            lblPortTitle.enable(true);
-            txtPort.enable(true);
+            lblHostTitle.setEnabled(true);
+            txtHost.setEnabled(true);
+            lblPortTitle.setEnabled(true);
+            txtPort.setEnabled(true);
         }
     }//GEN-LAST:event_chkAutoSetActionPerformed
 

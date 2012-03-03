@@ -34,6 +34,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import javax.swing.JLabel;
 /**
  *
  * @author tyler
@@ -41,6 +42,7 @@ import java.security.NoSuchAlgorithmException;
 public class ServerCore implements Runnable {
     private static final String TAG = "ServerCore";
     private static MainFrame MAINWIN;
+    private static JLabel lblLastClient;
     private static Settings SETS = new Settings();
     //private static int MaxConns = 5;
 
@@ -91,6 +93,10 @@ public class ServerCore implements Runnable {
         MAINWIN = s;
     }
 
+    public void setInfoLabel(JLabel lbl) {
+        lblLastClient = lbl;
+    }
+
     public void run() {
         input = "";
         System.out.println(TAG + " - Thread started");
@@ -100,6 +106,7 @@ public class ServerCore implements Runnable {
                 System.out.println(TAG + " - Waiting for a client ...");
                 socket = listener.accept();
                 System.out.println(TAG + " - Client accepted: " + socket);
+                lblLastClient.setText(this.socket.getInetAddress().toString() + " on port " + this.socket.getPort());
                 open();
                     try {
                         input = streamIn.readLine();
