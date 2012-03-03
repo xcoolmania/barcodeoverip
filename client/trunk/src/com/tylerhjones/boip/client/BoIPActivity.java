@@ -29,7 +29,6 @@ package com.tylerhjones.boip.client;
 import java.util.ArrayList;
 import android.app.AlertDialog;
 import android.app.ListActivity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -60,7 +59,7 @@ import com.google.zxing.integration.android.IntentResult;
 public class BoIPActivity extends ListActivity {
 	
 	private static final String TAG = "BoIPActivity";
-	private ProgressDialog ConnectingProgress = null;
+	// private ProgressDialog ConnectingProgress = null;
 	private ArrayList<Server> Servers = new ArrayList<Server>();
 	private ServerAdapter theAdapter;
 	private Database DB = new Database(this);
@@ -96,14 +95,16 @@ public class BoIPActivity extends ListActivity {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				SelectedServer = Servers.get(position);
-				// ---- ZXing Product Lookup Window -------------------------------------
-				Intent intent = new Intent("com.google.zxing.client.android.SCAN");
-				intent.putExtra("SCAN_MODE", "PRODUCT_MODE");
-				intent.putExtra("SCAN_WIDTH", 800);
-				intent.putExtra("SCAN_HEIGHT", 200);
-				intent.putExtra("RESULT_DISPLAY_DURATION_MS", 500L);
-				intent.putExtra("PROMPT_MESSAGE", "BarcodeOverIP -  Scan a barcode for transmission to target system");
-				startActivityForResult(intent, IntentIntegrator.REQUEST_CODE);
+				if (ValidateServer(Servers.get(position))) {
+					// ---- ZXing Product Lookup Window -------------------------------------
+					Intent intent = new Intent("com.google.zxing.client.android.SCAN");
+					intent.putExtra("SCAN_MODE", "PRODUCT_MODE");
+					intent.putExtra("SCAN_WIDTH", 800);
+					intent.putExtra("SCAN_HEIGHT", 200);
+					intent.putExtra("RESULT_DISPLAY_DURATION_MS", 500L);
+					intent.putExtra("PROMPT_MESSAGE", "BarcodeOverIP -  Scan a barcode for transmission to target system");
+					startActivityForResult(intent, IntentIntegrator.REQUEST_CODE);
+				}
 			}
 		});
 	}
@@ -220,9 +221,29 @@ public class BoIPActivity extends ListActivity {
 	/******************************************************************************************/
 	/** Send Barcode to Server ****************************************************************/
 
+	public boolean ValidateServer(Server s) {
+		Log.v(TAG, "ValidateServer called!");
+		final BoIPClient client = new BoIPClient(s);
+		// client.setServer(s);
+		String res = client.Validate();
+		if (res.equals("ERR11")) {
+			Common.showMsgBox(this, "Wrong Password!",
+				"The password you gave does not match the on on the server. Please change it on your app and press 'Apply Server Settings' and then try again.'");
+		} else if (res.equals("ERR1")) {
+			Toast.makeText(getApplicationContext(), "Invalid data and/or request syntax!", 4);
+		} else if (res.equals("ERR2")) {
+			Toast.makeText(getApplicationContext(), "Server received a blank request.", 4);
+		} else if (res.equals(Common.OK)) {
+			return true;
+		} else {
+			lv("client.Validate returned: ", Common.errorCodes().get(res).toString());
+		}
+		return false;
+	}
+
 	public void SendBarcode(Server s, final String code) {
 		
-		ConnectingProgress = ProgressDialog.show(BoIPActivity.this, "Please wait.", "Sending barcode to server...", true);
+		// ConnectingProgress = ProgressDialog.show(BoIPActivity.this, "Please wait.", "Sending barcode to server...", true);
 		Log.v(TAG, "SendBarcode called! Barcode: '" + code + "'");
 		final BoIPClient client = new BoIPClient(s);
 		// client.setServer(s);
@@ -256,7 +277,7 @@ public class BoIPActivity extends ListActivity {
 			lv("client.Validate returned: ", Common.errorCodes().get(res).toString());
 		}
 
-		ConnectingProgress.dismiss();
+		// ConnectingProgress.dismiss();
 	}
 	
 

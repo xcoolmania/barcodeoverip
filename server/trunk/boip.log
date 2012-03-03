@@ -210,3 +210,22 @@
 2012-03-02 06:37:24,825 INFO Sending Keyboard Emulation... DONE! - Sending keystrokes to system... FINISHED!
 2012-03-02 06:37:24,825 INFO Sending 'THANKS' To Client - Sending a thank you to the client to inform of successful receipt.
 2012-03-02 08:10:07,253 INFO Keyboard Interupt - Received keyboard interrupt, quitting threads
+2012-03-02 19:35:44,396 INFO Config file found... Loaded OK!
+2012-03-02 19:35:44,404 INFO Server Socket Created successfully! - Listening Host/IP: 0.0.0.0 (Port: 41788)
+2012-03-02 19:39:23,175 INFO Incoming Connection! - From: ('192.168.1.47', 56850)
+2012-03-02 19:39:23,175 INFO BoIP Client Verification - BoIP cilent has verified its server settings OK
+2012-03-02 19:39:23,282 INFO Incoming Connection! - From: ('192.168.1.47', 55485)
+2012-03-02 19:39:23,284 INFO No Password Set - No password is set in settings.conf therefore access is granted to anyone. Using a password is STRONGLY suggested!
+2012-03-02 19:39:23,284 INFO Finished Parsing Data - Parsed data: '9780201703535'
+2012-03-02 19:39:23,284 INFO Sending Keyboard Emulation - Sending keystrokes to system...
+2012-03-02 19:39:23,369 INFO Sending Keyboard Emulation... DONE! - Sending keystrokes to system... FINISHED!
+2012-03-02 19:39:23,369 INFO Sending 'THANKS' To Client - Sending a thank you to the client to inform of successful receipt.
+2012-03-02 19:39:38,022 INFO Incoming Connection! - From: ('192.168.1.47', 58626)
+2012-03-02 19:39:38,024 INFO BoIP Client Verification - BoIP cilent has verified its server settings OK
+2012-03-02 19:39:38,124 INFO Incoming Connection! - From: ('192.168.1.47', 47984)
+2012-03-02 19:39:38,124 INFO No Password Set - No password is set in settings.conf therefore access is granted to anyone. Using a password is STRONGLY suggested!
+2012-03-02 19:39:38,124 INFO Finished Parsing Data - Parsed data: '17802475'
+2012-03-02 19:39:38,124 INFO Sending Keyboard Emulation - Sending keystrokes to system...
+2012-03-02 19:39:38,175 INFO Sending Keyboard Emulation... DONE! - Sending keystrokes to system... FINISHED!
+2012-03-02 19:39:38,175 INFO Sending 'THANKS' To Client - Sending a thank you to the client to inform of successful receipt.
+2012-03-03 13:40:09,316 INFO Keyboard Interupt - Received keyboard interrupt, quitting threads
