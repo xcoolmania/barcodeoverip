@@ -103,6 +103,8 @@ public class BoIPActivity extends ListActivity {
 		
 		if (!Common.isNetworked(this)) {
 			Common.showMsgBox(this, "No Network", "No active network connection was found! You must be connected to a network to use BarcodeOverIP!");
+		} else {
+			Toast.makeText(this, "Select a server!", 5).show();
 		}
 	}
 	
@@ -226,12 +228,13 @@ public class BoIPActivity extends ListActivity {
 			Common.showMsgBox(this, "Wrong Password!",
 				"The password you gave does not match the on on the server. Please change it on your app and press 'Apply Server Settings' and then try again.'");
 		} else if (res.equals("ERR1")) {
-			Toast.makeText(getApplicationContext(), "Invalid data and/or request syntax!", 4);
+			Toast.makeText(this, "Invalid data and/or request syntax!", 4).show();
 		} else if (res.equals("ERR2")) {
-			Toast.makeText(getApplicationContext(), "Server received a blank request.", 4);
+			Toast.makeText(this, "Server received a blank request.", 4).show();
 		} else if (res.equals(Common.OK)) {
 			return true;
 		} else {
+			Toast.makeText(this, "Error! - " + Common.errorCodes().get(res).toString(), 6).show();
 			lv("client.Validate returned: ", Common.errorCodes().get(res).toString());
 		}
 		return false;
@@ -250,9 +253,9 @@ public class BoIPActivity extends ListActivity {
 				"Wrong Password!",
 				"The password you gave does not match the on on the server. Please change it on your app and press 'Apply Server Settings' and then try again.'");
 		} else if (res.equals("ERR1")) {
-			Toast.makeText(getApplicationContext(), "Invalid data and/or request syntax!", 4);
+			Toast.makeText(getApplicationContext(), "Invalid data and/or request syntax!", 4).show();
 		} else if (res.equals("ERR2")) {
-			Toast.makeText(getApplicationContext(), "Server received a blank request.", 4);
+			Toast.makeText(getApplicationContext(), "Server received a blank request.", 4).show();
 		} else if (res.equals(Common.OK)) {
 			String res2 = client.sendBarcode(code);
 			if (res2.equals("ERR11")) {
@@ -261,15 +264,17 @@ public class BoIPActivity extends ListActivity {
 					"Wrong Password!",
 					"The password you gave does not match the on on the server. Please change it on your app and press 'Apply Server Settings' and then try again.'");
 			} else if (res2.equals("ERR1")) {
-				Toast.makeText(getApplicationContext(), "Invalid data and/or request syntax!", 4);
+				Toast.makeText(getApplicationContext(), "Invalid data and/or request syntax!", 4).show();
 			} else if (res2.equals("ERR2")) {
-				Toast.makeText(getApplicationContext(), "Server received a blank request.", 4);
+				Toast.makeText(getApplicationContext(), "Server received a blank request.", 4).show();
 			} else if (res2.equals(Common.OK)) {
 				lv("sendBarcode(): OK");
 			} else {
+				Toast.makeText(this, "Error! - " + Common.errorCodes().get(res2).toString(), 6).show();
 				lv("client.Validate returned: ", Common.errorCodes().get(res2).toString());
 			}
 		} else {
+			Toast.makeText(this, "Error! - " + Common.errorCodes().get(res).toString(), 6).show();
 			lv("client.Validate returned: ", Common.errorCodes().get(res).toString());
 		}
 
@@ -333,20 +338,22 @@ public class BoIPActivity extends ListActivity {
 			lv("AddServer Activity result");
 			if (resultCode == RESULT_OK) {
 				this.UpdateList();
-				Toast.makeText(this, "Server(s) updated successfully!", 5);
+				Toast.makeText(this, "Server(s) updated successfully!", 5).show();
 			} else {
 				this.UpdateList();
-				Toast.makeText(this, "No changes were made.", 3);
+				// Toast.makeText(this, "No changes were made.", 3).show();
+				Toast.makeText(this, "Server edited successfully!", 5).show();
 			}
 		}
 		if (requestCode == Common.EDIT_SREQ) {
 			lv("EditServer Activity result");
 			if (resultCode == RESULT_OK) {
 				this.UpdateList();
-				Toast.makeText(this, "Server edited successfully!", 5);
+				Toast.makeText(this, "Server edited successfully!", 5).show();
 			} else {
 				this.UpdateList();
-				Toast.makeText(this, "No changes were made.", 3);
+				// Toast.makeText(this, "No changes were made.", 3).show();
+				Toast.makeText(this, "Server edited successfully!", 5).show();
 			}
 		}
 		if (requestCode >= IntentIntegrator.REQUEST_CODE) {
@@ -357,10 +364,12 @@ public class BoIPActivity extends ListActivity {
 					IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
 					String barcode = result.getContents().toString();
 					this.SendBarcode(Servers.get(sint), barcode);
+					Toast.makeText(this, "Barcode successfully sent to server.", 5).show();
 				}
 			}
 		} else {
-			Toast.makeText(this, "No activity called!", 6);
+			Toast.makeText(this, "An error occured (Code 20)", 5).show();
+			Log.wtf(TAG, "Activity request code not found?!?");
 		}
 	}
 	
