@@ -1,6 +1,6 @@
 /*
  *
- *  BarcodeOverIP-Server (Java) Version 0.3.x
+ *  BarcodeOverIP-Server (Java) Version 0.4.x
  *  Copyright (C) 2012, Tyler H. Jones (me@tylerjones.me)
  *  http://boip.tylerjones.me
  *
@@ -16,9 +16,9 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- *  Filename: ${nameAndExt}.java
- *  Package Name: ${package}
- *  Created By: ${user} on ${date} ${time}
+ *  Filename: Settings.java
+ *  Package Name: com.tylerhjones.boip.server
+ *  Created By: Tyler H. Jones <me@tylerjones.me> on Feb 26, 2012 9:50:26 AM
  *
  *  Description: TODO
  *
@@ -31,11 +31,11 @@ import  java.util.prefs.*;
 
 public class Settings {
 
-    public final String VERSION = "0.3.1";
+    public final String VERSION = "0.4.1";
     public final String APP_NAME = "BarcodeOverIP-Server";
     public final String APP_AUTHOR = "Tyler H. Jones";
     public final String APP_WEBSITE = "http://boip.tylerjones.me";
-    public final String APP_INFO = "0.3.1 Beta (Java)";
+    public final String APP_INFO = "0.4.1 (Java)";
 
     private static final String PREF_NAME = "boip-server";
     private static final String S_HOST = "host";

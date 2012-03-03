@@ -1,6 +1,6 @@
 /*
  *
- *  BarcodeOverIP-Server (Java) Version 0.3.x
+ *  BarcodeOverIP-Server (Java) Version 0.4.x
  *  Copyright (C) 2012, Tyler H. Jones (me@tylerjones.me)
  *  http://boip.tylerjones.me
  *
@@ -17,7 +17,7 @@
  *  limitations under the License.
  *
  *  Filename: MainFrame.java
- *  Package Name: com.tylerhjones.boipserver
+ *  Package Name: com.tylerhjones.boip.server
  *  Created By: Tyler H. Jones on Feb 25, 2012, 10:40:16 AM
  *
  *  Description: TODO

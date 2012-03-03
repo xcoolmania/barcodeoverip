@@ -1,6 +1,6 @@
 /*
  *
- *  BarcodeOverIP-Server (Java) Version 0.3.x
+ *  BarcodeOverIP-Server (Java) Version 0.4.x
  *  Copyright (C) 2012, Tyler H. Jones (me@tylerjones.me)
  *  http://boip.tylerjones.me
  *
@@ -16,9 +16,9 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- *  Filename: ${nameAndExt}.java
- *  Package Name: ${package}
- *  Created By: ${user} on ${date} ${time}
+ *  Filename: Main.java
+ *  Package Name: com.tylerhjones.boip.server
+ *  Created By: Tyler H. Jones <me@tylerjones.me> on Feb 26, 2012 9:50:26 AM
  *
  *  Description: TODO
  *
@@ -73,10 +73,9 @@ public class Main {
 	    }
 	});
 
-        MAINF.show();
+        MAINF.setVisible(true);
         //------------------------------------------------------
         //--- Setup System Tray Icon
-        final TrayIcon trayIcon;
 
         if (SystemTray.isSupported()) { //Check if the system can use a systray icon
             ImageIcon icon = createImageIcon("/icon24.png", "BarcodeOverIP App Icon"); // ./build/classes/icon.png
@@ -104,7 +103,7 @@ public class Main {
                 e.printStackTrace();
             }
         } else {
-            int n = JOptionPane.showConfirmDialog(MAINF, "No system-tray was found or your system does not support one. You must NOT close the settings window!", "No System-tray!", JOptionPane.OK_OPTION);
+            JOptionPane.showConfirmDialog(MAINF, "No system-tray was found or your system does not support one. You must NOT close the settings window!", "No System-tray!", JOptionPane.OK_OPTION);
             isSysTray = false;
         }
     }
