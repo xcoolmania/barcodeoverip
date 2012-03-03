@@ -95,9 +95,8 @@ public class BoIPClient {
 	public String Validate() {
 		Log.i(TAG, "Common.Validate() - Test the server settings...");
 		try {
-			String cres = this.connect();
-			if (cres != Common.OK) { return cres; }
-			this.output.print(Common.CHECK + Common.DSEP + this.pass + Common.DTERM); // Send a Common.DCHECK command to the server
+			this.connect();
+			this.output.println(Common.CHECK + Common.DSEP + this.pass + Common.DTERM); // Send a Common.DCHECK command to the server
 			
 			String responseLine;
             while ((responseLine = input.readLine()) != null) {
