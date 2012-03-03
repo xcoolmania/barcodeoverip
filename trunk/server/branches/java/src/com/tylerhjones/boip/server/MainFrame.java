@@ -30,9 +30,6 @@ import java.awt.Image;
 import java.awt.MediaTracker;
 import java.awt.Toolkit;
 import java.awt.TrayIcon;
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -41,7 +38,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.jar.JarFile;
-import javax.swing.ImageIcon;
+//import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 
@@ -74,7 +71,7 @@ public class MainFrame extends javax.swing.JFrame {
     public MainFrame(ServerCore c) {
         CORE = c;
         initComponents();
-         //Save the current settings to a dictionary so we can compare them later
+        //Save the current settings to a dictionary so we can compare them later
         OrigSets.put("host", new String(SET.getHost()));
         OrigSets.put("port", new Integer(SET.getPort()));
         OrigSets.put("pass", new String(SET.getPass()));
@@ -94,6 +91,7 @@ public class MainFrame extends javax.swing.JFrame {
             lblPortTitle.enable(true);
             txtPort.enable(true);
         } else {
+            chkAutoSet.setSelected(true);
             lblHostTitle.enable(false);
             txtHost.enable(false);
             lblPortTitle.enable(false);
