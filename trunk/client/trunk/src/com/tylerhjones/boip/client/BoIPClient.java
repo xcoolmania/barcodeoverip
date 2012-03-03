@@ -95,7 +95,8 @@ public class BoIPClient {
 	public String Validate() {
 		Log.i(TAG, "Common.Validate() - Test the server settings...");
 		try {
-			this.connect();
+			String res = this.connect();
+			if (!res.equals(Common.OK)) { return res; }
 			this.output.println(Common.CHECK + Common.DSEP + this.pass + Common.DTERM); // Send a Common.DCHECK command to the server
 			
 			String responseLine;
@@ -113,7 +114,8 @@ public class BoIPClient {
             }
 			this.close();
 			return Common.OK;
-		} catch(IOException e) {
+		}
+		catch (IOException e) {
 			this.close();
 			Log.e(TAG, "Common.Validate() - IO Exception: " + e);
 			e.printStackTrace();
