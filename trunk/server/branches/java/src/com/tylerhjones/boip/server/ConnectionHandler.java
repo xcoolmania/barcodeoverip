@@ -37,8 +37,6 @@ public class ConnectionHandler implements Runnable {
     //Communication constants for client<-->server communiction
     private static final String DSEP = "||";
     private static final String DLIM = ";";
-    private static final String DDATA = "_DATA";
-    private static final String DHASH = "_HASH";
     private static final String THANKS = "THANKS\n";
     private static final String OK = "OK\n";
 
@@ -46,10 +44,9 @@ public class ConnectionHandler implements Runnable {
     private static Settings SET = new Settings();
 
     private Socket server;
-    private String line,input;
+    private String input;
 
     private static String server_hash = "";
-    private boolean Authed = false;
 
     ConnectionHandler(Socket server) {
         this.server = server;
@@ -81,28 +78,19 @@ public class ConnectionHandler implements Runnable {
                 String res = this.ParseData(input.trim());
                 if(res.equals("CHECK_OK")) {
                     out.println(OK);
-                    server.close();input = in.readLine();
-                    return;
                 } else if(res.equals("ERR11")) {
                     out.println("ERR11\n");
-                    server.close();
-                    return;
                 } else if(res.equals("ERR1")) {
                     out.println("ERR1\n");
-                    server.close();
-                    return;
                 } else if(res.equals("VERSION")) {
                     out.print("\n*******************************************************************\nBarcodeOverIP-server " + SET.APP_INFO + " \nThis server is for use with mobile device applications.\nYou must have the right client to use it!\nPlease visit: https://code.google.com/p/barcodeoverip/ for more\ninformation on available clients.\n\nWritten by: Tyler H. Jones (me@tylerjones.me) (C) 2012\nGoogle Code Website: https://code.google.com/p/barcodeoverip/\n*******************************************************************\n\n");
-                    server.close();
-                    return;
                 } else {
                     if(res == null) { System.out.println("\n***FATAL ERROR!!!*** -- this.ParseData returned NULL string that is supposed to be the barcode data."); return; }
                     System.out.print("Parse - Sending Keyboard Emulation - Sending keystrokes to system...");
                     KP.typeString(res, SET.getAppendNL());
                     out.println(THANKS);
-                    server.close();
                 }
-                if(!server.isClosed()) { server.close(); }
+                server.close();
             }            
         } catch (IOException ioe) {
             System.out.println(TAG + " - IOException on socket listen: " + ioe);
@@ -113,21 +101,15 @@ public class ConnectionHandler implements Runnable {
     private String ParseData(String data) {
 
         String Udata = data.toUpperCase();
-        if(Udata.startsWith("CHECK") && Udata.indexOf(DSEP) < 1 && Udata.endsWith(DLIM)) {
-            String[] darray = Udata.split(DSEP);
-            //FIXME - Remove the line below before release
-            System.out.println("Parse - Split the data: " + darray[0] + " - " + darray[1]);
-            String client_hash = darray[1];
-            client_hash = client_hash.split(";$")[0];
-            client_hash = client_hash.trim().toUpperCase();
-            System.out.println("Parse - Remove ';' from the end: " + client_hash);
+        if(Udata.startsWith("CHECK") && Udata.indexOf(DSEP) > 1 && Udata.endsWith(DLIM)) {
+            Udata = Udata.split(";$")[0];
+            String darray[] = Udata.split("\\|");
+            String client_hash = darray[2];
             if(!server_hash.equals("NONE")) {
                 if(client_hash.equals(server_hash)) {
-                    this.Authed = true;
                     System.out.println("Parse - BoIP cilent has verified its server settings OK");
                     return "CHECK_OK";
                 } else {
-                    this.Authed = false;
                     System.out.println("Parse - Invalid password was sent by the client!");
                     return "ERR11";
                 }
@@ -144,26 +126,24 @@ public class ConnectionHandler implements Runnable {
             return "ERR1";
         }
         data = data.split(";$")[0];
-        String[] ddarray = data.split(DSEP);
+        String ddarray[] = data.split("\\|");
         if(data.indexOf(DSEP) < 1 || ddarray.length < 1) {
             System.out.println("Invalid data format and/or syntax! - Does not end with '" + DLIM + "' or there is not data before the separator.");
             return "ERR1";
         }
         if(server_hash.equals(ddarray[0]) || server_hash.equals("NONE") || server_hash.equals("")) {
-            this.Authed = true;
-            if(server_hash.equals("NONE") || server_hash.equals("NONE")) {
-                System.out.print("Parse - No password is set in settings.conf therefore access is granted to anyone. Using a password is STRONGLY suggested!");
+            if(server_hash.equals("NONE") || server_hash.equals("")) {
+                System.out.println("Parse - No password is set in settings.conf therefore access is granted to anyone. Using a password is STRONGLY suggested!");
             } else {
-                System.out.print("Parse - Your password was correct! You have been granted authorization!");
+                System.out.println("Parse - Your password was correct! You have been granted authorization!");
                 return "CHECK_OK";
             }
         } else {
-            this.Authed = false;
-            System.out.print("Parse - Invalid password was sent by the client!");
+            System.out.println("Parse - Invalid password was sent by the client!");
             return "ERR11";
         }
-        System.out.print("Parse - Finished Parsing Data - Parsed data: '" + ddarray[1] + "'");
-        return ddarray[1];
+        System.out.println("Parse - Finished Parsing Data - Parsed data: '" + ddarray[2] + "'");
+        return ddarray[2];
     }
 
 //-----------------------------------------------------------------------------------------
