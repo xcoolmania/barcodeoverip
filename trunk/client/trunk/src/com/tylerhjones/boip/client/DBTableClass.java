@@ -56,7 +56,7 @@ public class DBTableClass {
 	/**
 	 * On upgrade.
 	 *
-	 * @param db the db
+	 * @param db the DB
 	 * @param oldVersion the old version
 	 * @param newVersion the new version
 	 */
