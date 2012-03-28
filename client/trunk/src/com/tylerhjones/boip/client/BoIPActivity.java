@@ -76,7 +76,7 @@ public class BoIPActivity extends ListActivity {
 			Common.showAbout(this);
 			sEdit = sVal.edit();
 			sEdit.putString(Common.PREF_VERSION, Common.getAppVersion(this, getClass()));
-			sEdit.apply();
+			sEdit.commit();
 		}
 		this.theAdapter = new ServerAdapter(this, R.layout.serverlist_item, Servers);
 		setListAdapter(theAdapter);
@@ -355,7 +355,7 @@ public class BoIPActivity extends ListActivity {
 				}
 			}
 		} else {
-			// Toast.makeText(this, "An error occured (Code 20)", 5).show();
+			// Toast.makeText(this, "An error occurred (Code 20)", 5).show();
 			// Log.wtf(TAG, "Activity request code not found?!?");
 		}
 	}

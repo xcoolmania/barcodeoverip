@@ -76,7 +76,7 @@ public class Common {
 	
 	/** Network communication message constants ******************************************** */
 	public static final String OK = "OK"; // Server's client/user authorization pass message
-	public static final String THANKS = "THANKS"; // Server's 'all ok' reponse message
+	public static final String THANKS = "THANKS"; // Server's 'all OK' response message
 	public static final String DTERM = ";"; // Data string terminator
 	public static final String DSEP = "||"; // Data and values separator
 	public static final String CHECK = "CHECK"; // Command to ask the server to authenticate us
@@ -143,7 +143,7 @@ public class Common {
 		return true;
 	}
 	
-	// Check that the host/ip string is valid
+	// Check that the host/IP string is valid
 	public static boolean isValidHost(String s) {
 		// if (!s.matches("^[a-zA-Z0-9]+$") || s.length() < 1) { return false; }
 		return true;
