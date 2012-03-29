@@ -41,7 +41,7 @@ import javax.swing.JLabel;
  */
 public class ServerCore implements Runnable {
     private static final String TAG = "ServerCore";
-    private static MainFrame MAINWIN;
+    //private static MainFrame MAINWIN;
     private static JLabel lblLastClient;
     private static Settings SETS = new Settings();
     //private static int MaxConns = 5;
@@ -59,19 +59,23 @@ public class ServerCore implements Runnable {
     private static final String DLIM = ";";
     private static final String THANKS = "THANKS\n";
     private static final String OK = "OK\n";
+    private static final String NOPE = "NOPE\n";
 
     private static String server_hash = "NONE";
 
     KeypressEmulator KP = new KeypressEmulator();
 
-    
     public ServerCore() {
-
+        
     }
+    
+    //public ServerCore(JLabel lbl) {
+        //lblLastClient = lbl;
+    //}
 
-    public void setWindow(MainFrame s) {
-        MAINWIN = s;
-    }
+    //public void setWindow() {
+        //MAINWIN = s;
+    //}
 
     public void setInfoLabel(JLabel lbl) {
         lblLastClient = lbl;
@@ -100,6 +104,15 @@ public class ServerCore implements Runnable {
             }
         } catch(IOException ioe) {
             System.out.println(ioe);
+        }
+        while (thread == null) {
+            try {
+                socket = listener.accept();
+                System.out.println(TAG + " - Receiving data from client while deactivated: Responding 'NOPE'");
+                streamOut.println(NOPE);
+            } catch(IOException ie) {
+                System.out.println(TAG + " - Connection Acceptance Error: " + ie);  
+            }
         }
         while (thread != null) {
             try {
@@ -135,7 +148,8 @@ public class ServerCore implements Runnable {
                     }
                 close();
             } catch(IOException ie) {
-             System.out.println(TAG + " - cceptance Error: " + ie);  }
+                System.out.println(TAG + " - Connection Acceptance Error: " + ie);  
+            }
         }
     }
 

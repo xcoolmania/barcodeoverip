@@ -76,6 +76,7 @@ public class Common {
 	
 	/** Network communication message constants ******************************************** */
 	public static final String OK = "OK"; // Server's client/user authorization pass message
+	public static final String NOPE = "NOPE"; // Server's response to any and all data received while it is deactivated
 	public static final String THANKS = "THANKS"; // Server's 'all OK' response message
 	public static final String DTERM = ";"; // Data string terminator
 	public static final String DSEP = "||"; // Data and values separator

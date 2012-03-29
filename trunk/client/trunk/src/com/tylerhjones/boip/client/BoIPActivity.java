@@ -218,6 +218,8 @@ public class BoIPActivity extends ListActivity {
 			Toast.makeText(this, "Invalid data and/or request syntax!", 4).show();
 		} else if (res.equals("ERR2")) {
 			Toast.makeText(this, "Server received a blank request.", 4).show();
+		} else if (res.equals(Common.NOPE)) {
+			Toast.makeText(this, "Server is not activated!", 4).show();
 		} else if (res.equals(Common.OK)) {
 			return true;
 		} else {
@@ -243,6 +245,8 @@ public class BoIPActivity extends ListActivity {
 			Toast.makeText(getApplicationContext(), "Invalid data and/or request syntax!", 4).show();
 		} else if (res.equals("ERR2")) {
 			Toast.makeText(getApplicationContext(), "Server received a blank request.", 4).show();
+		} else if (res.equals(Common.NOPE)) {
+			Toast.makeText(getApplicationContext(), "Server is not activated!", 4).show();
 		} else if (res.equals(Common.OK)) {
 			String res2 = client.sendBarcode(code);
 			if (res2.equals("ERR11")) {
@@ -254,6 +258,8 @@ public class BoIPActivity extends ListActivity {
 				Toast.makeText(getApplicationContext(), "Invalid data and/or request syntax!", 4).show();
 			} else if (res2.equals("ERR2")) {
 				Toast.makeText(getApplicationContext(), "Server received a blank request.", 4).show();
+			} else if (res2.equals(Common.NOPE)) {
+				Toast.makeText(getApplicationContext(), "Server is not activated!", 4).show();
 			} else if (res2.equals(Common.OK)) {
 				lv("sendBarcode(): OK");
 			} else {
@@ -321,27 +327,28 @@ public class BoIPActivity extends ListActivity {
 
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
 		lv("Activity result -- ", String.valueOf(requestCode), String.valueOf(resultCode));
+		
 		if (requestCode == Common.ADD_SREQ) {
 			lv("AddServer Activity result");
+			this.UpdateList();
+			/*
 			if (resultCode == RESULT_OK) {
-				this.UpdateList();
-				Toast.makeText(this, "Server(s) updated successfully!", 5).show();
+				Toast.makeText(this, "Server added successfully!", 5).show();
 			} else {
-				this.UpdateList();
-				// Toast.makeText(this, "No changes were made.", 3).show();
-				Toast.makeText(this, "Server edited successfully!", 5).show();
+				Toast.makeText(this, "No changes were made.", 3).show();
 			}
+			*/
 		}
 		if (requestCode == Common.EDIT_SREQ) {
 			lv("EditServer Activity result");
+			this.UpdateList();
+			/*
 			if (resultCode == RESULT_OK) {
-				this.UpdateList();
 				Toast.makeText(this, "Server edited successfully!", 5).show();
 			} else {
-				this.UpdateList();
-				// Toast.makeText(this, "No changes were made.", 3).show();
-				Toast.makeText(this, "Server edited successfully!", 5).show();
+				Toast.makeText(this, "No changes were made.", 3).show();
 			}
+			*/
 		}
 		if (requestCode >= IntentIntegrator.REQUEST_CODE) {
 			lv("Barcode Activity result");

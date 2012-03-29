@@ -47,7 +47,7 @@ public class MainFrame extends javax.swing.JFrame {
 
     private String TAG = "MainFrame";
 
-    private ServerCore CORE;
+    private ServerCore CORE = new ServerCore();
 
     private Hashtable OrigSets = new Hashtable(4);
     private Settings SET = new Settings();
@@ -63,13 +63,13 @@ public class MainFrame extends javax.swing.JFrame {
 
     private Thread serverThread = new Thread(CORE);
 
-    public void setCore(ServerCore c) {
-        CORE = c;
-    }
+    //public void setCore(ServerCore c) {
+    //    CORE = c;
+    //}
 
     /** Creates new form MainFrame */
-    public MainFrame(ServerCore c) {
-        CORE = c;
+    public MainFrame() {
+        //CORE = c;
         initComponents();
         CORE.setInfoLabel(lblLastClient);
         //Save the current settings to a dictionary so we can compare them later
@@ -511,11 +511,12 @@ public class MainFrame extends javax.swing.JFrame {
     }
     private boolean setServerState(boolean val) {  // TRUE = Active
         if(val) {
-            CORE.start();
+            serverThread.start();
+            //CORE.start();
             this.SysTrayIcon.setToolTip("BarcodeOverIP " + SET.VERSION + " - Active");
         } else {
-            //serverThread.stop();
-            CORE.stop();
+            serverThread.stop();
+            //CORE.stop();
             this.SysTrayIcon.setToolTip("BarcodeOverIP " + SET.VERSION + " - Inactive");
         }
         return val;
