@@ -42,7 +42,7 @@ import javax.swing.JOptionPane;
  * @author tyler
  */
 public class Main {
-    private static ServerCore CORE;
+    //private static ServerCore CORE;
     private static MainFrame MAINF;
     private static boolean isSysTray = true;
 
@@ -51,9 +51,9 @@ public class Main {
      */
 
     public static void main(String[] args) {
-        CORE = new ServerCore();
-        MAINF = new MainFrame(CORE);
-        CORE.setWindow(MAINF);
+        //CORE = new ServerCore();
+        MAINF = new MainFrame();
+        //CORE.setWindow(MAINF);
 
         //Catch the 'X' button being pressed on the main window
         MAINF.addWindowListener(new WindowAdapter() {

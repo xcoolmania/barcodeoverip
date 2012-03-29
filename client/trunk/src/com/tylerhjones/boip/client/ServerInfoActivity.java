@@ -106,7 +106,11 @@ public class ServerInfoActivity extends Activity {
 			}
 			txtName.setText(Server.getName());
 			txtHost.setText(Server.getHost());
-			txtPass.setText(Server.getPass());
+			if(Server.getPass().equals(Common.DEFAULT_PASS)) {
+				txtPass.setText("");
+			} else {
+				txtPass.setText(Server.getPass());
+			}
 			txtPort.setText(String.valueOf(Server.getPort()));
 		} else {
 			lblTitle.setText("Add New Server");
