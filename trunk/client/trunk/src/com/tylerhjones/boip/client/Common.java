@@ -78,7 +78,7 @@ public class Common {
 	public static final String OK = "OK"; // Server's client/user authorization pass message
 	public static final String NOPE = "NOPE"; // Server's response to any and all data received while it is deactivated
 	public static final String THANKS = "THANKS"; // Server's 'all OK' response message
-	public static final String DTERM = ";"; // Data string terminator
+	public static final String SMC = ";"; // Data string terminator
 	public static final String DSEP = "||"; // Data and values separator
 	public static final String CHECK = "CHECK"; // Command to ask the server to authenticate us
 	public static final String ERR = "ERR"; // Prefix for errors returned by the server
@@ -93,15 +93,15 @@ public class Common {
 	
 	public static Hashtable<String, String> errorCodes() {
 		Hashtable<String, String> errors = new Hashtable<String, String>(13);
-		errors.put("ERR1", "Invalid data format and/or syntax!");
-		errors.put("ERR2", "No data was sent!");
-		errors.put("ERR3", "Invalid Command Sent!");
+		errors.put("ERR1", "Invalid data and/or request syntax!");
+		errors.put("ERR2", "Invalid data, possible missing data separator.");
+		errors.put("ERR3", "Invalid data/syntax, could not parse data.");
 		errors.put("ERR4", "Missing/Empty Command Argument(s) Recvd.");
 		errors.put("ERR5", "Invalid command syntax!");
 		errors.put("ERR6", "Invalid Auth Syntax!");
 		errors.put("ERR7", "Access Denied!");
 		errors.put("ERR8", "Server Timeout, Too Busy to Handle Request!");
-		errors.put("ERR11", "Invalid Auth.");
+		errors.put("ERR9", "Incorrect Password.");
 		errors.put("ERR14", "Invalid Login Command Syntax.");
 		errors.put("ERR19", "Unknown Auth Error");
 		errors.put("ERR99", "Unknown exception occured.");
@@ -135,42 +135,6 @@ public class Common {
 		}
 	}
 	
-// -----------------------------------------------------------------------------------------
-// --- Validate settings values functions --------------------------------------------------
-	
-	// Check that the barcode string contains only letters and numbers
-	public static boolean isValidBarcode(String s) {
-		if (!s.matches("^[a-zA-Z0-9]+$") || s.length() < 1) { return false; }
-		return true;
-	}
-	
-	// Check that the host/IP string is valid
-	public static boolean isValidHost(String s) {
-		// if (!s.matches("^[a-zA-Z0-9]+$") || s.length() < 1) { return false; }
-		return true;
-	}
-	
-	public static void isValidIP(String ip) throws Exception {
-		try {
-			String[] octets = ip.split("\\.");
-			for (String s : octets) {
-				int i = Integer.parseInt(s);
-				if (i > 255 || i < 0) { throw new NumberFormatException(); }
-			}
-		} catch (NumberFormatException e) {
-			throw new Exception("Invalid IP address! '" + ip + "'");
-		}
-	}
-	
-	public static void isValidPort(String port) throws Exception {
-		try {
-			int p = Integer.parseInt(port);
-			if(p < 1 || p > 65535 ) { throw new NumberFormatException(); }
-		} catch (NumberFormatException e) {
-			throw new Exception("Invalid Port Number! '" + port + "'");
-		}
-	}
-	
 	public static void showAbout(Context c) {
 		final TextView message = new TextView(c);
 		final SpannableString s = new SpannableString(c.getText(R.string.about_msg_body));
@@ -191,6 +155,16 @@ public class Common {
 		return (current.getState() == NetworkInfo.State.CONNECTED);
 	}
 
+	
+	public static boolean isValidPort(String port) {
+		try {
+			int p = Integer.parseInt(port);
+			if(p < 1 || p > 65535 ) { throw new NumberFormatException(); }
+		} catch (NumberFormatException e) {
+			return false;
+		}
+		return true;
+	}
 
 //-----------------------------------------------------------------------------------------
 //--- Make SHA1 Hash for transmitting passwords -------------------------------------------

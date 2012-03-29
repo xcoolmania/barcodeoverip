@@ -1,6 +1,6 @@
 /*
  *
- *  BarcodeOverIP-Server (Java) Version 0.4.x
+ *  BarcodeOverIP-Server (Java) Version 0.5.x
  *  Copyright (C) 2012, Tyler H. Jones (me@tylerjones.me)
  *  http://boip.tylerjones.me
  *
@@ -26,10 +26,7 @@
 
 package com.tylerhjones.boip.server;
 
-import java.awt.AWTException;
-import java.awt.Image;
-import java.awt.SystemTray;
-import java.awt.TrayIcon;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
@@ -42,7 +39,7 @@ import javax.swing.JOptionPane;
  * @author tyler
  */
 public class Main {
-    //private static ServerCore CORE;
+    private static ServerCore CORE;
     private static MainFrame MAINF;
     private static boolean isSysTray = true;
 
@@ -51,8 +48,8 @@ public class Main {
      */
 
     public static void main(String[] args) {
-        //CORE = new ServerCore();
-        MAINF = new MainFrame();
+        CORE = new ServerCore();
+        MAINF = new MainFrame(CORE);
         //CORE.setWindow(MAINF);
 
         //Catch the 'X' button being pressed on the main window
@@ -72,15 +69,18 @@ public class Main {
 	    	MAINF.setVisible(false);
 	    }
 	});
-
+        
+        MAINF.setIconImage(Toolkit.getDefaultToolkit().getImage(Main.class.getResource("/icon.png")));
         MAINF.setVisible(true);
+        
         //------------------------------------------------------
         //--- Setup System Tray Icon
 
         if (SystemTray.isSupported()) { //Check if the system can use a systray icon
-            ImageIcon icon = createImageIcon("/icon24.png", "BarcodeOverIP App Icon"); // ./build/classes/icon.png
+            ImageIcon icon = createImageIcon("/icon24.png", "BarcodeOverIP App-Tray Icon"); // ./build/classes/icon.png
+            MAINF.setIconImage(icon.getImage());
 
-            TrayIcon tray = new TrayIcon(icon.getImage().getScaledInstance(24, 24, Image.SCALE_DEFAULT), "BarcodeOverIP-Server - Starting Up");
+            TrayIcon tray = new TrayIcon(icon.getImage().getScaledInstance(20, 20, Image.SCALE_DEFAULT), "BarcodeOverIP-Server - Starting Up");
             tray.addMouseListener(new MouseListener(){
                 public void mouseClicked(MouseEvent e) {
                     if(MAINF.isVisible()) {
@@ -100,10 +100,9 @@ public class Main {
                 MAINF.setTrayIcon(tray);
             } catch (AWTException e) {
                 System.err.println("Error adding system-tray icon!");
-                e.printStackTrace();
             }
         } else {
-            JOptionPane.showConfirmDialog(MAINF, "No system-tray was found or your system does not support one. You must NOT close the settings window!", "No System-tray!", JOptionPane.OK_OPTION);
+            JOptionPane.showMessageDialog(MAINF, "No system-tray was found or your system does not support one. You must NOT close the settings window!", "No System-tray!", JOptionPane.WARNING_MESSAGE);
             isSysTray = false;
         }
     }

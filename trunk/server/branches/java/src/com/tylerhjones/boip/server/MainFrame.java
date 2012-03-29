@@ -1,6 +1,6 @@
 /*
  *
- *  BarcodeOverIP-Server (Java) Version 0.4.x
+ *  BarcodeOverIP-Server (Java) Version 0.5.x
  *  Copyright (C) 2012, Tyler H. Jones (me@tylerjones.me)
  *  http://boip.tylerjones.me
  *
@@ -26,10 +26,7 @@
 
 package com.tylerhjones.boip.server;
 
-import java.awt.Image;
-import java.awt.MediaTracker;
-import java.awt.Toolkit;
-import java.awt.TrayIcon;
+import java.awt.*;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -38,7 +35,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.jar.JarFile;
-//import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 
@@ -47,6 +43,9 @@ public class MainFrame extends javax.swing.JFrame {
 
     private String TAG = "MainFrame";
 
+    private static final String NO = "NO";
+    private static final String OK = "OK";
+    
     private ServerCore CORE = new ServerCore();
 
     private Hashtable OrigSets = new Hashtable(4);
@@ -61,22 +60,34 @@ public class MainFrame extends javax.swing.JFrame {
     private Toolkit toolkit;
     private MediaTracker tracker;
 
-    private Thread serverThread = new Thread(CORE);
-
-    //public void setCore(ServerCore c) {
-    //    CORE = c;
-    //}
+    //private Thread serverThread = new Thread(CORE);
 
     /** Creates new form MainFrame */
-    public MainFrame() {
-        //CORE = c;
+    public MainFrame(ServerCore c) {
+        CORE = c;
+        CORE.start();
         initComponents();
         CORE.setInfoLabel(lblLastClient);
+        
+        // Get the size of the screen
+        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+
+        // Determine the new location of the window
+        int w = this.getSize().width;
+        int h = this.getSize().height;
+        int x = (dim.width-w)/2;
+        int y = (dim.height-h)/2;
+
+        // Move the window
+        this.setLocation(x, y);        
         //Save the current settings to a dictionary so we can compare them later
-        OrigSets.put("host", new String(SET.getHost()));
-        OrigSets.put("port", new Integer(SET.getPort()));
-        OrigSets.put("pass", new String(SET.getPass()));
-        OrigSets.put("newl", new Boolean(SET.getAppendNL()));
+        if(SET.getPass().equals("NONE")) { 
+            OrigSets.put("pass", ""); 
+        } else { 
+            OrigSets.put("pass", SET.getPass()); }
+        OrigSets.put("host", SET.getHost());
+        OrigSets.put("port", SET.getPort());
+        OrigSets.put("newl", SET.getAppendNL());
 
         txtHost.setText(OrigSets.get("host").toString());
         txtPassword.setText(OrigSets.get("pass").toString());
@@ -84,8 +95,8 @@ public class MainFrame extends javax.swing.JFrame {
         chkAppendNL.setSelected(Boolean.valueOf(OrigSets.get("newl").toString()));
 
         String ip = this.FindSystemIP();
-        if(ip.equals("NO")) {
-            JOptionPane.showConfirmDialog(this, "The IP address of the current system could not be determined. Either there is no network connection or you need to set the IP manually.", "Can't Determine IP Address", JOptionPane.OK_OPTION);
+        if(ip.equals(NO)) {
+            JOptionPane.showMessageDialog(this.getParent(), "The IP address of the current system could not be determined.\nEither there is no network connection or you need to set the IP manually.", "Can't Determine IP Address", JOptionPane.WARNING_MESSAGE);
             chkAutoSet.setSelected(false);
             lblHostTitle.setEnabled(true);
             txtHost.setEnabled(true);
@@ -134,7 +145,7 @@ public class MainFrame extends javax.swing.JFrame {
         lblHost = new javax.swing.JLabel();
         lblPort = new javax.swing.JLabel();
 
-        setTitle("BarcodeOverIP-Server 0.3.1 Beta - Settings");
+        setTitle("BarcodeOverIP-Server 0.5.1 - Settings");
         setAlwaysOnTop(true);
         setName("MainWindow"); // NOI18N
         setResizable(false);
@@ -171,7 +182,7 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
-        btnToggleServer.setFont(new java.awt.Font("DejaVu Sans", 1, 13));
+        btnToggleServer.setFont(new java.awt.Font("DejaVu Sans", 1, 13)); // NOI18N
         btnToggleServer.setText("Activate Server");
         btnToggleServer.setMaximumSize(new java.awt.Dimension(402, 29));
         btnToggleServer.setMinimumSize(new java.awt.Dimension(402, 29));
@@ -182,7 +193,7 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
-        jLabel1.setFont(new java.awt.Font("DejaVu Sans", 0, 12)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("DejaVu Sans", 0, 14)); // NOI18N
         jLabel1.setText("<html> Enter the following values into your mobile device (follow the steps your device gives you) to connect to this computer to start scanning barcodes! It's that easy!<br> <br> - If the big button below says \"Activate Server\", you need press it to start the server before you can start sending barcodes.</html>");
         jLabel1.setVerticalAlignment(javax.swing.SwingConstants.TOP);
         jLabel1.setFocusable(false);
@@ -273,7 +284,7 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
-        jLabel2.setFont(new java.awt.Font("DejaVu Sans", 1, 13));
+        jLabel2.setFont(new java.awt.Font("DejaVu Sans", 1, 13)); // NOI18N
         jLabel2.setLabelFor(lblLastClient);
         jLabel2.setText("Last Client:");
         jLabel2.setToolTipText("(IP, UPC, When (Min/Hrs))");
@@ -281,11 +292,11 @@ public class MainFrame extends javax.swing.JFrame {
         lblLastClient.setLabelFor(btnExit);
         lblLastClient.setText("NONE!");
 
-        lblHost.setFont(new java.awt.Font("DejaVu Sans", 1, 24));
+        lblHost.setFont(new java.awt.Font("DejaVu Sans", 1, 24)); // NOI18N
         lblHost.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblHost.setText("Host/IP = 0.0.0.0");
 
-        lblPort.setFont(new java.awt.Font("DejaVu Sans", 1, 24));
+        lblPort.setFont(new java.awt.Font("DejaVu Sans", 1, 24)); // NOI18N
         lblPort.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblPort.setText("Port # = 41788");
 
@@ -376,12 +387,10 @@ public class MainFrame extends javax.swing.JFrame {
             setServerState(true);
             btnToggleServer.setText("Deactivate Server");
             LogI(TAG, "Activated the server.");
-            return;
         } else {
             setServerState(false);
             btnToggleServer.setText("Activate Server");
             LogI(TAG, "Deactivated the server.");
-            return;
         }
     }//GEN-LAST:event_btnToggleServerActionPerformed
 
@@ -427,11 +436,12 @@ public class MainFrame extends javax.swing.JFrame {
 
     public void setTrayIcon(TrayIcon ico) {
         this.SysTrayIcon = ico;
+        this.SysTrayIcon.setToolTip("BarcodeOverIP " + SET.VERSION + " - Inactive\n(Right or Left click to show settings window)");
         //this.setIconImage(getImage("/icon24.ico"));
     }
 
     private String FindSystemIP() {
-        String sHost = "";
+        String sHost;
 	try {
             localAddr = InetAddress.getLocalHost();
             if (localAddr.isLoopbackAddress()) {
@@ -439,8 +449,8 @@ public class MainFrame extends javax.swing.JFrame {
             }
             sHost = localAddr.getHostAddress();
         } catch (UnknownHostException ex) {
-            System.out.println("Error finding local IP.");
-            return "NO";
+            CORE.pln("Error finding local IP.");
+            return NO;
         }
         return sHost;
     }
@@ -454,6 +464,7 @@ public class MainFrame extends javax.swing.JFrame {
             if(!txtHost.getText().trim().equals(OrigSets.get("host").toString().trim())) { changed = true; }
             if(!txtPort.getText().trim().equals(OrigSets.get("port").toString().trim())) { changed = true; }
         }
+        if(txtPassword.getText().toUpperCase().trim().equals("NONE")) { txtPassword.setText(""); }
         if(!txtPassword.getText().trim().equals(OrigSets.get("pass").toString().trim())) { changed = true; }
         if(chkAppendNL.isSelected() != Boolean.valueOf(OrigSets.get("newl").toString().trim())) { changed = true; }
         return changed;
@@ -467,7 +478,7 @@ public class MainFrame extends javax.swing.JFrame {
             if(txtPort.getText().trim().length() < 1 || txtPort.getText().trim().equals("") || txtPort.getText().trim() == null) {
                 txtPort.setText("41788");
             } else {
-                boolean validport = false;
+                boolean validport;
                 try {
                     int i = Integer.parseInt(txtPort.getText());
                     if(i < 65535 && i > 1023) {
@@ -481,15 +492,18 @@ public class MainFrame extends javax.swing.JFrame {
                 if(!validport) { return "Given port value is not a valid number!"; }
             }
         }
-        if(txtPassword.getText().trim().length() > 32) { return "Given password is too long! Must be <32 characters long!"; }
-        return "OK"; //All is ok
+        if(txtPassword.getText().trim().toUpperCase().equals("CHECK") || txtPassword.getText().trim().toUpperCase().equals("VERSION")) { 
+            return "Given password conflicts with the syntax of the client-server comm protocol. Please pick another password!"; }
+        if(txtPassword.getText().trim().length() < 4 && !txtPassword.getText().trim().equals("")) { return "Given password is too short! Must be > 4 characters long!"; }
+        if(txtPassword.getText().trim().length() > 32) { return "Given password is too long! Must be < 32 characters long!"; }
+        return OK; //All is ok
     }
 
     private boolean saveChanges() {
         if(!checkForChanges()) { return true; }
         String validres = validateValues();
-        if(!validres.equals("OK")) {
-            int n = JOptionPane.showConfirmDialog(this, validres, "Invalid Value!", JOptionPane.OK_OPTION);
+        if(!validres.equals(OK)) {
+            JOptionPane.showMessageDialog(this, validres, "Invalid Value!", JOptionPane.INFORMATION_MESSAGE);
             return false;
         }
         if(!chkAutoSet.isSelected()) {
@@ -504,20 +518,26 @@ public class MainFrame extends javax.swing.JFrame {
         lblPort.setText("Port # = " + SET.getPort());
 
         //Start and stop the server to force it to take the changes
-        setServerState(false);
-        setServerState(true);
-
+        //setServerState(false);
+        //setServerState(true);
+        //CORE.stop();
+        //CORE.start();
+        int m = JOptionPane.showConfirmDialog(this, "You MUST restart BoIP-Server for the changes to take effect!!!\nWould you like to exit now?\n\n(Note: This will be fixed in a future release.)", "Invalid Value!", JOptionPane.YES_OPTION);
+        if(m == JOptionPane.YES_OPTION) {
+            dispose();
+            System.exit(0);
+        } 
+        LogI(TAG, "Restart Warning Result: " + String.valueOf(m));
+        
         return true;
     }
     private boolean setServerState(boolean val) {  // TRUE = Active
         if(val) {
-            serverThread.start();
-            //CORE.start();
-            this.SysTrayIcon.setToolTip("BarcodeOverIP " + SET.VERSION + " - Active");
+            CORE.activate();
+            this.SysTrayIcon.setToolTip("BarcodeOverIP " + SET.VERSION + " - Active\n(Right or Left click to show settings window)");
         } else {
-            serverThread.stop();
-            //CORE.stop();
-            this.SysTrayIcon.setToolTip("BarcodeOverIP " + SET.VERSION + " - Inactive");
+            CORE.deactivate();
+            this.SysTrayIcon.setToolTip("BarcodeOverIP " + SET.VERSION + " - Inactive\n(Right or Left click to show settings window)");
         }
         return val;
     }
@@ -533,7 +553,7 @@ public class MainFrame extends javax.swing.JFrame {
         if(level == 2) { a = "WARN: "; }
         if(level == 3) { a = "*ERR*: "; }
         if(level == 4) { a = "**FATAL**: "; }
-        System.out.println(a + tag + " -- " + info);
+        CORE.pln(a + tag + " -- " + info);
     }
 
     public static InetAddress getLocalHost_nix() throws UnknownHostException {

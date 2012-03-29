@@ -1,6 +1,6 @@
 /*
  *
- *  BarcodeOverIP-Server (Java) Version 0.4.x
+ *  BarcodeOverIP-Server (Java) Version 0.5.x
  *  Copyright (C) 2012, Tyler H. Jones (me@tylerjones.me)
  *  http://boip.tylerjones.me
  *
@@ -26,16 +26,16 @@
 
 package com.tylerhjones.boip.server;
 
-import  java.util.prefs.*;
+import  java.util.prefs.Preferences;
 
 
 public class Settings {
 
-    public final String VERSION = "0.4.1";
+    public final String VERSION = "0.5.1";
     public final String APP_NAME = "BarcodeOverIP-Server";
     public final String APP_AUTHOR = "Tyler H. Jones";
     public final String APP_WEBSITE = "http://boip.tylerjones.me";
-    public final String APP_INFO = "0.4.1 (Java)";
+    public final String APP_INFO = "0.5.1 (Java)";
 
     private static final String PREF_NAME = "boip-server";
     private static final String S_HOST = "host";
@@ -67,12 +67,14 @@ public class Settings {
     }
 
     public String getPass() {
-        return prefs.get(S_PASS, "").trim();
+        return prefs.get(S_PASS, "NONE").trim();
     }
 
     public void setPass(String val) {
-        if(val.trim().toLowerCase().equals("none")) {
-            prefs.put(S_PASS, "");
+        if(val.trim().toUpperCase().equals("NONE")) {
+            prefs.put(S_PASS, "NONE");
+        } else if(val.length() < 3) {
+            prefs.put(S_PASS, "NONE");
         } else {
             prefs.put(S_PASS, val);
         }
