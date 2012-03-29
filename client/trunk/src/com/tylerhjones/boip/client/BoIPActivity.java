@@ -26,6 +26,9 @@
 
 package com.tylerhjones.boip.client;
 
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import android.app.AlertDialog;
 import android.app.ListActivity;
@@ -93,7 +96,7 @@ public class BoIPActivity extends ListActivity {
 					Intent intent = new Intent("com.google.zxing.client.android.SCAN");
 					intent.putExtra("SCAN_MODE", "PRODUCT_MODE");
 					intent.putExtra("SCAN_WIDTH", 800);
-					intent.putExtra("SCAN_HEIGHT", 200);
+					intent.putExtra("SCAN_HEIGHT", 300);
 					intent.putExtra("RESULT_DISPLAY_DURATION_MS", 500L);
 					intent.putExtra("PROMPT_MESSAGE", "BarcodeOverIP -  Scan a barcode for transmission to target system");
 					startActivityForResult(intent, IntentIntegrator.REQUEST_CODE + position);
@@ -208,16 +211,22 @@ public class BoIPActivity extends ListActivity {
 	/** Send Barcode to Server ****************************************************************/
 
 	public boolean ValidateServer(Server s) {
+		String ipaddr = CheckInetAddress(s.getHost());
+		if(ipaddr == null) { return false; }
+		Server ns = new Server(s.getName(), ipaddr, s.getPass(), s.getPort(), s.getIndex());
+		
 		Log.v(TAG, "ValidateServer called!");
-		final BoIPClient client = new BoIPClient(s);
+		final BoIPClient client = new BoIPClient(ns);
 		String res = client.Validate();
-		if (res.equals("ERR11")) {
+		if (res.equals("ERR9")) {
 			Common.showMsgBox(this, "Wrong Password!",
 				"The password you gave does not match the on on the server. Please change it on your app and press 'Apply Server Settings' and then try again.'");
 		} else if (res.equals("ERR1")) {
 			Toast.makeText(this, "Invalid data and/or request syntax!", 4).show();
 		} else if (res.equals("ERR2")) {
 			Toast.makeText(this, "Server received a blank request.", 4).show();
+		} else if (res.equals("ERR3")) {
+			Toast.makeText(this, "Invalid data/syntax, could not parse data.", 4).show();
 		} else if (res.equals(Common.NOPE)) {
 			Toast.makeText(this, "Server is not activated!", 4).show();
 		} else if (res.equals(Common.OK)) {
@@ -230,13 +239,16 @@ public class BoIPActivity extends ListActivity {
 	}
 
 	public void SendBarcode(Server s, final String code) {
+		String ipaddr = CheckInetAddress(s.getHost());
+		if(ipaddr == null) { return; }
+		Server ns = new Server(s.getName(), ipaddr, s.getPass(), s.getPort(), s.getIndex());
 		
 		// ConnectingProgress = ProgressDialog.show(BoIPActivity.this, "Please wait.", "Sending barcode to server...", true);
 		Log.v(TAG, "SendBarcode called! Barcode: '" + code + "'");
 		lv(s.getName());
-		final BoIPClient client = new BoIPClient(s);
+		final BoIPClient client = new BoIPClient(ns);
 		String res = client.Validate();
-		if (res.equals("ERR11")) {
+		if (res.equals("ERR9")) {
 			Common.showMsgBox(
 				this,
 				"Wrong Password!",
@@ -244,12 +256,14 @@ public class BoIPActivity extends ListActivity {
 		} else if (res.equals("ERR1")) {
 			Toast.makeText(getApplicationContext(), "Invalid data and/or request syntax!", 4).show();
 		} else if (res.equals("ERR2")) {
-			Toast.makeText(getApplicationContext(), "Server received a blank request.", 4).show();
+			Toast.makeText(getApplicationContext(), "Invalid data, possible missing data separator.", 4).show();
+		} else if (res.equals("ERR3")) {
+			Toast.makeText(getApplicationContext(), "Invalid data/syntax, could not parse data.", 4).show();
 		} else if (res.equals(Common.NOPE)) {
 			Toast.makeText(getApplicationContext(), "Server is not activated!", 4).show();
 		} else if (res.equals(Common.OK)) {
 			String res2 = client.sendBarcode(code);
-			if (res2.equals("ERR11")) {
+			if (res2.equals("ERR9")) {
 				Common.showMsgBox(
 					this,
 					"Wrong Password!",
@@ -257,7 +271,9 @@ public class BoIPActivity extends ListActivity {
 			} else if (res2.equals("ERR1")) {
 				Toast.makeText(getApplicationContext(), "Invalid data and/or request syntax!", 4).show();
 			} else if (res2.equals("ERR2")) {
-				Toast.makeText(getApplicationContext(), "Server received a blank request.", 4).show();
+				Toast.makeText(getApplicationContext(), "Invalid data, possible missing data separator.", 4).show();
+			} else if (res.equals("ERR3")) {
+				Toast.makeText(getApplicationContext(), "Invalid data/syntax, could not parse data.", 4).show();
 			} else if (res2.equals(Common.NOPE)) {
 				Toast.makeText(getApplicationContext(), "Server is not activated!", 4).show();
 			} else if (res2.equals(Common.OK)) {
@@ -274,6 +290,79 @@ public class BoIPActivity extends ListActivity {
 		// ConnectingProgress.dismiss();
 	}
 	
+
+	/******************************************************************************************/
+	/** Validate IPs/Hostnames ****************************************************************/
+	
+	// This function will do the following:
+		// -Get the IP address from a hostname
+		// -Check if an IP/Host is reachable
+		// -Check if an IP/host is a loopback
+		// -Check if an IP is a valid IP address
+		
+		public String CheckInetAddress(String s) {
+			InetAddress addr;
+
+			try {
+				addr = InetAddress.getByName(s);
+			} catch (UnknownHostException e) {
+				Toast.makeText(this, "Invalid Host/IP Address! (-1)", 10).show();
+				return null;
+			}
+			if(addr.isLoopbackAddress() || addr.isLinkLocalAddress() || addr.isAnyLocalAddress()) {
+				Toast.makeText(this, "Invalid IP Address! IP must point to a physical, reachable computer!  (-2)", 10).show();
+				return null;
+			}
+			try {
+				if(!addr.isReachable(2500)) {
+					Toast.makeText(this, "Address/Hosst is unreachable! (2500ms Timeout) (-3)", 10).show();
+					return null;
+				}
+			} catch (IOException e1) {
+				Toast.makeText(this, "Address/Host is unreachable! (Error Connecting) (-4)", 10).show();
+				return null;
+			}
+			
+			return addr.getHostAddress();
+		}
+		
+		public boolean IsSiteLocalIP(String s) {
+			String str = CheckInetAddress(s);
+			if(str == null) { return false; }
+			InetAddress addr = null;
+			try {
+				addr = InetAddress.getByName(str);
+			} catch (UnknownHostException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return false;
+			}
+			return addr.isSiteLocalAddress();
+		}
+		
+		
+		public boolean IsValidIPv4(String ip) {
+			try {
+				String[] octets = ip.trim().split("\\.");
+				for (String s : octets) {
+					int i = Integer.parseInt(s);
+					if (i > 255 || i < 0) { throw new NumberFormatException(); }
+				}
+			} catch (NumberFormatException e) {
+				return false;
+			}
+			return true;
+		}
+		
+		public boolean isValidPort(String port) {
+			try {
+				int p = Integer.parseInt(port);
+				if(p < 1 || p > 65535 ) { throw new NumberFormatException(); }
+			} catch (NumberFormatException e) {
+				return false;
+			}
+			return true;
+		}
 
 	/******************************************************************************************/
 	/** Setup Menus ***************************************************************************/

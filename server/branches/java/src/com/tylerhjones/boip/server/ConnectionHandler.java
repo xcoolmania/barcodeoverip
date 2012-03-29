@@ -1,6 +1,6 @@
 /*
  *
- *  BarcodeOverIP-Server (Java) Version 0.4.x
+ *  BarcodeOverIP-Server (Java) Version 0.5.x
  *  Copyright (C) 2012, Tyler H. Jones (me@tylerjones.me)
  *  http://boip.tylerjones.me
  *
@@ -71,7 +71,7 @@ public class ConnectionHandler implements Runnable {
             // Get input from the client
             DataInputStream in = new DataInputStream(server.getInputStream());
             PrintStream out = new PrintStream(server.getOutputStream());
-            input = in.readLine();
+            input = in.readUTF();
             //System.out.println("Server sent data: " + input);
             if(input != null) {
                 System.out.println("Recv'd data from " + this.server.getInetAddress().toString() + ": '" + input + "'");
@@ -94,7 +94,6 @@ public class ConnectionHandler implements Runnable {
             }            
         } catch (IOException ioe) {
             System.out.println(TAG + " - IOException on socket listen: " + ioe);
-            ioe.printStackTrace();
         }
     }
 
@@ -150,7 +149,7 @@ public class ConnectionHandler implements Runnable {
 //--- Make SHA1 Hash for transmitting passwords -------------------------------------------
 
     public static String convertToHex_better(byte[] data) { // This one may work better than the one below
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         for (int i = 0; i < data.length; i++) {
             int halfbyte = (data[i] >>> 4) & 0x0F;
             int two_halfs = 0;
@@ -166,7 +165,7 @@ public class ConnectionHandler implements Runnable {
     }
 
     public static String convertToHex(byte[] data) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         int length = data.length;
         for(int i = 0; i < length; ++i) {
             int halfbyte = (data[i] >>> 4) & 0x0F;
@@ -190,11 +189,11 @@ public class ConnectionHandler implements Runnable {
         byte byteData[] = md.digest();
 
         //convert the byte to hex format method 1
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (int i = 0; i < byteData.length; i++) {
             sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
         }
-        StringBuffer hexString = new StringBuffer();
+        StringBuilder hexString = new StringBuilder();
         for (int i=0;i<byteData.length;i++) {
             String hex=Integer.toHexString(0xff & byteData[i]);
             if(hex.length()==1) hexString.append('0');

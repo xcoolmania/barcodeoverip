@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
+
 import android.util.Log;
 
 public class BoIPClient {
@@ -97,19 +98,26 @@ public class BoIPClient {
 		try {
 			String res = this.connect();
 			if (!res.equals(Common.OK)) { return res; }
-			this.output.println(Common.CHECK + Common.DSEP + this.pass + Common.DTERM); // Send a Common.DCHECK command to the server
+			this.output.println(Common.CHECK + Common.DSEP + this.pass + Common.SMC); // Send a Common.DCHECK command to the server
 			
-			String responseLine;
-            while ((responseLine = input.readLine()) != null) {
-				Log.i(TAG, "Common.Validate() - Server: " + responseLine);
-                if (responseLine.indexOf(Common.OK) != -1) {
+			String result;
+            while ((result = input.readLine().trim()) != null) {
+				Log.i(TAG, "Common.Validate() - Server: " + result);
+    			CanConnect = false;
+                if (result.indexOf(Common.OK) > -1) {
         			CanConnect = true;
 					this.close();
 					return Common.OK;
-				} else if (responseLine.indexOf(Common.ERR) != -1) {
-					int idx = responseLine.indexOf(Common.ERR);
+                } else if (result.indexOf(Common.NOPE) > -1) {
+        			this.close();
+        			return Common.NOPE;
+				} else if (result.indexOf(Common.ERR) > -1) {
+					int idx = result.indexOf(Common.ERR);
 					this.close();
-					return responseLine.substring(idx, 5);
+					return result.substring(idx, result.length());
+                } else {
+                	this.close();
+                	return "ERR8";
                 }
             }
 			this.close();
@@ -124,34 +132,34 @@ public class BoIPClient {
 	}
 	
 	public String sendBarcode(String barcode) {
+		String result;
         try {
     		this.connect();
 			Log.v(TAG, "***** sendBarcode() - passhash: " + this.pass);
-			String servermsg = this.pass + Common.DSEP + barcode + Common.DTERM;
+			String servermsg = this.pass + Common.DSEP + barcode + Common.SMC;
         	Log.v(TAG, "***** sendBarcode() - servermsg: " + servermsg);
         	this.output.println(servermsg);
         	
-        	String responseLine;
-			while ((responseLine = input.readLine()) != null) {
-				Log.i(TAG, "Common.sendBarcode() - Server: " + responseLine);
-			    if (responseLine.indexOf(Common.THANKS) != -1) {
-					break;
-				} else if (responseLine.indexOf(Common.ERR) != -1) {
-					int idx = responseLine.indexOf(Common.ERR);
-					this.close();
-					return responseLine.substring(idx, 5);
-			    } else {
-			    	Log.v(TAG, "*** responseLine ***  " + responseLine);
+			while ((result = input.readLine().trim()) != null) {
+				Log.i(TAG, "Common.sendBarcode() - Server: " + result);
+				this.close();
+			    if (result.indexOf(Common.THANKS) > -1) {
+					return Common.OK;
+				} else if (result.indexOf(Common.ERR) > -1) {
+					int idx = result.indexOf(Common.ERR);
+					return result.substring(idx, result.length());
+				} else if (result.indexOf(Common.NOPE) > -1) {
+					return Common.NOPE;
 			    }
 			}
-			this.close();
-			return Common.OK;
+	    	Log.v(TAG, "*** Unknown Result ***  " + result);
+			return "ERR8";
 		} catch (IOException e) {
 			this.close();
 			Log.e(TAG, "sendBarcode() - Unknown Exception occured: " + e);
 			System.err.println("sendBarcode() - " + e);
 			e.printStackTrace();
-			return "ERR1";
+			return "ERR99";
 		}
 	}
 	
