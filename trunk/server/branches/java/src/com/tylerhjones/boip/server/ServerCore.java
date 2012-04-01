@@ -42,8 +42,7 @@ import javax.swing.JLabel;
  */
 public class ServerCore implements Runnable {
     private static final String TAG = "ServerCore";
-    //private static MainFrame MAINWIN;
-    private static JLabel lblLastClient; //For updating that status of the server backed to the main window
+    private static JLabel lblLastClient = null; //For updating that status of the server backed to the main window
     private static Settings SETS = new Settings(); //The settings handler class
     //private static int MaxConns = 5;
 
@@ -82,29 +81,20 @@ public class ServerCore implements Runnable {
 
     public ServerCore() {
         System.out.println(TAG + " -- Constructor was called!");
-        thread = new Thread(this);
-
     }
     
     public void setInfoLabel(JLabel lbl) { //Assign an already created label object to our empty pointer
         lblLastClient = lbl; 
     }
+    
 
     public void run() { //The thread 'thread' starts here
-        pln(TAG + " -- Thread: '" + thread.getName() + "' with ID: '" + thread.getId() + "' and Priority: '" + thread.getPriority() + "' ... has started");
-        try {
-            if(SETS.getHost().equals("") || SETS.getHost().equals("0.0.0.0")) {
-                listener = new ServerSocket(SETS.getPort());
-            } else {
-                listener = new ServerSocket(SETS.getPort(), 2, InetAddress.getByName(SETS.getHost()));
-            }
-            pln(TAG + " -- Server started: " + listener);
-        } catch(IOException ioe) {
-            perr(TAG + " --  IOException was caught! (Starting...) - " + ioe.toString());
-            perr(TAG + " -- startListener failed!");
-            runThread = false;
-            return; //Kill thread
+        this.runThread = true;
+        
+        synchronized(this){
+            this.thread = Thread.currentThread();
         }
+        if(!startListener()) { return; }
         try {
             if(!SETS.getPass().equals("NONE")) {
                 server_hash = SHA1(SETS.getPass()).trim().toUpperCase(); }
@@ -113,21 +103,18 @@ public class ServerCore implements Runnable {
             return; //Kill thread
         }
 
-        while (runThread) { //Main thread loop
+        while (runThread()) { //Main thread loop
+            if(!listener.isClosed()) {
             try {
                 pln(TAG + " -- Waiting for a client ...");
-                if(!listener.isClosed()) {
-                    socket = listener.accept();
-                } else {
-                    pln(TAG + " -- Waiting for the listener to restart...");
-                }
-                open();
+                socket = listener.accept();
+                openStreams();
                 if(!IsActive) {
                     pln(TAG + " -- Receiving data from client while deactivated: Responding 'NOPE'");
                     streamOut.println(NOPE);
                 } else {
                     pln(TAG + " -- Client accepted: " + socket);
-                    lblLastClient.setText(this.socket.getInetAddress().toString() + " on port " + this.socket.getPort());
+                    if(lblLastClient != null) { lblLastClient.setText(this.socket.getInetAddress().toString() + " on port " + this.socket.getPort()); }
                     try {
                         input = streamIn.readLine();
                         pln(TAG + " -- Client sent data: " + input);
@@ -139,7 +126,7 @@ public class ServerCore implements Runnable {
                             } else if(res.startsWith("ERR")) {
                                 streamOut.println(res + "\n"); //Always need to append a '\n' char to the server's response string (it lets the server know when it should stop talking) 
                             } else if(res.equals(VER)) {
-                                streamOut.println("BarcodeOverIP-Server v0.5.1 (Java) -- www.tylerhjones.me / http://boip.tbsf.me");
+                                streamOut.println("BarcodeOverIP-Server v0.5.1 (Java) -- www.tylerhjones.me / http://boip.tylerjones.me");
                                 streamOut.print("\n*******************************************************************\nBarcodeOverIP-server " + SETS.APP_INFO + " \nThis server is for use with mobile device applications.\nYou must have the right client to use it!\nPlease visit: https://code.google.com/p/barcodeoverip/ for more\ninformation on available clients.\n\nWritten by: Tyler H. Jones (me@tylerjones.me) (C) 2012\nGoogle Code Website: https://code.google.com/p/barcodeoverip/\n*******************************************************************\n\n");
                             } else if(res.length() > 0 && res != null){
                                 pln(TAG + " -- Parse - Sending Keyboard Emulation - Sending keystrokes to system...");
@@ -147,7 +134,7 @@ public class ServerCore implements Runnable {
                                 streamOut.println(THX);
                             } else {
                                 streamOut.println("ERR99\n");
-                                close();
+                                closeStreams();
                                 perr("\n***FATAL ERROR!!!*** -- this.ParseData returned NULL string that is supposed to be the barcode data."); 
                                 return;
                             }
@@ -156,18 +143,21 @@ public class ServerCore implements Runnable {
                         perr(TAG + " -- IOException on socket listen: " + ioe);
                     }
                 }
-                close();
+                closeStreams();
             } catch(IOException ie) {
                 perr(TAG + " -- Connection Acceptance Error: " + ie);  
             }
+            }
         }
+        stopListener();
         pln(TAG + " -- The thread loop exited, exiting thread.");
         
     }
-    /*
+    
     public boolean startListener() {
-        if(!listener.isClosed()) { return true; }
+        //if(!listener.isClosed()) { return true; }
         try {
+            pln(TAG + " -- Starting listener...");
             if(SETS.getHost().equals("") || SETS.getHost().equals("0.0.0.0")) {
                 listener = new ServerSocket(SETS.getPort());
             } else {
@@ -185,35 +175,26 @@ public class ServerCore implements Runnable {
     
     public boolean stopListener() {
         try {
-            listener.close();
-            while (listener.isBound() && !listener.isClosed()) {
-                pln(TAG + " -- Trying to stop the listener, it's still bound...");
-                for(long i = 0;i<(80);i++) {
-                    for(int k = 0; k < 15; k++) {
-                        float f = (54*4)/(4^7)+56/(34^3);
-                        pln("The Answer: " + String.valueOf(f));
-                    }
-                    //listener.close();
-                }
-                listener.close();
-            }
+            pln(TAG + " -- Stopping listener...");
+            listener.close(); 
         } catch(IOException ioe) {
             perr(TAG + " --  IOException was caught! (Stopping...) - " + ioe.toString());
             return false; //Kill thread
         }
         return true;
     }
-    */
-    public void start() {
-        thread.start();
-        runThread = true;
-    }
     
-    public void stop() {    
-        runThread = false;
-        thread.stop();
-
+    
+    private synchronized boolean runThread() {
+        return this.runThread;
     }
+
+    public synchronized void stop(){
+        this.runThread = true;
+        this.stopListener();
+    }  
+    
+    
     
     public void activate() {
         // See comment in deactivate()...
@@ -229,13 +210,13 @@ public class ServerCore implements Runnable {
         IsActive = false;
     }
 
-    public void open() throws IOException {
+    private void openStreams() throws IOException {
         //streamIn = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
         streamIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         streamOut = new PrintStream(socket.getOutputStream());
     }
 
-    public void close() throws IOException {
+    private void closeStreams() throws IOException {
         //Close the input/output streams and the socket to save resources
         if (socket != null)    socket.close();
         if (streamIn != null)  streamIn.close();
@@ -271,50 +252,7 @@ public class ServerCore implements Runnable {
                 return ER9;
             }            
         }
-        /*
-        if(data.startsWith(CHK) && data.indexOf(DSEP) > 1 && data.endsWith(SMC)) {
-            data = data.split(R_SMC)[0];
-            String client_hash = data.split(R_DSEP)[2];
-            if(!server_hash.equals(NONE)) {
-                if(client_hash.equals(server_hash)) {
-                    pln(TAG + " -- Parse - The cilent has been successfully verified against the server settings.");
-                    return CHKOK;
-                } else {
-                    pln(TAG + " -- Parse - An invalid password was sent by the client!");
-                    return ER9;
-                }
-            } else {
-                pln(TAG + " -- Parse - The cilent has been successfully verified against the server settings.");
-                return CHKOK;
-            }
-        } else if(data.equals(VER)) {
-            return VER;
-        } else if(!data.endsWith(SMC)) {
-            pln(TAG + " -- Invalid data format and/or syntax! - Command does not end with '" + SMC + "'.");
-            return ER1;
-        } else {
-            data = data.split(R_SMC)[0];
-            String d[] = data.split(R_DSEP);
-            if(data.indexOf(DSEP) < 1 || d.length < 1) {
-                pln(TAG + " -- Invalid data format and/or syntax! - Command does not end with '" + SMC + "' or there is not data before the '" + DSEP + "' separator.");
-                return ER1;
-            }
-            if(server_hash.equals(d[0].trim()) || server_hash.equals(NONE) || server_hash.equals("")) {
-                if(server_hash.equals(NONE) || server_hash.equals("")) {
-                    pln(TAG + " -- Parse - No password is set in settings.conf therefore access is granted to anyone. Using a password is STRONGLY suggested!");
-                } else {
-                    pln(TAG + " -- Parse - Your password was correct! You have been granted authorization!");
-                }
-            } else {
-                pln(TAG + " -- Parse - Invalid password was sent by the client!");
-                return ER9;
-            }
-
-            pln(TAG + " -- Parse - Finished Parsing Data - Parsed data: '" + d[2] + "'");
-            return d[2];
-        }
-        * */
-        
+       
     }
 
 //-----------------------------------------------------------------------------------------
