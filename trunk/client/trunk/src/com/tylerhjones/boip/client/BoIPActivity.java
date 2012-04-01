@@ -63,7 +63,7 @@ public class BoIPActivity extends ListActivity {
 	private ArrayList<Server> Servers = new ArrayList<Server>();
 	private ServerAdapter theAdapter;
 	private Database DB = new Database(this);
-	private Server SelectedServer = new Server();
+	private Server SelectedServer;
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -91,15 +91,9 @@ public class BoIPActivity extends ListActivity {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				SelectedServer = Servers.get(position);
 				lv("SelectedServer", SelectedServer.getHost());
+				IntentIntegrator integrator = new IntentIntegrator(BoIPActivity.this);
 				if (ValidateServer(Servers.get(position))) {
-					// ---- ZXing Product Lookup Window -------------------------------------
-					Intent intent = new Intent("com.google.zxing.client.android.SCAN");
-					intent.putExtra("SCAN_MODE", "PRODUCT_MODE");
-					intent.putExtra("SCAN_WIDTH", 800);
-					intent.putExtra("SCAN_HEIGHT", 300);
-					intent.putExtra("RESULT_DISPLAY_DURATION_MS", 500L);
-					intent.putExtra("PROMPT_MESSAGE", "BarcodeOverIP -  Scan a barcode for transmission to target system");
-					startActivityForResult(intent, IntentIntegrator.REQUEST_CODE + position);
+					integrator.initiateScan();
 				}
 			}
 		});
@@ -442,20 +436,22 @@ public class BoIPActivity extends ListActivity {
 		if (requestCode >= IntentIntegrator.REQUEST_CODE) {
 			lv("Barcode Activity result");
 			lv(String.valueOf(resultCode));
-			if (resultCode == RESULT_OK) {
-				int sint = requestCode - IntentIntegrator.REQUEST_CODE;
-				lv(String.valueOf(sint));
-				if (sint < Servers.size()) {
-					//This is where I think the big bug was being tripped. I changed 'requestCode' to 'IntentIntegrator.REQUEST_CODE' and it worked. IDK why though...
-					IntentResult result = IntentIntegrator.parseActivityResult(IntentIntegrator.REQUEST_CODE, resultCode, intent);
-					String barcode = result.getContents().toString();
-					this.SendBarcode(Servers.get(sint), barcode);
-					Toast.makeText(this, "Barcode successfully sent to server.", 5).show();
+			try {
+				try {
+					if (resultCode == RESULT_OK) {
+						IntentResult result = IntentIntegrator.parseActivityResult(IntentIntegrator.REQUEST_CODE, resultCode, intent);
+						String barcode = result.getContents().toString();
+						this.SendBarcode(SelectedServer, barcode);
+						Toast.makeText(this, "Barcode successfully sent to server!", 5).show();					
+					}
+				} catch(Exception e) {
+					Toast.makeText(this, "Hmm that did't work.. Try again. (2)", 10).show();
+					Log.e(TAG, e.toString());
 				}
+			} catch(NullPointerException ne) {
+				Toast.makeText(this, "Hmm that did't work.. Try again. (1)", 10).show();
+				Log.e(TAG, ne.toString());
 			}
-		} else {
-			// Toast.makeText(this, "An error occurred (Code 20)", 5).show();
-			// Log.wtf(TAG, "Activity request code not found?!?");
 		}
 	}
 	
