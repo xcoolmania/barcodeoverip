@@ -61,12 +61,12 @@
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="lblPort" pref="478" max="32767" attributes="0"/>
+                      <Component id="jLabel1" pref="478" max="32767" attributes="1"/>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jLabel1" alignment="1" pref="478" max="32767" attributes="1"/>
+                          <Component id="lblPort" alignment="0" pref="478" max="32767" attributes="0"/>
                           <Component id="lblHost" alignment="0" pref="478" max="32767" attributes="0"/>
                       </Group>
                   </Group>
@@ -78,9 +78,9 @@
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="1" attributes="0">
+              <EmptySpace min="-2" pref="42" max="-2" attributes="0"/>
+              <Component id="jLabel1" min="-2" pref="74" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="jLabel1" min="-2" pref="104" max="-2" attributes="0"/>
-              <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Component id="lblHost" min="-2" pref="42" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="lblPort" pref="40" max="32767" attributes="0"/>
@@ -175,7 +175,8 @@
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="DejaVu Sans" size="13" style="1"/>
         </Property>
-        <Property name="text" type="java.lang.String" value="Activate Server"/>
+        <Property name="text" type="java.lang.String" value="Deactivate Server"/>
+        <Property name="toolTipText" type="java.lang.String" value="Deactivate the server to prevent barcodes being sent and typed"/>
         <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
           <Dimension value="[402, 29]"/>
         </Property>
@@ -195,7 +196,7 @@
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="DejaVu Sans" size="14" style="0"/>
         </Property>
-        <Property name="text" type="java.lang.String" value="&lt;html&gt; Enter the following values into your mobile device (follow the steps your device gives you) to connect to this computer to start scanning barcodes! It&apos;s that easy!&lt;br&gt; &lt;br&gt; - If the big button below says &quot;Activate Server&quot;, you need press it to start the server before you can start sending barcodes.&lt;/html&gt;"/>
+        <Property name="text" type="java.lang.String" value="&lt;html&gt;Enter the following values into your mobile device (follow the steps your device gives you) to connect to this computer to start scanning barcodes! It&apos;s that easy!&lt;/html&gt;"/>
         <Property name="verticalAlignment" type="int" value="1"/>
         <Property name="focusable" type="boolean" value="false"/>
         <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">

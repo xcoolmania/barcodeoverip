@@ -1,6 +1,6 @@
 /*
  *
- *  BarcodeOverIP-Server (Java) Version 0.5.x
+ *  BarcodeOverIP-Server (Java) Version 0.6.x
  *  Copyright (C) 2012, Tyler H. Jones (me@tylerjones.me)
  *  http://boip.tylerjones.me
  *
@@ -26,14 +26,16 @@
 
 package com.tylerhjones.boip.server;
 
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Image;
+import java.awt.Toolkit;
+import java.awt.TrayIcon;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.jar.JarFile;
 import javax.swing.JOptionPane;
 
@@ -48,7 +50,6 @@ public class MainFrame extends javax.swing.JFrame {
     
     private ServerCore Server = new ServerCore();
 
-    private Hashtable OrigSets = new Hashtable(4);
     private Settings SET = new Settings();
 
     private TrayIcon SysTrayIcon;
@@ -65,6 +66,7 @@ public class MainFrame extends javax.swing.JFrame {
     public MainFrame() {
         serverThread.start();
         initComponents();
+        Server.setInfoLabel(lblLastClient);
         
         // Get the size of the screen
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
@@ -77,19 +79,11 @@ public class MainFrame extends javax.swing.JFrame {
 
         // Move the window
         this.setLocation(x, y);        
-        //Save the current settings to a dictionary so we can compare them later
-        if(SET.getPass().equals("NONE")) { 
-            OrigSets.put("pass", ""); 
-        } else { 
-            OrigSets.put("pass", SET.getPass()); }
-        OrigSets.put("host", SET.getHost());
-        OrigSets.put("port", SET.getPort());
-        OrigSets.put("newl", SET.getAppendNL());
 
-        txtHost.setText(OrigSets.get("host").toString());
-        txtPassword.setText(OrigSets.get("pass").toString());
-        txtPort.setText(OrigSets.get("port").toString());
-        chkAppendNL.setSelected(Boolean.valueOf(OrigSets.get("newl").toString()));
+        txtHost.setText(SET.getHost());
+        txtPassword.setText(SET.getPass());
+        txtPort.setText(String.valueOf(SET.getPort()));
+        chkAppendNL.setSelected(Boolean.valueOf(SET.getAppendNL()));
 
         String ip = this.FindSystemIP();
         if(ip.equals(NO)) {
@@ -107,8 +101,8 @@ public class MainFrame extends javax.swing.JFrame {
             txtPort.setEnabled(false);
             SET.setHost(ip);
             SET.setPort(41788);
-            lblHost.setText("Host/IP = " + ip);
-            lblPort.setText("Port # = 41788");
+            lblHost.setText("IP = " + ip);
+            lblPort.setText("Port = 41788");
         }
     }
 
@@ -180,7 +174,8 @@ public class MainFrame extends javax.swing.JFrame {
         });
 
         btnToggleServer.setFont(new java.awt.Font("DejaVu Sans", 1, 13)); // NOI18N
-        btnToggleServer.setText("Activate Server");
+        btnToggleServer.setText("Deactivate Server");
+        btnToggleServer.setToolTipText("Deactivate the server to prevent barcodes being sent and typed");
         btnToggleServer.setMaximumSize(new java.awt.Dimension(402, 29));
         btnToggleServer.setMinimumSize(new java.awt.Dimension(402, 29));
         btnToggleServer.setPreferredSize(new java.awt.Dimension(402, 29));
@@ -191,7 +186,7 @@ public class MainFrame extends javax.swing.JFrame {
         });
 
         jLabel1.setFont(new java.awt.Font("DejaVu Sans", 0, 14)); // NOI18N
-        jLabel1.setText("<html> Enter the following values into your mobile device (follow the steps your device gives you) to connect to this computer to start scanning barcodes! It's that easy!<br> <br> - If the big button below says \"Activate Server\", you need press it to start the server before you can start sending barcodes.</html>");
+        jLabel1.setText("<html>Enter the following values into your mobile device (follow the steps your device gives you) to connect to this computer to start scanning barcodes! It's that easy!</html>");
         jLabel1.setVerticalAlignment(javax.swing.SwingConstants.TOP);
         jLabel1.setFocusable(false);
         jLabel1.setMaximumSize(new java.awt.Dimension(402, 45));
@@ -332,20 +327,20 @@ public class MainFrame extends javax.swing.JFrame {
                         .addComponent(txtPassword, javax.swing.GroupLayout.DEFAULT_SIZE, 294, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(lblPort, javax.swing.GroupLayout.DEFAULT_SIZE, 478, Short.MAX_VALUE))
+                        .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 478, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 478, Short.MAX_VALUE)
+                            .addComponent(lblPort, javax.swing.GroupLayout.DEFAULT_SIZE, 478, Short.MAX_VALUE)
                             .addComponent(lblHost, javax.swing.GroupLayout.DEFAULT_SIZE, 478, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(42, 42, 42)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblHost, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblPort, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
@@ -378,15 +373,16 @@ public class MainFrame extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
     private void btnToggleServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnToggleServerActionPerformed
         if(btnToggleServer.getText().equals("Activate Server")) {
             setServerState(true);
             btnToggleServer.setText("Deactivate Server");
+            btnToggleServer.setToolTipText("Deactivate the server to prevent barcodes being sent and typed in");
             LogI(TAG, "Activated the server.");
         } else {
             setServerState(false);
             btnToggleServer.setText("Activate Server");
+            btnToggleServer.setToolTipText("Activate the server to allow barcodes to be sent and typed in");
             LogI(TAG, "Deactivated the server.");
         }
     }//GEN-LAST:event_btnToggleServerActionPerformed
@@ -431,9 +427,10 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_chkAutoSetActionPerformed
 
 
+
     public void setTrayIcon(TrayIcon ico) {
         this.SysTrayIcon = ico;
-        this.SysTrayIcon.setToolTip("BarcodeOverIP " + SET.VERSION + " - Inactive\n(Right or Left click to show settings window)");
+        this.SysTrayIcon.setToolTip("BarcodeOverIP " + SET.VERSION + " - Active\n(Right or Left click to show settings window)");
         //this.setIconImage(getImage("/icon24.ico"));
     }
 
@@ -450,21 +447,6 @@ public class MainFrame extends javax.swing.JFrame {
             return NO;
         }
         return sHost;
-    }
-
-    //*********************************************
-    // Check if any settings are different and then save them if the user wishes to
-
-    private boolean checkForChanges() {
-        boolean changed = false;
-        if(!chkAutoSet.isSelected()) {
-            if(!txtHost.getText().trim().equals(OrigSets.get("host").toString().trim())) { changed = true; }
-            if(!txtPort.getText().trim().equals(OrigSets.get("port").toString().trim())) { changed = true; }
-        }
-        if(txtPassword.getText().toUpperCase().trim().equals("NONE")) { txtPassword.setText(""); }
-        if(!txtPassword.getText().trim().equals(OrigSets.get("pass").toString().trim())) { changed = true; }
-        if(chkAppendNL.isSelected() != Boolean.valueOf(OrigSets.get("newl").toString().trim())) { changed = true; }
-        return changed;
     }
 
     private String validateValues() {
@@ -497,7 +479,6 @@ public class MainFrame extends javax.swing.JFrame {
     }
 
     private boolean saveChanges() {
-        if(!checkForChanges()) { return true; }
         String validres = validateValues();
         if(!validres.equals(OK)) {
             JOptionPane.showMessageDialog(this, validres, "Invalid Value!", JOptionPane.INFORMATION_MESSAGE);
@@ -511,22 +492,16 @@ public class MainFrame extends javax.swing.JFrame {
         SET.setPass(txtPassword.getText().trim());
         LogI(TAG, "Changes successfully saved!");
 
-        lblHost.setText("Host/IP = " + SET.getHost());
-        lblPort.setText("Port # = " + SET.getPort());
+        lblHost.setText("IP = " + SET.getHost());
+        lblPort.setText("Port = " + SET.getPort());
 
         //Start and stop the server to force it to take the changes
         Server.stopListener();
         Server.startListener();
-        /*
-        int m = JOptionPane.showConfirmDialog(this, "You MUST restart BoIP-Server for the changes to take effect!!!\nWould you like to exit now?\n\n(Note: This will be fixed in a future release.)", "Invalid Value!", JOptionPane.YES_OPTION);
-        if(m == JOptionPane.YES_OPTION) {
-            dispose();
-            System.exit(0);
-        } 
-        LogI(TAG, "Restart Warning Result: " + String.valueOf(m));
-        */
+
         return true;
     }
+
     private boolean setServerState(boolean val) {  // TRUE = Active
         if(val) {
             Server.activate();
@@ -543,7 +518,6 @@ public class MainFrame extends javax.swing.JFrame {
     public void LogW(String tag, String info) { Log(tag, info, 2); }
     public void LogE(String tag, String info) { Log(tag, info, 3); }
     public void LogF(String tag, String info) { Log(tag, info, 4); }
-
     public void Log(String tag, String info, int level) { //Levels: 0 = debug, 1 = info, 2 = warning, 3 = error, 4 = fatal
         String a = "";
         if(level == 2) { a = "WARN: "; }
@@ -591,23 +565,10 @@ public class MainFrame extends javax.swing.JFrame {
             return iAddresses;
     }
 
-
     public Image getImage(String sImage) {
         Image imgReturn = this.toolkit.createImage(this.getClass().getClassLoader().getResource(sImage));
         return imgReturn;
     }
-/*
-    private Image createImage(String path) {
-        java.net.URL imgURL = this.getClass().getResource(path);
-        if (imgURL != null) {
-            Image img = new Image(imgURL);
-            return img;
-        } else {
-            System.err.println("Couldn't find image: " + path);
-            return null;
-        }
-    }
-    */
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAbout;
