@@ -65,10 +65,11 @@
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="lblPort" alignment="0" pref="478" max="32767" attributes="0"/>
-                          <Component id="lblHost" alignment="0" pref="478" max="32767" attributes="0"/>
-                      </Group>
+                      <Component id="lblPort" pref="478" max="32767" attributes="0"/>
+                  </Group>
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="lblHost" pref="478" max="32767" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
@@ -77,14 +78,14 @@
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="1" attributes="0">
-              <EmptySpace min="-2" pref="42" max="-2" attributes="0"/>
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
               <Component id="jLabel1" min="-2" pref="74" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="lblHost" min="-2" pref="42" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="lblPort" pref="40" max="32767" attributes="0"/>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
+              <Component id="lblPort" max="32767" attributes="0"/>
+              <EmptySpace min="-2" pref="24" max="-2" attributes="0"/>
               <Component id="chkAutoSet" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="btnToggleServer" min="-2" pref="42" max="-2" attributes="0"/>
@@ -111,7 +112,7 @@
                   <Component id="btnExit" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="btnAbout" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace max="-2" attributes="0"/>
+              <EmptySpace min="-2" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -137,7 +138,8 @@
     </Component>
     <Component class="javax.swing.JButton" name="btnOk">
       <Properties>
-        <Property name="text" type="java.lang.String" value="OK"/>
+        <Property name="text" type="java.lang.String" value="Hide"/>
+        <Property name="toolTipText" type="java.lang.String" value="Hide this window and let the server run in the system tray."/>
         <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
           <Dimension value="[85, 29]"/>
         </Property>
@@ -232,6 +234,7 @@
     <Component class="javax.swing.JButton" name="btnAbout">
       <Properties>
         <Property name="text" type="java.lang.String" value="About"/>
+        <Property name="toolTipText" type="java.lang.String" value="Click for info on this application."/>
         <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
           <Dimension value="[85, 29]"/>
         </Property>
@@ -367,19 +370,19 @@
     <Component class="javax.swing.JLabel" name="lblHost">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="DejaVu Sans" size="24" style="1"/>
+          <Font name="DejaVu Sans" size="36" style="1"/>
         </Property>
         <Property name="horizontalAlignment" type="int" value="0"/>
-        <Property name="text" type="java.lang.String" value="Host/IP = 0.0.0.0"/>
+        <Property name="text" type="java.lang.String" value="IP = 0.0.0.0"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="lblPort">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="DejaVu Sans" size="24" style="1"/>
+          <Font name="DejaVu Sans" size="36" style="1"/>
         </Property>
         <Property name="horizontalAlignment" type="int" value="0"/>
-        <Property name="text" type="java.lang.String" value="Port # = 41788"/>
+        <Property name="text" type="java.lang.String" value="Port = 41788"/>
       </Properties>
     </Component>
   </SubComponents>
