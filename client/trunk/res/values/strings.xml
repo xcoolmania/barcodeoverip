@@ -4,8 +4,8 @@
 	<string name="app_name">BarcodeOverIP</string>
 	<string name="app_desc">Use your Android device as a wireless barcode scanner for your PC/Laptop</string>
 	<string name="author_label">(&#169;)2012 Tyler H. Jones (inquirewue) - me@tylerjones.me</string>
-	<string name="version">BarcodeOverIP v0.9.2</string>
-	<string name="versionnum">0.9.2</string>
+	<string name="version">BarcodeOverIP v0.9.3</string>
+	<string name="versionnum">0.9.3</string>
 	<string name="googlecode_site">https://code.google.com/hosting/settings</string>
 	<string name="project_site">http://boip.tylerjones.me/</string>
 	<string name="project_donate_site">http://tbsf.me/boip/donate</string>
@@ -24,7 +24,7 @@
 
 	<!-- Message box and alert dialog strings -->
 	<string name="about_msg_title">About BarcodeOverIP</string>
-	<string name="about_msg_body"><b>BarcodeOverIP v0.9.2</b>\n&#169;2012 - Tyler H. Jones\nProject Home: http://boip.tylerjones.me\n\nWelcome to BarcodeOverIP for Android!\nTo get started you must add a server by pressing \'Menu\' > \'Add Server\'. 
+	<string name="about_msg_body"><b>BarcodeOverIP v0.9.3</b>\n&#169;2012 - Tyler H. Jones\nProject Home: http://boip.tylerjones.me\n\nWelcome to BarcodeOverIP for Android!\nTo get started you must add a server by pressing \'Menu\' > \'Add Server\'. 
 	    Once you have added one or more servers, to scan a barcode,
 	    simply touch the desired server on the list and scan away!\nTo edit/remove a server, press and hold 
 	    the target server in the list and a menu will appear.\n
