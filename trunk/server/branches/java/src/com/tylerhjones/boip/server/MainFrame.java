@@ -152,7 +152,8 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
-        btnOk.setText("OK");
+        btnOk.setText("Hide");
+        btnOk.setToolTipText("Hide this window and let the server run in the system tray.");
         btnOk.setMaximumSize(new java.awt.Dimension(85, 29));
         btnOk.setMinimumSize(new java.awt.Dimension(65, 29));
         btnOk.setPreferredSize(new java.awt.Dimension(85, 29));
@@ -205,6 +206,7 @@ public class MainFrame extends javax.swing.JFrame {
         });
 
         btnAbout.setText("About");
+        btnAbout.setToolTipText("Click for info on this application.");
         btnAbout.setMaximumSize(new java.awt.Dimension(85, 29));
         btnAbout.setMinimumSize(new java.awt.Dimension(65, 29));
         btnAbout.setPreferredSize(new java.awt.Dimension(85, 29));
@@ -284,13 +286,13 @@ public class MainFrame extends javax.swing.JFrame {
         lblLastClient.setLabelFor(btnExit);
         lblLastClient.setText("NONE!");
 
-        lblHost.setFont(new java.awt.Font("DejaVu Sans", 1, 24)); // NOI18N
+        lblHost.setFont(new java.awt.Font("DejaVu Sans", 1, 36)); // NOI18N
         lblHost.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblHost.setText("Host/IP = 0.0.0.0");
+        lblHost.setText("IP = 0.0.0.0");
 
-        lblPort.setFont(new java.awt.Font("DejaVu Sans", 1, 24)); // NOI18N
+        lblPort.setFont(new java.awt.Font("DejaVu Sans", 1, 36)); // NOI18N
         lblPort.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblPort.setText("Port # = 41788");
+        lblPort.setText("Port = 41788");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -330,21 +332,22 @@ public class MainFrame extends javax.swing.JFrame {
                         .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 478, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblPort, javax.swing.GroupLayout.DEFAULT_SIZE, 478, Short.MAX_VALUE)
-                            .addComponent(lblHost, javax.swing.GroupLayout.DEFAULT_SIZE, 478, Short.MAX_VALUE))))
+                        .addComponent(lblPort, javax.swing.GroupLayout.DEFAULT_SIZE, 478, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(lblHost, javax.swing.GroupLayout.DEFAULT_SIZE, 478, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(42, 42, 42)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblHost, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblPort, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(lblPort, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(24, 24, 24)
                 .addComponent(chkAutoSet)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnToggleServer, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -409,7 +412,7 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_btnOkActionPerformed
 
     private void btnAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAboutActionPerformed
-        JOptionPane.showConfirmDialog(this, "Written by Tyler H. Jones (http://tylerjones.me) -- BarcodeOverIP project site: http://boip.tylerjones.me", "About BarcodeOverIP-Server 0.4.1", JOptionPane.PLAIN_MESSAGE);
+        JOptionPane.showConfirmDialog(this, "Written by Tyler H. Jones (http://tylerjones.me) -- BarcodeOverIP project site: http://boip.tylerjones.me", "About BarcodeOverIP-Server 0.6.1", JOptionPane.PLAIN_MESSAGE);
     }//GEN-LAST:event_btnAboutActionPerformed
 
     private void chkAutoSetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkAutoSetActionPerformed
@@ -485,6 +488,11 @@ public class MainFrame extends javax.swing.JFrame {
             return false;
         }
         if(!chkAutoSet.isSelected()) {
+            SET.setHost(txtHost.getText().trim());
+            SET.setPort(Integer.valueOf(txtPort.getText().trim()));
+        } else {
+            txtPort.setText("41788");
+            txtHost.setText(this.FindSystemIP());
             SET.setHost(txtHost.getText().trim());
             SET.setPort(Integer.valueOf(txtPort.getText().trim()));
         }
