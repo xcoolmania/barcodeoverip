@@ -1,6 +1,6 @@
 /*
  *
- *  BarcodeOverIP-Server (Java) VER 0.5.x
+ *  BarcodeOverIP-Server (Java) VER 0..6.x
  *  Copyright (C) 2012, Tyler H. Jones (me@tylerjones.me)
  *  http://boip.tylerjones.me
  *
@@ -43,15 +43,17 @@ import javax.swing.JLabel;
 public class ServerCore implements Runnable {
     private static final String TAG = "ServerCore";
     private static JLabel lblLastClient = null; //For updating that status of the server backed to the main window
-    private static Settings SETS = new Settings(); //The settings handler class
+    //private static Settings SETS = new Settings(); //The settings handler class
     //private static int MaxConns = 5;
+
+    protected Settings SET = new Settings();
 
     private BufferedReader  streamIn  =  null; //The is the replacement for the old "DataStream" variable
     private PrintStream streamOut = null; //The output datastream from sending data to the client over a socket
     private Thread thread = null; //This is the thread that does all the work handling the sockets and connections
     private ServerSocket listener; //The listening socket listens for new client connections
     private Socket socket; //This is the socket that is returned when a client connects
-    private boolean IsActive = false; //Is the server activated?
+    private boolean IsActive = true; //Is the server activated?
     private boolean runThread = false; //The thread watches this variable to know when to stop running
 
     private String input = "";
@@ -86,22 +88,14 @@ public class ServerCore implements Runnable {
     public void setInfoLabel(JLabel lbl) { //Assign an already created label object to our empty pointer
         lblLastClient = lbl; 
     }
-    
 
     public void run() { //The thread 'thread' starts here
         this.runThread = true;
-        
+
         synchronized(this){
             this.thread = Thread.currentThread();
         }
         if(!startListener()) { return; }
-        try {
-            if(!SETS.getPass().equals("NONE")) {
-                server_hash = SHA1(SETS.getPass()).trim().toUpperCase(); }
-        } catch (NoSuchAlgorithmException e) {
-            perr(TAG + " -- NoSuchAlgorithmException was caught in ConnectionHandler.run()! -- " + e.toString());
-            return; //Kill thread
-        }
 
         while (runThread()) { //Main thread loop
             if(!listener.isClosed()) {
@@ -126,11 +120,11 @@ public class ServerCore implements Runnable {
                             } else if(res.startsWith("ERR")) {
                                 streamOut.println(res + "\n"); //Always need to append a '\n' char to the server's response string (it lets the server know when it should stop talking) 
                             } else if(res.equals(VER)) {
-                                streamOut.println("BarcodeOverIP-Server v0.5.1 (Java) -- www.tylerhjones.me / http://boip.tylerjones.me");
-                                streamOut.print("\n*******************************************************************\nBarcodeOverIP-server " + SETS.APP_INFO + " \nThis server is for use with mobile device applications.\nYou must have the right client to use it!\nPlease visit: https://code.google.com/p/barcodeoverip/ for more\ninformation on available clients.\n\nWritten by: Tyler H. Jones (me@tylerjones.me) (C) 2012\nGoogle Code Website: https://code.google.com/p/barcodeoverip/\n*******************************************************************\n\n");
+                                streamOut.println("BarcodeOverIP-Server v0..6.1 (Java) -- www.tylerhjones.me / http://boip.tylerjones.me");
+                                streamOut.print("\n*******************************************************************\nBarcodeOverIP-server " + SET.APP_INFO + " \nThis server is for use with mobile device applications.\nYou must have the right client to use it!\nPlease visit: https://code.google.com/p/barcodeoverip/ for more\ninformation on available clients.\n\nWritten by: Tyler H. Jones (me@tylerjones.me) (C) 2012\nGoogle Code Website: https://code.google.com/p/barcodeoverip/\n*******************************************************************\n\n");
                             } else if(res.length() > 0 && res != null){
                                 pln(TAG + " -- Parse - Sending Keyboard Emulation - Sending keystrokes to system...");
-                                KP.typeString(res, SETS.getAppendNL());
+                                KP.typeString(res, SET.getAppendNL());
                                 streamOut.println(THX);
                             } else {
                                 streamOut.println("ERR99\n");
@@ -155,13 +149,20 @@ public class ServerCore implements Runnable {
     }
     
     public boolean startListener() {
-        //if(!listener.isClosed()) { return true; }
+        try {
+            if(!SET.getPass().equals("NONE")) {
+                server_hash = SHA1(SET.getPass()).trim().toUpperCase(); } else { server_hash = "NONE"; }
+        } catch (NoSuchAlgorithmException e) {
+            perr(TAG + " -- NoSuchAlgorithmException was caught in ConnectionHandler.run()! -- " + e.toString());
+            return false; //Kill thread
+        }
+
         try {
             pln(TAG + " -- Starting listener...");
-            if(SETS.getHost().equals("") || SETS.getHost().equals("0.0.0.0")) {
-                listener = new ServerSocket(SETS.getPort());
+            if(SET.getHost().equals("") || SET.getHost().equals("0.0.0.0")) {
+                listener = new ServerSocket(SET.getPort());
             } else {
-                listener = new ServerSocket(SETS.getPort(), 2, InetAddress.getByName(SETS.getHost()));
+                listener = new ServerSocket(SET.getPort(), 2, InetAddress.getByName(SET.getHost()));
             }
             pln(TAG + " -- Server started: " + listener);
         } catch(IOException ioe) {
@@ -176,14 +177,13 @@ public class ServerCore implements Runnable {
     public boolean stopListener() {
         try {
             pln(TAG + " -- Stopping listener...");
-            listener.close(); 
+            listener.close();
         } catch(IOException ioe) {
             perr(TAG + " --  IOException was caught! (Stopping...) - " + ioe.toString());
             return false; //Kill thread
         }
         return true;
     }
-    
     
     private synchronized boolean runThread() {
         return this.runThread;
@@ -192,10 +192,8 @@ public class ServerCore implements Runnable {
     public synchronized void stop(){
         this.runThread = true;
         this.stopListener();
-    }  
-    
-    
-    
+    }
+
     public void activate() {
         // See comment in deactivate()...
         if(thread == null) { thread.start(); }
