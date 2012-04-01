@@ -46,7 +46,7 @@ public class MainFrame extends javax.swing.JFrame {
     private static final String NO = "NO";
     private static final String OK = "OK";
     
-    private ServerCore CORE = new ServerCore();
+    private ServerCore Server = new ServerCore();
 
     private Hashtable OrigSets = new Hashtable(4);
     private Settings SET = new Settings();
@@ -58,16 +58,13 @@ public class MainFrame extends javax.swing.JFrame {
     public static InetAddress localAddr;
 
     private Toolkit toolkit;
-    private MediaTracker tracker;
 
-    //private Thread serverThread = new Thread(CORE);
+    private Thread serverThread = new Thread(Server);
 
     /** Creates new form MainFrame */
-    public MainFrame(ServerCore c) {
-        CORE = c;
-        CORE.start();
+    public MainFrame() {
+        serverThread.start();
         initComponents();
-        CORE.setInfoLabel(lblLastClient);
         
         // Get the size of the screen
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
@@ -449,7 +446,7 @@ public class MainFrame extends javax.swing.JFrame {
             }
             sHost = localAddr.getHostAddress();
         } catch (UnknownHostException ex) {
-            CORE.pln("Error finding local IP.");
+            Server.pln("Error finding local IP.");
             return NO;
         }
         return sHost;
@@ -518,25 +515,24 @@ public class MainFrame extends javax.swing.JFrame {
         lblPort.setText("Port # = " + SET.getPort());
 
         //Start and stop the server to force it to take the changes
-        //setServerState(false);
-        //setServerState(true);
-        //CORE.stop();
-        //CORE.start();
+        Server.stopListener();
+        Server.startListener();
+        /*
         int m = JOptionPane.showConfirmDialog(this, "You MUST restart BoIP-Server for the changes to take effect!!!\nWould you like to exit now?\n\n(Note: This will be fixed in a future release.)", "Invalid Value!", JOptionPane.YES_OPTION);
         if(m == JOptionPane.YES_OPTION) {
             dispose();
             System.exit(0);
         } 
         LogI(TAG, "Restart Warning Result: " + String.valueOf(m));
-        
+        */
         return true;
     }
     private boolean setServerState(boolean val) {  // TRUE = Active
         if(val) {
-            CORE.activate();
+            Server.activate();
             this.SysTrayIcon.setToolTip("BarcodeOverIP " + SET.VERSION + " - Active\n(Right or Left click to show settings window)");
         } else {
-            CORE.deactivate();
+            Server.deactivate();
             this.SysTrayIcon.setToolTip("BarcodeOverIP " + SET.VERSION + " - Inactive\n(Right or Left click to show settings window)");
         }
         return val;
@@ -553,7 +549,7 @@ public class MainFrame extends javax.swing.JFrame {
         if(level == 2) { a = "WARN: "; }
         if(level == 3) { a = "*ERR*: "; }
         if(level == 4) { a = "**FATAL**: "; }
-        CORE.pln(a + tag + " -- " + info);
+        Server.pln(a + tag + " -- " + info);
     }
 
     public static InetAddress getLocalHost_nix() throws UnknownHostException {

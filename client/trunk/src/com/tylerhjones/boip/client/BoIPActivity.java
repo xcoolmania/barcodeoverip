@@ -441,10 +441,13 @@ public class BoIPActivity extends ListActivity {
 		}
 		if (requestCode >= IntentIntegrator.REQUEST_CODE) {
 			lv("Barcode Activity result");
+			lv(String.valueOf(resultCode));
 			if (resultCode == RESULT_OK) {
 				int sint = requestCode - IntentIntegrator.REQUEST_CODE;
+				lv(String.valueOf(sint));
 				if (sint < Servers.size()) {
-					IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
+					//This is where I think the big bug was being tripped. I changed 'requestCode' to 'IntentIntegrator.REQUEST_CODE' and it worked. IDK why though...
+					IntentResult result = IntentIntegrator.parseActivityResult(IntentIntegrator.REQUEST_CODE, resultCode, intent);
 					String barcode = result.getContents().toString();
 					this.SendBarcode(Servers.get(sint), barcode);
 					Toast.makeText(this, "Barcode successfully sent to server.", 5).show();
