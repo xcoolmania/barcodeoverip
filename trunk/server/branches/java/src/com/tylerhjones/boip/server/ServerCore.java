@@ -150,8 +150,10 @@ public class ServerCore implements Runnable {
     
     public boolean startListener() {
         try {
-            if(!SET.getPass().equals("NONE")) {
-                server_hash = SHA1(SET.getPass()).trim().toUpperCase(); } else { server_hash = "NONE"; }
+            server_hash = "NONE";
+            if(!SET.getPass().equals("")) {
+                server_hash = SHA1(SET.getPass()).trim().toUpperCase();
+            }
         } catch (NoSuchAlgorithmException e) {
             perr(TAG + " -- NoSuchAlgorithmException was caught in ConnectionHandler.run()! -- " + e.toString());
             return false; //Kill thread
@@ -254,7 +256,7 @@ public class ServerCore implements Runnable {
     }
 
 //-----------------------------------------------------------------------------------------
-//--- Make SHA1 Hash for transmitting passwords -------------------------------------------
+//--- Make SHA1 Hash for checking received passwords --------------------------------------
 
     public static String convertToHex_better(byte[] data) { // This one may work better than the one below
         StringBuilder buf = new StringBuilder();

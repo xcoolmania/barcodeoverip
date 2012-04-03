@@ -66,8 +66,12 @@ public class Settings {
         prefs.putInt(S_PORT, val);
     }
 
-    public String getPass() {
-        return prefs.get(S_PASS, "NONE").trim();
+    public String getPass() { //The default, default value for password is ""
+        return prefs.get(S_PASS, "").trim();
+    }
+
+    public String getPass(String defval) { //Get the server password, if none set then return defval
+        return prefs.get(S_PASS, defval).trim();
     }
 
     public void setPass(String val) {
