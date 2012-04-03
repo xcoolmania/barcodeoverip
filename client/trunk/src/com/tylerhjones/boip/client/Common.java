@@ -1,6 +1,6 @@
 /*
  * 
- * BarcodeOverIP (Android < v3.2) Version 0.9.3
+ * BarcodeOverIP (Android < v3.2) Version 0.9.4
  * Copyright (C) 2012, Tyler H. Jones (me@tylerjones.me)
  * http://boip.tylerjones.me/
  * 
@@ -67,7 +67,8 @@ public class Common {
 	// Our one and only preference, set after the first run of the application
 	public static final String PREFS = "boip_client";
 	public static final String PREF_VERSION = "version";
-
+	public static final String PREF_CURSRV = "curserver";
+	
 	/** Default value constants *********************************************************** */
 	public static final int DEFAULT_PORT = 41788;
 	public static final String DEFAULT_HOST = "0.0.0.0";

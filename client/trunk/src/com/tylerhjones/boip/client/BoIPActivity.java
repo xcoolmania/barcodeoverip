@@ -1,6 +1,6 @@
 /*
  * 
- * BarcodeOverIP (Android < v3.2) Version 0.9.3
+ * BarcodeOverIP (Android < v3.2) Version 0.9.4
  * Copyright (C) 2012, Tyler H. Jones (me@tylerjones.me)
  * http://boip.tylerjones.me/
  * 
@@ -63,7 +63,7 @@ public class BoIPActivity extends ListActivity {
 	private ArrayList<Server> Servers = new ArrayList<Server>();
 	private ServerAdapter theAdapter;
 	private Database DB = new Database(this);
-	private Server SelectedServer;
+	private Server SelectedServer = new Server();
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -89,11 +89,16 @@ public class BoIPActivity extends ListActivity {
 			
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				SharedPreferences sVal = getSharedPreferences(Common.PREFS, 0);
+				Editor sEdit;
 				SelectedServer = Servers.get(position);
-				lv("SelectedServer", SelectedServer.getHost());
+				sEdit = sVal.edit();
+				sEdit.putInt(Common.PREF_CURSRV, SelectedServer.getIndex());
+				sEdit.commit();
+				lv("*** BEFORE SCAN : SelectedServer ***  Index: " + String.valueOf(SelectedServer.getIndex()) + " -- Name: " + SelectedServer.getName());
 				IntentIntegrator integrator = new IntentIntegrator(BoIPActivity.this);
 				if (ValidateServer(Servers.get(position))) {
-					integrator.initiateScan();
+					integrator.initiateScan(IntentIntegrator.ONE_D_CODE_TYPES);
 				}
 			}
 		});
@@ -333,8 +338,7 @@ public class BoIPActivity extends ListActivity {
 			}
 			return addr.isSiteLocalAddress();
 		}
-		
-		
+				
 		public boolean IsValidIPv4(String ip) {
 			try {
 				String[] octets = ip.trim().split("\\.");
@@ -409,7 +413,33 @@ public class BoIPActivity extends ListActivity {
 	}
 
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+		SharedPreferences sVal = getSharedPreferences(Common.PREFS, 0);
+		boolean found = false;
+		for(int i=0; i<Servers.size(); i++) {
+			if(!found) {
+				if(sVal.getInt(Common.PREF_CURSRV, 0) == Servers.get(i).getIndex()) {
+					found = true;
+					SelectedServer = Servers.get(i);
+					i = Servers.size() + 1;
+				}
+			}
+		}
+		if(!found) { SelectedServer = Servers.get(0); }
+		lv("*** AFTER SCAN : SelectedServer ***  Index: " + String.valueOf(SelectedServer.getIndex()) + " -- Name: " + SelectedServer.getName());
 		lv("Activity result -- ", String.valueOf(requestCode), String.valueOf(resultCode));
+		IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
+		if(result != null) {
+			try {
+				if (resultCode == RESULT_OK) {
+					String barcode = result.getContents().toString();
+					this.SendBarcode(SelectedServer, barcode);
+					Toast.makeText(this, "Barcode successfully sent to server!", 5).show();					
+				}
+			} catch(NullPointerException ne) {
+				Toast.makeText(this, "Hmm that did't work.. Try again. (1)", 10).show();
+				Log.e(TAG, ne.toString());
+			}
+		}
 		
 		if (requestCode == Common.ADD_SREQ) {
 			lv("AddServer Activity result");
@@ -432,26 +462,6 @@ public class BoIPActivity extends ListActivity {
 				Toast.makeText(this, "No changes were made.", 3).show();
 			}
 			*/
-		}
-		if (requestCode >= IntentIntegrator.REQUEST_CODE) {
-			lv("Barcode Activity result");
-			lv(String.valueOf(resultCode));
-			try {
-				try {
-					if (resultCode == RESULT_OK) {
-						IntentResult result = IntentIntegrator.parseActivityResult(IntentIntegrator.REQUEST_CODE, resultCode, intent);
-						String barcode = result.getContents().toString();
-						this.SendBarcode(SelectedServer, barcode);
-						Toast.makeText(this, "Barcode successfully sent to server!", 5).show();					
-					}
-				} catch(Exception e) {
-					Toast.makeText(this, "Hmm that did't work.. Try again. (2)", 10).show();
-					Log.e(TAG, e.toString());
-				}
-			} catch(NullPointerException ne) {
-				Toast.makeText(this, "Hmm that did't work.. Try again. (1)", 10).show();
-				Log.e(TAG, ne.toString());
-			}
 		}
 	}
 	
