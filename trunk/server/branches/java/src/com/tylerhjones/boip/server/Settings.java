@@ -31,11 +31,11 @@ import  java.util.prefs.Preferences;
 
 public class Settings {
 
-    public final String VERSION = "0.6.1";
+    public final String VERSION = "0.6.2";
     public final String APP_NAME = "BarcodeOverIP-Server";
     public final String APP_AUTHOR = "Tyler H. Jones";
     public final String APP_WEBSITE = "http://boip.tylerjones.me";
-    public final String APP_INFO = "0.6.1 (Java)";
+    public final String APP_INFO = "0.6.2 (Java)";
 
     private static final String PREF_NAME = "boip-server";
     private static final String S_HOST = "host";
@@ -66,7 +66,7 @@ public class Settings {
         prefs.putInt(S_PORT, val);
     }
 
-    public String getPass() { //The default, default value for password is ""
+    public String getPass() { //The default value for password is ""
         return prefs.get(S_PASS, "").trim();
     }
 
@@ -77,9 +77,9 @@ public class Settings {
     public void setPass(String val) {
         System.out.println("Set pass to: " + val);
         if(val.trim().toUpperCase().equals("NONE")) {
-            prefs.put(S_PASS, "NONE");
+            prefs.put(S_PASS, "");
         } else if(val.length() < 3) {
-            prefs.put(S_PASS, "NONE");
+            prefs.put(S_PASS, "");
         } else {
             prefs.put(S_PASS, val);
         }

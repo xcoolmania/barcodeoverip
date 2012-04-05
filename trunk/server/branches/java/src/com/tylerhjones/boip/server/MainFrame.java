@@ -412,7 +412,7 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_btnOkActionPerformed
 
     private void btnAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAboutActionPerformed
-        JOptionPane.showConfirmDialog(this, "Written by Tyler H. Jones (http://tylerjones.me) -- BarcodeOverIP project site: http://boip.tylerjones.me", "About BarcodeOverIP-Server 0.6.1", JOptionPane.PLAIN_MESSAGE);
+        JOptionPane.showConfirmDialog(this, "Written by Tyler H. Jones (http://tylerjones.me) -- BarcodeOverIP project site: http://boip.tylerjones.me", "About BarcodeOverIP-Server 0.6.2", JOptionPane.PLAIN_MESSAGE);
     }//GEN-LAST:event_btnAboutActionPerformed
 
     private void chkAutoSetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkAutoSetActionPerformed

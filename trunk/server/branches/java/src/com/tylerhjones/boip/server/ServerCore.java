@@ -120,7 +120,7 @@ public class ServerCore implements Runnable {
                             } else if(res.startsWith("ERR")) {
                                 streamOut.println(res + "\n"); //Always need to append a '\n' char to the server's response string (it lets the server know when it should stop talking) 
                             } else if(res.equals(VER)) {
-                                streamOut.println("BarcodeOverIP-Server v0..6.1 (Java) -- www.tylerhjones.me / http://boip.tylerjones.me");
+                                streamOut.println("BarcodeOverIP-Server v0.6.2 (Java) -- www.tylerhjones.me / http://boip.tylerjones.me");
                                 streamOut.print("\n*******************************************************************\nBarcodeOverIP-server " + SET.APP_INFO + " \nThis server is for use with mobile device applications.\nYou must have the right client to use it!\nPlease visit: https://code.google.com/p/barcodeoverip/ for more\ninformation on available clients.\n\nWritten by: Tyler H. Jones (me@tylerjones.me) (C) 2012\nGoogle Code Website: https://code.google.com/p/barcodeoverip/\n*******************************************************************\n\n");
                             } else if(res.length() > 0 && res != null){
                                 pln(TAG + " -- Parse - Sending Keyboard Emulation - Sending keystrokes to system...");
