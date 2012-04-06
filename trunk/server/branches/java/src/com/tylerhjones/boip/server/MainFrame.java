@@ -433,7 +433,7 @@ public class MainFrame extends javax.swing.JFrame {
 
     public void setTrayIcon(TrayIcon ico) {
         this.SysTrayIcon = ico;
-        this.SysTrayIcon.setToolTip("BarcodeOverIP " + SET.VERSION + " - Active\n(Right or Left click to show settings window)");
+        this.SysTrayIcon.setToolTip("BarcodeOverIP " + SET.VERSION + " - Active\n(Right or Left click to show settings window)\nHost:Port - " + SET.getHost() + ":" + String.valueOf(SET.getPort()));
         //this.setIconImage(getImage("/icon24.ico"));
     }
 
@@ -513,10 +513,10 @@ public class MainFrame extends javax.swing.JFrame {
     private boolean setServerState(boolean val) {  // TRUE = Active
         if(val) {
             Server.activate();
-            this.SysTrayIcon.setToolTip("BarcodeOverIP " + SET.VERSION + " - Active\n(Right or Left click to show settings window)");
+            this.SysTrayIcon.setToolTip("BarcodeOverIP " + SET.VERSION + " - Active\n(Right or Left click to show settings window)\nHost:Port - " + SET.getHost() + ":" + String.valueOf(SET.getPort()));
         } else {
             Server.deactivate();
-            this.SysTrayIcon.setToolTip("BarcodeOverIP " + SET.VERSION + " - Inactive\n(Right or Left click to show settings window)");
+            this.SysTrayIcon.setToolTip("BarcodeOverIP " + SET.VERSION + " - Inactive\n(Right or Left click to show settings window)\nHost:Port - " + SET.getHost() + ":" + String.valueOf(SET.getPort()));
         }
         return val;
     }
