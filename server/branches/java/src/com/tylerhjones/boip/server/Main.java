@@ -70,7 +70,7 @@ public class Main {
 	    }
 	});
         
-        MAINF.setIconImage(Toolkit.getDefaultToolkit().getImage(Main.class.getResource("/icon.png")));
+        MAINF.setIconImage(Toolkit.getDefaultToolkit().getImage(Main.class.getResource("/icon24.png")));
         MAINF.setVisible(true);
         
         //------------------------------------------------------
@@ -80,7 +80,7 @@ public class Main {
             ImageIcon icon = createImageIcon("/icon24.png", "BarcodeOverIP App-Tray Icon"); // ./build/classes/icon.png
             MAINF.setIconImage(icon.getImage());
 
-            TrayIcon tray = new TrayIcon(icon.getImage().getScaledInstance(20, 20, Image.SCALE_DEFAULT), "BarcodeOverIP-Server - Starting Up");
+            TrayIcon tray = new TrayIcon(icon.getImage().getScaledInstance(16, 16, Image.SCALE_DEFAULT), "BarcodeOverIP-Server - Starting Up");
             tray.addMouseListener(new MouseListener(){
                 public void mouseClicked(MouseEvent e) {
                     if(MAINF.isVisible()) {
