@@ -113,18 +113,23 @@ public class ServerCore implements Runnable {
                         input = streamIn.readLine();
                         pln(TAG + " -- Client sent data: " + input);
                         if(input != null) {
-                            pln(TAG + " -- Recv'd data from " + this.socket.getInetAddress().toString() + ": '" + input + "'");
+                            pln(TAG + " -- Rec'd data from " + this.socket.getInetAddress().toString() + ": '" + input + "'");
                             String res = ParseData(input.trim());
                             if(res.equals(CHKOK)) {
+                                pln(TAG + " -- Parser sent 'OK' to client");
                                 streamOut.println(OK);
                             } else if(res.startsWith("ERR")) {
+                                pln(TAG + " -- Parser sent data to client: " + res);
                                 streamOut.println(res + "\n"); //Always need to append a '\n' char to the server's response string (it lets the server know when it should stop talking) 
                             } else if(res.equals(VER)) {
-                                streamOut.println("BarcodeOverIP-Server v0.6.2 (Java) -- www.tylerhjones.me / http://boip.tylerjones.me");
+                                pln(TAG + " -- Parser sent version info to client.");
+                                streamOut.println("BarcodeOverIP-Server v0.6.2 (Java) -- http://tylerhjones.me / http://boip.tylerjones.me");
                                 streamOut.print("\n*******************************************************************\nBarcodeOverIP-server " + SET.APP_INFO + " \nThis server is for use with mobile device applications.\nYou must have the right client to use it!\nPlease visit: https://code.google.com/p/barcodeoverip/ for more\ninformation on available clients.\n\nWritten by: Tyler H. Jones (me@tylerjones.me) (C) 2012\nGoogle Code Website: https://code.google.com/p/barcodeoverip/\n*******************************************************************\n\n");
                             } else if(res.length() > 0 && res != null){
-                                pln(TAG + " -- Parse - Sending Keyboard Emulation - Sending keystrokes to system...");
+                                pln(TAG + " -- Parser returned a barcode for system input: " + res);
+                                pln(TAG + " -- Sending keystrokes to system...");
                                 KP.typeString(res, SET.getAppendNL());
+                                pln(TAG + " -- Barcode was inputted. Sending 'THANKS' to client.");
                                 streamOut.println(THX);
                             } else {
                                 streamOut.println("ERR99\n");
@@ -229,19 +234,19 @@ public class ServerCore implements Runnable {
         data = data.toUpperCase();
         if(data.equals(VER)) { return VER; }
         if(!data.endsWith(SMC)) {
-            pln(TAG + " -- Invalid data format and/or syntax! - Command does not end with '" + SMC + "'.");
+            pln(TAG + " -- Parser - Invalid data format and/or syntax! - Command does not end with '" + SMC + "'.");
             return ER1;
         } else if(data.indexOf(DSEP) < 2 || ((data.length() - 1) - data.indexOf(DSEP)) < 3) {
-            pln(TAG + " -- Invalid data format and/or syntax! - Command does not seem contain the '" + DSEP + "' data separator.");
+            pln(TAG + " -- Parser - Invalid data format and/or syntax! - Command does not seem contain the '" + DSEP + "' data separator.");
             return ER2;
         } else {
             data = data.split(R_SMC)[0];
             try {
                 begin = data.split(R_DSEP)[0].trim();
                 end = data.split(R_DSEP)[2].trim();
-                pln(TAG + " -- Begin: '" + begin + "',  End: '" + end + "'");
+                pln(TAG + " -- Parser - Begin: '" + begin + "',  End: '" + end + "'");
             } catch(ArrayIndexOutOfBoundsException e) {
-                perr(TAG + " -- Invalid data format and/or syntax! - Command does not seem to be assembled right. It cannot be parsed. - Exception: " + e.getMessage());
+                perr(TAG + " -- Parser - Invalid data format and/or syntax! - Command does not seem to be assembled right. It cannot be parsed. - Exception: " + e.getMessage());
                 return ER3;
             }
             if(begin.equals(CHK)) { chkd = true; } 

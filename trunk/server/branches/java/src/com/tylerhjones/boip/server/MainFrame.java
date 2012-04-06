@@ -136,7 +136,7 @@ public class MainFrame extends javax.swing.JFrame {
         lblHost = new javax.swing.JLabel();
         lblPort = new javax.swing.JLabel();
 
-        setTitle("BarcodeOverIP-Server 0.5.1 - Settings");
+        setTitle("BarcodeOverIP-Server 0.6.2 - Settings");
         setAlwaysOnTop(true);
         setName("MainWindow"); // NOI18N
         setResizable(false);
@@ -176,7 +176,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         btnToggleServer.setFont(new java.awt.Font("DejaVu Sans", 1, 13)); // NOI18N
         btnToggleServer.setText("Deactivate Server");
-        btnToggleServer.setToolTipText("Deactivate the server to prevent barcodes being sent and typed");
+        btnToggleServer.setToolTipText("Deactivate the server to prevent barcodes being received and typed");
         btnToggleServer.setMaximumSize(new java.awt.Dimension(402, 29));
         btnToggleServer.setMinimumSize(new java.awt.Dimension(402, 29));
         btnToggleServer.setPreferredSize(new java.awt.Dimension(402, 29));
@@ -187,7 +187,7 @@ public class MainFrame extends javax.swing.JFrame {
         });
 
         jLabel1.setFont(new java.awt.Font("DejaVu Sans", 0, 14)); // NOI18N
-        jLabel1.setText("<html>Enter the following values into your mobile device (follow the steps your device gives you) to connect to this computer to start scanning barcodes! It's that easy!</html>");
+        jLabel1.setText("<html>Enter the IP and Port given below into your BarcodeOverIP Client app to scan and send barcodes to this computer. It's that easy!</html>");
         jLabel1.setVerticalAlignment(javax.swing.SwingConstants.TOP);
         jLabel1.setFocusable(false);
         jLabel1.setMaximumSize(new java.awt.Dimension(402, 45));
@@ -206,7 +206,7 @@ public class MainFrame extends javax.swing.JFrame {
         });
 
         btnAbout.setText("About");
-        btnAbout.setToolTipText("Click for info on this application.");
+        btnAbout.setToolTipText("Click for info about BarcodeOverIP-Server");
         btnAbout.setMaximumSize(new java.awt.Dimension(85, 29));
         btnAbout.setMinimumSize(new java.awt.Dimension(65, 29));
         btnAbout.setPreferredSize(new java.awt.Dimension(85, 29));
@@ -217,8 +217,8 @@ public class MainFrame extends javax.swing.JFrame {
         });
 
         chkAppendNL.setSelected(true);
-        chkAppendNL.setText("Append a cairrage return (enter) to end of rec'd barcode.");
-        chkAppendNL.setToolTipText("Adds a simulated press of the enter key after the barcode is typed. Defualt is TRUE.");
+        chkAppendNL.setText("Append a cairrage return (enter key) to received barcodes");
+        chkAppendNL.setToolTipText("Adds a simulated press of the enter key after the barcode is received and typed by the system. Defualt is TRUE.");
 
         frameAdvanced.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Advanced Settings", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 14))); // NOI18N
         frameAdvanced.setEnabled(false);
@@ -341,8 +341,8 @@ public class MainFrame extends javax.swing.JFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(12, 12, 12)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblHost, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -513,9 +513,11 @@ public class MainFrame extends javax.swing.JFrame {
     private boolean setServerState(boolean val) {  // TRUE = Active
         if(val) {
             Server.activate();
+            this.btnToggleServer.setToolTipText("Activate the server to allow barcodes to be received and typed");
             this.SysTrayIcon.setToolTip("BarcodeOverIP " + SET.VERSION + " - Active\n(Right or Left click to show settings window)\nHost:Port - " + SET.getHost() + ":" + String.valueOf(SET.getPort()));
         } else {
             Server.deactivate();
+            this.btnToggleServer.setToolTipText("Deactivate the server to prevent barcodes being received and typed");
             this.SysTrayIcon.setToolTip("BarcodeOverIP " + SET.VERSION + " - Inactive\n(Right or Left click to show settings window)\nHost:Port - " + SET.getHost() + ":" + String.valueOf(SET.getPort()));
         }
         return val;
