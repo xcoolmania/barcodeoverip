@@ -383,7 +383,7 @@ public class BoIPActivity extends ListActivity {
 				Common.showAbout(this);
 				return true;
 			case R.id.mnuMainDonate:
-				Uri uri = Uri.parse("http://" + getText(R.string.project_donate_site));
+				Uri uri = Uri.parse(getText(R.string.project_donate_site).toString());
 				startActivity(new Intent(Intent.ACTION_VIEW, uri));
 				return true;
 			case R.id.mnuMainAddServer:
@@ -468,6 +468,7 @@ public class BoIPActivity extends ListActivity {
 			}
 			*/
 		}
+		this.UpdateList();
 	}
 	
 	/** Logging shortcut functions **************************************************** */
