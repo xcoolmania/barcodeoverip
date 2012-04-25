@@ -24,7 +24,7 @@
  */
 
 
-package com.tylerhjones.boip.client;
+package com.tylerhjones.boip.client1;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
