@@ -415,16 +415,21 @@ public class BoIPActivity extends ListActivity {
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
 		SharedPreferences sVal = getSharedPreferences(Common.PREFS, 0);
 		boolean found = false;
-		for(int i=0; i<Servers.size(); i++) {
-			if(!found) {
-				if(sVal.getInt(Common.PREF_CURSRV, 0) == Servers.get(i).getIndex()) {
-					found = true;
-					SelectedServer = Servers.get(i);
-					i = Servers.size() + 1;
+		try {
+			for(int i=0; i<Servers.size(); i++) {
+				if(!found) {
+					if(sVal.getInt(Common.PREF_CURSRV, 0) == Servers.get(i).getIndex()) {
+						found = true;
+						SelectedServer = Servers.get(i);
+						i = Servers.size() + 1;
+					}
 				}
 			}
+			if(!found) { SelectedServer = Servers.get(0); }
+		} catch(IndexOutOfBoundsException e) {
+			Log.wtf(TAG, "A barcode was scanned but no servers are defined! - " + e.toString()); 
+			return;
 		}
-		if(!found) { SelectedServer = Servers.get(0); }
 		lv("*** AFTER SCAN : SelectedServer ***  Index: " + String.valueOf(SelectedServer.getIndex()) + " -- Name: " + SelectedServer.getName());
 		lv("Activity result -- ", String.valueOf(requestCode), String.valueOf(resultCode));
 		IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
