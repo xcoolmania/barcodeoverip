@@ -8,7 +8,7 @@
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
         android:layout_marginRight="6dip"
-        android:src="@drawable/remote_server_64x64" 
+        android:src="@drawable/remote_server_small" 
         android:contentDescription="@string/app_icon_desc" />
     <LinearLayout
         android:orientation="vertical"

@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
-    <item android:id="@+id/mnuESEdit"
-          android:icon="@drawable/edit"
-          android:title="@string/mnuESEdit_title" />
-	<item android:id="@+id/mnuESDelete"
-          android:icon="@drawable/delete"
-          android:title="@string/mnuESDelete_title" />
-</menu>

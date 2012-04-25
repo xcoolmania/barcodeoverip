@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
     <item android:id="@+id/mnuMainAddServer"
-          android:icon="@drawable/add"
+          android:icon="@drawable/ic_add"
           android:title="@string/mnuMainAddServer_title" />
 	<item android:id="@+id/mnuMainAbout"
-          android:icon="@drawable/about"
+          android:icon="@drawable/ic_about"
           android:title="@string/mnuMainAbout_title" />
 	<item android:id="@+id/mnuMainDonate"
-          android:icon="@drawable/gift"
+          android:icon="@drawable/ic_donate"
           android:title="@string/mnuMainDonate_title" />
 	<item android:id="@+id/mnuMainExit"
-          android:icon="@drawable/exit"
+          android:icon="@drawable/ic_exit"
           android:title="@string/mnuMainExit_title" />
 </menu>
