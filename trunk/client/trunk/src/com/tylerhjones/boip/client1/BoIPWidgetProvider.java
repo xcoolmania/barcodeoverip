@@ -26,20 +26,46 @@
 
 package com.tylerhjones.boip.client1;
 
+import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.widget.RemoteViews;
 
 public class BoIPWidgetProvider extends AppWidgetProvider {
 
+	private static final String ACTION_CLICK = "ACTION_CLICK";
+	
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         final int N = appWidgetIds.length;
 
+        ComponentName thisWidget = new ComponentName(context, BoIPWidgetProvider.class);
+		int[] allWidgetIds = appWidgetManager.getAppWidgetIds(thisWidget);
+		for (int widgetId : allWidgetIds) {
+
+
+			RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.boip_widget);
+			//Log.w("WidgetExample", String.valueOf(number));
+			// Set the text
+			//remoteViews.setTextViewText(R.id.server, String.valueOf(number));
+
+			// Register an onClickListener
+			Intent intent = new Intent(context, BoIPWidgetProvider.class);
+
+			intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+			intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
+
+			PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+			remoteViews.setOnClickPendingIntent(R.id.server, pendingIntent);
+			appWidgetManager.updateAppWidget(widgetId, remoteViews);
+		}
+        
         // Perform this loop procedure for each App Widget that belongs to this provider
-        for (int i=0; i<N; i++) {
-            int appWidgetId = appWidgetIds[i];
+        //for (int i=0; i<N; i++) {
+            //int appWidgetId = appWidgetIds[i];
 
             // Create an Intent to launch ExampleActivity
             //Intent intent = new Intent(context, ExampleActivity.class);
@@ -52,6 +78,6 @@ public class BoIPWidgetProvider extends AppWidgetProvider {
 
             // Tell the AppWidgetManager to perform an update on the current app widget
             //appWidgetManager.updateAppWidget(appWidgetId, views);
-        }
+        //}
     }
 }
