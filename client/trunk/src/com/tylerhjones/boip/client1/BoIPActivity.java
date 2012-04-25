@@ -55,6 +55,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
+import com.tylerhjones.boip.client1.R;
 
 public class BoIPActivity extends ListActivity {
 	
@@ -383,7 +384,7 @@ public class BoIPActivity extends ListActivity {
 				Common.showAbout(this);
 				return true;
 			case R.id.mnuMainDonate:
-				Uri uri = Uri.parse("http://" + getText(R.string.project_donate_site));
+				Uri uri = Uri.parse(getText(R.string.project_donate_site).toString());
 				startActivity(new Intent(Intent.ACTION_VIEW, uri));
 				return true;
 			case R.id.mnuMainAddServer:
