@@ -37,17 +37,17 @@ import android.widget.RemoteViews;
 
 public class BoIPWidgetProvider extends AppWidgetProvider {
 
-	private static final String ACTION_CLICK = "ACTION_CLICK";
+	public static final String ACTION_CLICK = "com.tylerhjones.boip.client1.BoIPWidgetProvider.ACTION_CLICK";
+	public static final String TAG = "BoIPWidgetProvider";
 	
+	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-        final int N = appWidgetIds.length;
+		// final int N = appWidgetIds.length;
 
         ComponentName thisWidget = new ComponentName(context, BoIPWidgetProvider.class);
 		int[] allWidgetIds = appWidgetManager.getAppWidgetIds(thisWidget);
 		for (int widgetId : allWidgetIds) {
-
-
-			RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.boip_widget);
+			RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.boip_widget);
 			//Log.w("WidgetExample", String.valueOf(number));
 			// Set the text
 			//remoteViews.setTextViewText(R.id.server, String.valueOf(number));
@@ -59,8 +59,8 @@ public class BoIPWidgetProvider extends AppWidgetProvider {
 			intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
 
 			PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-			remoteViews.setOnClickPendingIntent(R.id.server, pendingIntent);
-			appWidgetManager.updateAppWidget(widgetId, remoteViews);
+			views.setOnClickPendingIntent(R.id.server, pendingIntent);
+			appWidgetManager.updateAppWidget(widgetId, views);
 		}
         
         // Perform this loop procedure for each App Widget that belongs to this provider
@@ -80,4 +80,21 @@ public class BoIPWidgetProvider extends AppWidgetProvider {
             //appWidgetManager.updateAppWidget(appWidgetId, views);
         //}
     }
+	
+	@Override
+	public void onReceive(Context context, Intent intent) {
+		super.onReceive(context, intent);
+		
+		if (intent.getAction().equals(ACTION_CLICK)) {
+			RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.boip_widget);
+			try {
+				AppWidgetManager awm = AppWidgetManager.getInstance(context);
+				awm.updateAppWidget(awm.getAppWidgetIds(new ComponentName(context, BoIPWidgetProvider.class)), views);
+			}
+			catch (Exception ignore) {
+				// Nothing
+			}
+			Log.v(TAG, "*** Widget Clicked!!! ***");
+		}
+	}
 }
