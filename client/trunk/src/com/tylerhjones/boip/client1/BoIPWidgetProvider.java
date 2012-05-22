@@ -54,11 +54,10 @@ public class BoIPWidgetProvider extends AppWidgetProvider {
 
 			// Register an onClickListener
 			Intent intent = new Intent(context, BoIPWidgetProvider.class);
-
-			intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+			intent.setAction(ACTION_CLICK);
 			intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
 
-			PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+			PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
 			views.setOnClickPendingIntent(R.id.server, pendingIntent);
 			appWidgetManager.updateAppWidget(widgetId, views);
 		}
