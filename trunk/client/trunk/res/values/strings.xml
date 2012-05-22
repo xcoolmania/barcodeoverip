@@ -88,4 +88,5 @@
 	<string-array name="cboServers_array">
 		<item>Choose Server</item>
 	</string-array>
+	<string name="widget_text_default">Scan Barcode</string>
 </resources>
