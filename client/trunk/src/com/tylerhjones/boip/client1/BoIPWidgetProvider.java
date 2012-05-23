@@ -34,6 +34,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import android.widget.RemoteViews;
+import android.widget.Toast;
 
 public class BoIPWidgetProvider extends AppWidgetProvider {
 
@@ -42,17 +43,12 @@ public class BoIPWidgetProvider extends AppWidgetProvider {
 	
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-		// final int N = appWidgetIds.length;
 
         ComponentName thisWidget = new ComponentName(context, BoIPWidgetProvider.class);
 		int[] allWidgetIds = appWidgetManager.getAppWidgetIds(thisWidget);
 		for (int widgetId : allWidgetIds) {
 			RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.boip_widget);
-			//Log.w("WidgetExample", String.valueOf(number));
-			// Set the text
-			//remoteViews.setTextViewText(R.id.server, String.valueOf(number));
 
-			// Register an onClickListener
 			Intent intent = new Intent(context, BoIPWidgetProvider.class);
 			intent.setAction(ACTION_CLICK);
 			intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
@@ -62,22 +58,6 @@ public class BoIPWidgetProvider extends AppWidgetProvider {
 			appWidgetManager.updateAppWidget(widgetId, views);
 		}
         
-        // Perform this loop procedure for each App Widget that belongs to this provider
-        //for (int i=0; i<N; i++) {
-            //int appWidgetId = appWidgetIds[i];
-
-            // Create an Intent to launch ExampleActivity
-            //Intent intent = new Intent(context, ExampleActivity.class);
-            //PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
-
-            // Get the layout for the App Widget and attach an on-click listener
-            // to the button
-            //RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.boip_widget);
-            //views.setOnClickPendingIntent(R.id.button, pendingIntent);
-
-            // Tell the AppWidgetManager to perform an update on the current app widget
-            //appWidgetManager.updateAppWidget(appWidgetId, views);
-        //}
     }
 	
 	@Override
@@ -89,6 +69,7 @@ public class BoIPWidgetProvider extends AppWidgetProvider {
 			try {
 				AppWidgetManager awm = AppWidgetManager.getInstance(context);
 				awm.updateAppWidget(awm.getAppWidgetIds(new ComponentName(context, BoIPWidgetProvider.class)), views);
+				Toast.makeText(context, "You tapped a widget!", 6).show();
 			}
 			catch (Exception ignore) {
 				// Nothing

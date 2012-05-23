@@ -1,18 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/widget_layout"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:gravity="center"
-    android:background="@drawable/boip_widget_shape" >
 
-    <TextView
-        android:id="@+id/server"
-        style="@android:style/TextAppearance.Medium"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="@string/widget_text_default">
-    </TextView>
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/widget_layout"
+    	android:layout_width="match_parent"
+    	android:layout_height="match_parent"
+		android:background="@drawable/boip_widget_shape" 
+		android:layout_marginTop="5dp"  		        
+	    android:layout_marginLeft="5dp"  
+	    android:layout_marginRight="5dp"  
+	    android:layout_marginBottom="5dp"  
+    	android:gravity="center|top">
+    	
+        <ImageView
+            android:id="@+id/widget_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="5dp"
+            android:src="@drawable/ic_launcher" >
 
-</LinearLayout>
+    	</ImageView>
+    	   	
+	    <TextView
+	        android:id="@+id/server_title"
+	        style="@style/ServerTitleText"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentRight="true"
+	        android:layout_toRightOf="@+id/widget_icon"
+			android:layout_marginTop="5dp"  		        
+	        android:layout_marginLeft="1dp"  
+	        android:layout_marginRight="4dp"  
+	        android:gravity="left"
+	        android:text="@string/widget_server_title" >
+
+	    </TextView>   
+	    
+	    <TextView
+	        android:id="@+id/server"
+	        style="@style/ServerText"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentRight="true"
+	        android:layout_alignParentLeft="true"
+	        android:layout_below="@+id/widget_icon"
+	        android:gravity="center|top"
+	        android:text="@string/widget_server_default" >
+
+	    </TextView> 
+	    
+	    <TextView
+	        android:id="@+id/server_ipport"
+	        style="@style/IPPortText"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentRight="true"
+	        android:layout_alignParentLeft="true"
+	        android:layout_below="@+id/server"
+	        android:gravity="center|bottom"
+	        android:layout_marginTop="2dp"  	        	        
+	        android:layout_marginBottom="2dp"  	        
+	        android:text="@string/widget_server_ipport" >
+
+	    </TextView> 
+    
+    </RelativeLayout>
