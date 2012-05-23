@@ -88,5 +88,7 @@
 	<string-array name="cboServers_array">
 		<item>Choose Server</item>
 	</string-array>
-	<string name="widget_text_default">Scan Barcode</string>
+	<string name="widget_server_default">[Target Server]</string>
+	<string name="widget_server_ipport">[Target IP:Port]</string>
+	<string name="widget_server_title">Tap here to scan a barcode.</string>
 </resources>
