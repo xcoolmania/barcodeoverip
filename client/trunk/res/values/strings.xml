@@ -92,4 +92,5 @@
 	<string name="widget_server_ipport">[Target IP:Port]</string>
 	<string name="widget_server_title">Tap here to scan a barcode.</string>
 	<string name="scanner_activity">Scan Barcode w/ZXing</string>
+	<string name="widget_icon_desc">BarcodeOverIP application icon.</string>
 </resources>
