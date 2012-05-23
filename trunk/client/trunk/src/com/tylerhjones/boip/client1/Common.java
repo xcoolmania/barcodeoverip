@@ -53,6 +53,7 @@ public class Common {
 	public static final String DB_NAME = "servers";
 	public static final int DB_VERSION = 1;
 	public static final String TABLE_SERVERS = "servers";
+	public static final String TABLE_SERVERS_BKP = "servers_bkp";
 	public static final String S_FIELD_INDEX = "idx";
 	public static final String S_FIELD_NAME = "name";
 	public static final String S_FIELD_HOST = "host";

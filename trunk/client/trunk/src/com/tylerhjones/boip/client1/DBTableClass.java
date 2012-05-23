@@ -44,6 +44,14 @@ public class DBTableClass {
 		+ Common.S_FIELD_PORT + " INTEGER DEFAULT '41788', "
 		+ Common.S_FIELD_PASS + " TEXT DEFAULT '')";   
 	
+	private static final String CREATE_TABLE_BKP="CREATE TABLE IF NOT EXISTS " 
+		+ Common.TABLE_SERVERS_BKP + " (" 
+		+ Common.S_FIELD_INDEX + " INTEGER PRIMARY KEY, " 
+		+ Common.S_FIELD_NAME + " TEXT, " 
+		+ Common.S_FIELD_HOST + " TEXT, "
+		+ Common.S_FIELD_PORT + " INTEGER, " 
+		+ Common.S_FIELD_PASS + " TEXT)";
+
 	/**
 	 * On create.
 	 *
@@ -51,6 +59,7 @@ public class DBTableClass {
 	 */
 	public static void onCreate(SQLiteDatabase database) {
 		database.execSQL(CREATE_TABLE);
+		database.execSQL(CREATE_TABLE_BKP);
 	}
 
 	/**
@@ -66,6 +75,7 @@ public class DBTableClass {
 				+ oldVersion + " to " + newVersion
 				+ ", which will destroy all old data");
 		db.execSQL("DROP TABLE IF EXISTS todo");
+		db.execSQL("DROP TABLE IF EXISTS " + Common.TABLE_SERVERS_BKP);
 		onCreate(db);
 	}
 	

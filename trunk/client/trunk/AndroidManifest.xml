@@ -30,13 +30,24 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".BoIPWidgetConfigure">
+        <activity 
+            android:name=".BarcodeScannerActivity"
+            android:label="@string/scanner_activity">
+    		<intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+		</activity>
+        <activity 
+            android:name=".BoIPWidgetConfigure">
     		<intent-filter>
         		<action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
     		</intent-filter>
 		</activity>
         
-        <receiver android:name=".BoIPWidgetProvider" android:label="BoIP Scan Widget">
+        <receiver 
+            android:name=".BoIPWidgetProvider" 
+            android:label="BoIP Scan Widget">
     		<intent-filter>
     	    	<action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
     	    	<action android:name="com.tylerhjones.boip.client1.BoIPWidgetProvider.ACTION_CLICK" />

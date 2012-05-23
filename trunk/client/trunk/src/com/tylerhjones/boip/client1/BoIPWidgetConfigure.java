@@ -54,7 +54,7 @@ public class BoIPWidgetConfigure extends ListActivity {
 	private Database DB = new Database(this);
 	private Server SelectedServer = new Server();
 
-	int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
+	int WidgetID = AppWidgetManager.INVALID_APPWIDGET_ID;
 	
 	public BoIPWidgetConfigure() {
 		super();
@@ -71,9 +71,9 @@ public class BoIPWidgetConfigure extends ListActivity {
 		Intent intent = getIntent();
 		Bundle extras = intent.getExtras();
 		if (extras != null) {
-			mAppWidgetId = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
+			WidgetID = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
 		}
-		if (mAppWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
+		if (WidgetID == AppWidgetManager.INVALID_APPWIDGET_ID) {
 			finish();
 		}
 
@@ -90,7 +90,7 @@ public class BoIPWidgetConfigure extends ListActivity {
 				sEdit = sVal.edit();
 				// The widget id is used as the key (format: wid0,wid1,etc..) with the server index stored as data
 				// This allows us to determine which widget belongs to what server and vice-versa.
-				sEdit.putInt(String.valueOf(mAppWidgetId), SelectedServer.getIndex());
+				sEdit.putInt(String.valueOf(WidgetID), SelectedServer.getIndex());
 				sEdit.commit();
 
 				//
@@ -99,11 +99,11 @@ public class BoIPWidgetConfigure extends ListActivity {
 				
 				final Context context = BoIPWidgetConfigure.this;
 				AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-				BoIPWidgetProvider.updateAppWidget(context, appWidgetManager, mAppWidgetId, SelectedServer.getIndex());
+				BoIPWidgetProvider.updateAppWidget(context, appWidgetManager, WidgetID, SelectedServer.getIndex());
 				
 				// Make sure we pass back the original appWidgetId
 				Intent resultValue = new Intent();
-				resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
+				resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, WidgetID);
 				setResult(RESULT_OK, resultValue);
 				finish();
 			}

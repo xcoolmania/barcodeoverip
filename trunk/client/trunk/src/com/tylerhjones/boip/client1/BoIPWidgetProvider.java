@@ -46,61 +46,69 @@ public class BoIPWidgetProvider extends AppWidgetProvider {
 	public static final String TAG = "BoIPWidgetProvider";
 	
 	@Override
-	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+	public void onUpdate(Context c, AppWidgetManager appWidgetManager, int[] WidgetIDs) {
 		// Database and server settings variables
 		String ServerName, ServerIPPort;
-        ComponentName thisWidget = new ComponentName(context, BoIPWidgetProvider.class);
+		ComponentName thisWidget = new ComponentName(c, BoIPWidgetProvider.class);
 		int[] allWidgetIds = appWidgetManager.getAppWidgetIds(thisWidget);
-		for (int widgetId : allWidgetIds) {
+		for (int i = 0; i < allWidgetIds.length; ++i) {
+			Log.v(TAG, "||| onUpdate - For Loop, WidgetID: " + String.valueOf(allWidgetIds[i]) + " |||");
 			ServerName = "[Not Configured]";
 			ServerIPPort = "0.0.0.0:41788";
-			SharedPreferences sVal = context.getSharedPreferences(Common.WIDGET_PREFS, 0);
-			int ServerIdx = sVal.getInt(String.valueOf(widgetId), -1);
+			SharedPreferences sVal = c.getSharedPreferences(Common.WIDGET_PREFS, 0);
+			int ServerIdx = sVal.getInt(String.valueOf(allWidgetIds[i]), -1);
 			if (ServerIdx >= 0) {
-				Server found = GetServer(context, ServerIdx);
+				Server found = GetServer(c, ServerIdx);
 				if (found != null) {
 					ServerName = found.getName();
 					ServerIPPort = found.getHost() + ":" + String.valueOf(found.getPort());
 				}
 			}
-			RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.boip_widget);
+			RemoteViews views = new RemoteViews(c.getPackageName(), R.layout.boip_widget);
 
-			Intent intent = new Intent(context, BoIPWidgetProvider.class);
-			intent.setAction(ACTION_CLICK);
-			intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
+			Intent in = new Intent(c, BoIPWidgetProvider.class);
+			in.setAction(ACTION_CLICK);
+			in.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, allWidgetIds[i]);
+			Log.v(TAG, "*** onUpdate WidgetID: " + String.valueOf(allWidgetIds[i]) + " ***");
 
-			PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
+
+			PendingIntent pendingIntent = PendingIntent.getBroadcast(c, 0, in, 0);
 			views.setTextViewText(R.id.w_server, ServerName);
 			views.setTextViewText(R.id.w_server_ipport, ServerIPPort);
 			views.setOnClickPendingIntent(R.id.widget_layout, pendingIntent);
-			appWidgetManager.updateAppWidget(widgetId, views);
+			views.setOnClickPendingIntent(R.id.w_server, pendingIntent);
+			views.setOnClickPendingIntent(R.id.w_server_ipport, pendingIntent);
+			views.setOnClickPendingIntent(R.id.widget_icon, pendingIntent);
+			views.setOnClickPendingIntent(R.id.w_server_title, pendingIntent);
+			appWidgetManager.updateAppWidget(allWidgetIds[i], views);
 		}
         
     }
 	
 	@Override
-	public void onReceive(Context context, Intent intent) {
-		super.onReceive(context, intent);
+	public void onReceive(Context c, Intent in) {
+		super.onReceive(c, in);
 		int WidgetID = AppWidgetManager.INVALID_APPWIDGET_ID;
 		
-		if (intent.getAction().equals(ACTION_CLICK)) {
-			RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.boip_widget);
+		if (in.getAction().equals(ACTION_CLICK)) {
+			RemoteViews views = new RemoteViews(c.getPackageName(), R.layout.boip_widget);
 			try {
-				AppWidgetManager awm = AppWidgetManager.getInstance(context);
-				awm.updateAppWidget(awm.getAppWidgetIds(new ComponentName(context, BoIPWidgetProvider.class)), views);
-				Toast.makeText(context, "You tapped a widget!", 6).show();
+				AppWidgetManager awm = AppWidgetManager.getInstance(c);
+				awm.updateAppWidget(awm.getAppWidgetIds(new ComponentName(c, BoIPWidgetProvider.class)), views);
+				Toast.makeText(c, "You tapped a widget!", 6).show();
 				
-				Bundle extras = intent.getExtras();
-				if (extras != null) {
-					WidgetID = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
-				}
+				Bundle extras = in.getExtras();
+				// if (extras != null) {
+				WidgetID = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
+				Log.v(TAG, "*** onReceive WidgetID: " + String.valueOf(WidgetID) + " ***");
+				// }
 				if (WidgetID == AppWidgetManager.INVALID_APPWIDGET_ID) {
 					Log.e(TAG, "onReceive(context, intent) Invalid AppWidgetID received!");
 					return;
 				} else {
-					SharedPreferences sVal = context.getSharedPreferences(Common.WIDGET_PREFS, 0);
+					SharedPreferences sVal = c.getSharedPreferences(Common.WIDGET_PREFS, 0);
 					int SvrID = sVal.getInt(String.valueOf(WidgetID), -1);
-					Server Svr = GetServer(context, SvrID);
+					Server Svr = GetServer(c, SvrID);
 					if (Svr == null) {
 						Log.w(TAG, "onReceive(context, intent) Requested server ID '" + String.valueOf(SvrID) + "' could not be found in the DB!");
 						return;
@@ -108,7 +116,7 @@ public class BoIPWidgetProvider extends AppWidgetProvider {
 						Intent scanner = new Intent();
 						scanner.setClassName("com.tylerhjones.boip.client1", "com.tylerhjones.boip.client1.BarcodeScannerActivity");
 						scanner.putExtra(BarcodeScannerActivity.SERVER_ID, SvrID);
-						context.startActivity(scanner);
+						c.startActivity(scanner);
 					}
 				}
 			}
@@ -119,24 +127,25 @@ public class BoIPWidgetProvider extends AppWidgetProvider {
 		}
 	}
 	
-	public static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int mAppWidgetId, int index) {
+	public static void updateAppWidget(Context c, AppWidgetManager appWidgetManager, int mAppWidgetId, int idx) {
 		// Database and server settings variables
-		Server SelectedServer = GetServer(context, index);
+		Server SelectedServer = GetServer(c, idx);
 		
-		RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.boip_widget);
+		RemoteViews views = new RemoteViews(c.getPackageName(), R.layout.boip_widget);
 		views.setTextViewText(R.id.w_server, SelectedServer.getName());
 		views.setTextViewText(R.id.w_server_ipport, SelectedServer.getHost() + ":" + String.valueOf(SelectedServer.getPort()));
 		appWidgetManager.updateAppWidget(mAppWidgetId, views);
 	}
 	
-	private static Server GetServer(Context context, int idx) {
+	// This function returns a server object from the DB when given the LIST ITEM INDEX of said server.
+	private static Server GetServer(Context c, int idx) {
 		
 		ArrayList<Server> Servers = new ArrayList<Server>();
-		Database DB = new Database(context);
+		Database DB = new Database(c);
 		DB.open();
 		Servers = DB.getAllServers();
 		DB.close();
-		Log.v(TAG, "UpdateList(): Got servers. Count: " + Servers.size());
+		Log.v(TAG, "UpdateList(): Got servers. Count: " + String.valueOf(Servers.size()));
 		if (!Servers.equals(null) && Servers.size() > 0) {
 			Log.v(TAG, "GetServer(): Recieved and returned server data...");
 			if (Servers.size() == 1) {
