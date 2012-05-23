@@ -71,7 +71,6 @@ public class BoIPWidgetProvider extends AppWidgetProvider {
 			in.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, allWidgetIds[i]);
 			Log.v(TAG, "*** onUpdate WidgetID: " + String.valueOf(allWidgetIds[i]) + " ***");
 
-
 			PendingIntent pendingIntent = PendingIntent.getBroadcast(c, 0, in, 0);
 			views.setTextViewText(R.id.w_server, ServerName);
 			views.setTextViewText(R.id.w_server_ipport, ServerIPPort);

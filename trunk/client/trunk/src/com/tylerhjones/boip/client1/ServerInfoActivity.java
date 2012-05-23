@@ -90,12 +90,12 @@ public class ServerInfoActivity extends Activity {
 			}
 		});
 		
-		int action = this.getIntent().getIntExtra("com.tylerhjones.boip.client.Action", Common.ADD_SREQ);
+		int action = this.getIntent().getIntExtra("com.tylerhjones.boip.client1.Action", Common.ADD_SREQ);
 		Log.d(TAG, "*** Intent passed 'Action' to ServerInfoActivity with value: '" + String.valueOf(action) + "'");
 		this.thisAction = action;
 		if (action == Common.EDIT_SREQ) {
 			lblTitle.setText("Edit Server Settings");
-			String name = this.getIntent().getStringExtra("com.tylerhjones.boip.client.ServerName");
+			String name = this.getIntent().getStringExtra("com.tylerhjones.boip.client1.ServerName");
 			Log.d(TAG, "*** Intent passed 'ServerName' to ServerInfoActivity with value: '" + name + "'");
 			DB.open();
 			Server = DB.getServerFromName(name);
@@ -139,7 +139,12 @@ public class ServerInfoActivity extends Activity {
 			Log.i(TAG, "Settings validation FAILED!");
 			return;
 		}
-
+		DB.open();
+		boolean r = DB.getIndexExits(DB.getRecordCount());
+		boolean rr = false;
+		if(DB.getRecordCount() > 1) { rr = DB.getIndexExits(DB.getRecordCount()-1);	}	
+		DB.close();
+		if(r && !rr) { Server.setIndex(DB.getRecordCount()); }
 		if (txtPass.getText().toString().trim().equals("") || txtPass.getText().toString() == null) {
 			Server.setPass(Common.DEFAULT_PASS);
 		} else {
@@ -187,6 +192,8 @@ public class ServerInfoActivity extends Activity {
 			if (res2 == -4) {
 				Toast.makeText(this, getText(R.string.settings_not_saved), 4).show();
 			} else {
+				int resval = DB.SortIndexes();
+				Log.d(TAG, "Save(): DB.SortIndexes() returned: " + String.valueOf(resval));
 				Toast.makeText(this, getText(R.string.settings_saved), 4).show();
 			}
 			Log.i(TAG, "addServer returned: '" + Long.toString(res2) + "'!");

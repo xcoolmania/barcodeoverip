@@ -126,6 +126,7 @@ public class BoIPActivity extends ListActivity {
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+		ld("onContextItemSelected(): Server list item selected with index: '" + String.valueOf(info.position) + "'");
 		int menuItemIndex = item.getItemId();
 		if (menuItemIndex == 1) {
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -135,9 +136,14 @@ public class BoIPActivity extends ListActivity {
 										@Override
 										public void onClick(DialogInterface dialog, int id) {
 											DB.open();
-											DB.deleteServer(Servers.get(info.position));
+											if(DB.deleteServer(Servers.get(info.position))) {
+												int resval = DB.SortIndexes();
+												Log.d(TAG, "onContextItemSelected(): DB.SortIndexes() returned: " + String.valueOf(resval));
+											} else {
+												Log.e(TAG, "onContextItemSelected(): Failed to delete server from DB table!");
+											}
 											DB.close();
-											UpdateList();
+											if(DB.getRecordCount() < 1) { theAdapter.clear(); Servers.clear(); } else { UpdateList(); }
 										}
 									}).setNegativeButton("No", new DialogInterface.OnClickListener() {
 										
@@ -161,6 +167,7 @@ public class BoIPActivity extends ListActivity {
 		DB.open();
 		Servers = DB.getAllServers();
 		DB.close();
+		if(Servers.size() < 1) { return; }
 		lv("UpdateList(): Got Servers, clearing adapter...");
 		theAdapter.clear();
 
@@ -241,7 +248,6 @@ public class BoIPActivity extends ListActivity {
 		if(ipaddr == null) { return; }
 		Server ns = new Server(s.getName(), ipaddr, s.getPass(), s.getPort(), s.getIndex());
 		
-		// ConnectingProgress = ProgressDialog.show(BoIPActivity.this, "Please wait.", "Sending barcode to server...", true);
 		Log.v(TAG, "SendBarcode called! Barcode: '" + code + "'");
 		lv(s.getName());
 		final BoIPClient client = new BoIPClient(ns);
@@ -284,8 +290,6 @@ public class BoIPActivity extends ListActivity {
 			Toast.makeText(this, "Error! - " + Common.errorCodes().get(res).toString(), 6).show();
 			lv("client.Validate returned: ", Common.errorCodes().get(res).toString());
 		}
-
-		// ConnectingProgress.dismiss();
 	}
 	
 	/******************************************************************************************/
@@ -303,11 +307,11 @@ public class BoIPActivity extends ListActivity {
 			try {
 				addr = InetAddress.getByName(s);
 			} catch (UnknownHostException e) {
-			Toast.makeText(this, "Invalid Host/IP Address! (-1)", 10).show();
+				Toast.makeText(this, "Invalid Host/IP Address! (-1)", 10).show();
 				return null;
 			}
 			if(addr.isLoopbackAddress() || addr.isLinkLocalAddress() || addr.isAnyLocalAddress()) {
-			Toast.makeText(this, "Invalid IP Address! IP must point to a physical, reachable computer!  (-2)", 10).show();
+				Toast.makeText(this, "Invalid IP Address! IP must point to a physical, reachable computer!  (-2)", 10).show();
 				return null;
 			}
 			try {
@@ -316,7 +320,7 @@ public class BoIPActivity extends ListActivity {
 					return null;
 				}
 			} catch (IOException e1) {
-			Toast.makeText(this, "Address/Host is unreachable! (Error Connecting) (-4)", 10).show();
+				Toast.makeText(this, "Address/Host is unreachable! (Error Connecting) (-4)", 10).show();
 				return null;
 			}
 			
@@ -330,7 +334,6 @@ public class BoIPActivity extends ListActivity {
 			try {
 				addr = InetAddress.getByName(str);
 			} catch (UnknownHostException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 				return false;
 			}
@@ -412,8 +415,15 @@ public class BoIPActivity extends ListActivity {
 
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
 		SharedPreferences sVal = getSharedPreferences(Common.PREFS, 0);
-		boolean found = false;
+		//boolean found = false;
 		try {
+			this.UpdateList();
+		} catch(Exception e) {
+			Log.e(TAG, "onActivityResult(): Exception occured while trying to update the server list.", e);
+		}
+		try {
+			SelectedServer = Servers.get(sVal.getInt(Common.PREF_CURSRV, 0));
+			/*
 			for(int i=0; i<Servers.size(); i++) {
 				if(!found) {
 					if(sVal.getInt(Common.PREF_CURSRV, 0) == Servers.get(i).getIndex()) {
@@ -423,8 +433,10 @@ public class BoIPActivity extends ListActivity {
 					}
 				}
 			}
-			if(!found) { SelectedServer = Servers.get(0); }
+			*/
+			//if(!found) { SelectedServer = Servers.get(0); }
 		} catch(IndexOutOfBoundsException e) {
+			Log.e(TAG, "INDEX OUT OF BOUNDES!! - " + e.toString()); 
 			Log.wtf(TAG, "A barcode was scanned but no servers are defined! - " + e.toString()); 
 			return;
 		}
@@ -440,6 +452,10 @@ public class BoIPActivity extends ListActivity {
 				}
 			} catch(NullPointerException ne) {
 				Toast.makeText(this, "Hmm that did't work.. Try again. (1)", 10).show();
+				DB.open();
+				DB.SortIndexes();
+				DB.close();
+				this.UpdateList();
 				Log.e(TAG, ne.toString());
 			}
 		}
@@ -466,7 +482,7 @@ public class BoIPActivity extends ListActivity {
 			}
 			*/
 		}
-		this.UpdateList();
+		//this.UpdateList();
 	}
 	
 	/** Logging shortcut functions **************************************************** */
