@@ -55,13 +55,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
-import com.tylerhjones.boip.client1.R;
 
 public class BoIPActivity extends ListActivity {
 	
 	private static final String TAG = "BoIPActivity";
 	// private ProgressDialog ConnectingProgress = null;
-	private ArrayList<Server> Servers = new ArrayList<Server>();
+	private static ArrayList<Server> Servers = new ArrayList<Server>();
 	private ServerAdapter theAdapter;
 	private Database DB = new Database(this);
 	private Server SelectedServer = new Server();
@@ -108,7 +107,6 @@ public class BoIPActivity extends ListActivity {
 			Common.showMsgBox(this, "No Network", "No active network connection was found! You must be connected to a network to use BarcodeOverIP!");
 		}
 	}
-	
 	
 	/*******************************************************************************************************/
 	/** Event handler functions ************************************************************************** */
@@ -233,7 +231,7 @@ public class BoIPActivity extends ListActivity {
 			return true;
 		} else {
 			Toast.makeText(this, "Error! - " + Common.errorCodes().get(res).toString(), 6).show();
-			lv("client.Validate returned: ", Common.errorCodes().get(res).toString());
+			Log.v(TAG, "client.Validate returned: " + Common.errorCodes().get(res).toString());
 		}
 		return false;
 	}
@@ -290,7 +288,6 @@ public class BoIPActivity extends ListActivity {
 		// ConnectingProgress.dismiss();
 	}
 	
-
 	/******************************************************************************************/
 	/** Validate IPs/Hostnames ****************************************************************/
 	
@@ -300,26 +297,26 @@ public class BoIPActivity extends ListActivity {
 		// -Check if an IP/host is a loopback
 		// -Check if an IP is a valid IP address
 		
-		public String CheckInetAddress(String s) {
+	public String CheckInetAddress(String s) {
 			InetAddress addr;
 
 			try {
 				addr = InetAddress.getByName(s);
 			} catch (UnknownHostException e) {
-				Toast.makeText(this, "Invalid Host/IP Address! (-1)", 10).show();
+			Toast.makeText(this, "Invalid Host/IP Address! (-1)", 10).show();
 				return null;
 			}
 			if(addr.isLoopbackAddress() || addr.isLinkLocalAddress() || addr.isAnyLocalAddress()) {
-				Toast.makeText(this, "Invalid IP Address! IP must point to a physical, reachable computer!  (-2)", 10).show();
+			Toast.makeText(this, "Invalid IP Address! IP must point to a physical, reachable computer!  (-2)", 10).show();
 				return null;
 			}
 			try {
 				if(!addr.isReachable(2500)) {
-					Toast.makeText(this, "Address/Hosst is unreachable! (2500ms Timeout) (-3)", 10).show();
+				Toast.makeText(this, "Address/Hosst is unreachable! (2500ms Timeout) (-3)", 10).show();
 					return null;
 				}
 			} catch (IOException e1) {
-				Toast.makeText(this, "Address/Host is unreachable! (Error Connecting) (-4)", 10).show();
+			Toast.makeText(this, "Address/Host is unreachable! (Error Connecting) (-4)", 10).show();
 				return null;
 			}
 			
@@ -400,16 +397,16 @@ public class BoIPActivity extends ListActivity {
 	
 	private void showServerInfo(Server s) { // Server object given, edit server
 		Intent intent = new Intent();
-		intent.setClassName("com.tylerhjones.boip.client", "com.tylerhjones.boip.client.ServerInfoActivity");
-		intent.putExtra("com.tylerhjones.boip.client.ServerName", s.getName());
-		intent.putExtra("com.tylerhjones.boip.client.Action", Common.EDIT_SREQ);
+		intent.setClassName("com.tylerhjones.boip.client1", "com.tylerhjones.boip.client1.ServerInfoActivity");
+		intent.putExtra("com.tylerhjones.boip.client1.ServerName", s.getName());
+		intent.putExtra("com.tylerhjones.boip.client1.Action", Common.EDIT_SREQ);
 		startActivityForResult(intent, Common.EDIT_SREQ);
 	}
 	
 	private void addServer() {
 		Intent intent = new Intent();
-		intent.setClassName("com.tylerhjones.boip.client", "com.tylerhjones.boip.client.ServerInfoActivity");
-		intent.putExtra("com.tylerhjones.boip.client.Action", Common.ADD_SREQ);
+		intent.setClassName("com.tylerhjones.boip.client1", "com.tylerhjones.boip.client1.ServerInfoActivity");
+		intent.putExtra("com.tylerhjones.boip.client1.Action", Common.ADD_SREQ);
 		startActivityForResult(intent, Common.ADD_SREQ);
 	}
 
@@ -512,5 +509,13 @@ public class BoIPActivity extends ListActivity {
 	
 	public void li(String msg, String val) { // Info message with one string value passed
 		Log.v(TAG, msg + val);
+	}
+	
+	public void lw(String msg) { // Warning message
+		Log.w(TAG, msg);
+	}
+	
+	public void lw(String msg, String val) { // Warning message with one string value passed
+		Log.w(TAG, msg + val);
 	}
 }

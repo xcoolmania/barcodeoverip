@@ -22,7 +22,7 @@
     	</ImageView>
     	   	
 	    <TextView
-	        android:id="@+id/server_title"
+	        android:id="@+id/w_server_title"
 	        style="@style/ServerTitleText"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
@@ -37,7 +37,7 @@
 	    </TextView>   
 	    
 	    <TextView
-	        android:id="@+id/server"
+	        android:id="@+id/w_server"
 	        style="@style/ServerText"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
@@ -50,13 +50,13 @@
 	    </TextView> 
 	    
 	    <TextView
-	        android:id="@+id/server_ipport"
+	        android:id="@+id/w_server_ipport"
 	        style="@style/IPPortText"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:layout_alignParentRight="true"
 	        android:layout_alignParentLeft="true"
-	        android:layout_below="@+id/server"
+	        android:layout_below="@+id/w_server"
 	        android:gravity="center|bottom"
 	        android:layout_marginTop="2dp"  	        	        
 	        android:layout_marginBottom="2dp"  	        

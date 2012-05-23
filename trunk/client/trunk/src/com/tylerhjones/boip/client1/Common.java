@@ -66,8 +66,10 @@ public class Common {
 	
 	// Our one and only preference, set after the first run of the application
 	public static final String PREFS = "boip_client";
+	public static final String WIDGET_PREFS = "boip_client_widgets";
 	public static final String PREF_VERSION = "version";
 	public static final String PREF_CURSRV = "curserver";
+	public static final String PREF_WIDGET_ID = "wid";
 	
 	/** Default value constants *********************************************************** */
 	public static final int DEFAULT_PORT = 41788;

@@ -30,6 +30,11 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <activity android:name=".BoIPWidgetConfigure">
+    		<intent-filter>
+        		<action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
+    		</intent-filter>
+		</activity>
         
         <receiver android:name=".BoIPWidgetProvider" android:label="BoIP Scan Widget">
     		<intent-filter>
@@ -40,6 +45,7 @@
     	    	android:name="android.appwidget.provider" 
     	    	android:resource="@xml/boip_widget_info" />
 		</receiver> 
+		
     </application>
         
     <support-screens
