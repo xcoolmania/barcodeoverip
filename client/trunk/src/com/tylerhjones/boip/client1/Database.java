@@ -42,7 +42,7 @@ public class Database {
 	private DBHelper dbhelper;
 	
 	public Database(Context c) {
-		Log.v(TAG, "Database class cunstructor called...");
+		Log.v(TAG, "Database class cunstructor called!");
 		this.context = c;
 	}
 	
@@ -53,10 +53,10 @@ public class Database {
 		try {
 			dbhelper = new DBHelper(context);
 			theDB = dbhelper.getWritableDatabase();
-			Log.v(TAG, "Database opened!");
+			Log.v(TAG, "open(): Database opened!");
 			return this;
 		} catch(SQLiteException e) {
-			Log.e(TAG, "Database.open() threw an exception!", e);
+			Log.e(TAG, "open() threw an exception!", e);
 			return null;
 		}
 	}
@@ -65,9 +65,9 @@ public class Database {
 		try {
 			dbhelper.close();
 		} catch(SQLiteException e) {
-			Log.e(TAG, "Database.close() threw an exception!", e);
+			Log.e(TAG, "close() threw an exception!", e);
 		}
-		Log.v(TAG, "Database closed!");
+		Log.v(TAG, "close(): Database closed!");
 	}
 	
 	/******************************************************************************/
@@ -75,7 +75,7 @@ public class Database {
 
 	public long addServer(Server s) {
 		try {
-			Log.v(TAG, "addImage()");
+			Log.v(TAG, "addServer(Server s)");
 			if (s.getHost().trim() == "" || s.getHost() == null) { return -1; }
 			if (s.getPort() == 0 || s.getPort() == 0) { return -2; }
 			if (s.getName().trim() == "" || s.getName() == null) { return -3; }
@@ -93,7 +93,7 @@ public class Database {
 	
 	public long editServer(int index, String name, String host, String port, String pass) {
 		try {
-			Log.v(TAG, "editServer()");
+			Log.v(TAG, "editServer(int index, name, host, port, pass)");
 			if(pass.trim() == "" || pass == null) { pass = "none"; }
 			ContentValues values = new ContentValues();
 			String where = Common.S_FIELD_INDEX + " = '" + String.valueOf(index) + "'";
@@ -111,7 +111,7 @@ public class Database {
 	public long editServerInfo(String oldname, String name, String host, String port, String pass) {
 	
 		try {
-			Log.v(TAG, "editServerInfo()");
+			Log.v(TAG, "editServerInfo(oldname, name, host, port, pass)");
 			if (pass.trim() == "" || pass == null) {
 				pass = "none";
 			}
@@ -131,7 +131,7 @@ public class Database {
 	public ArrayList<Server> getAllServers() {
 		Server s = new Server();
 		ArrayList<Server> sarray = new ArrayList<Server>();
-		Log.v(TAG, "Servers()");
+		Log.v(TAG, "getAllServers()");
 		try {
 			Cursor curs = theDB.query(Common.TABLE_SERVERS, new String[] { Common.S_FIELD_NAME, Common.S_FIELD_HOST, Common.S_FIELD_PORT,
 					Common.S_FIELD_PASS, Common.S_FIELD_INDEX }, null, null, null, null, null);
@@ -153,13 +153,13 @@ public class Database {
 	}
 
 	public boolean deleteServer(Server s) {
-		Log.v(TAG, "deleteServer(s)");
+		Log.v(TAG, "deleteServer(Server s)");
 		return theDB.delete(Common.TABLE_SERVERS, Common.S_FIELD_NAME + "='" + s.getName() + "'", null) > 0;
 	}
 	
 	public Server getServerFromIndex(int idx) throws SQLiteException {
 		Server s = new Server();
-		Log.v(TAG, "getServerFromIndex(idx)");
+		Log.v(TAG, "getServerFromIndex(int idx)");
 		Cursor mCursor = theDB.query(true, Common.TABLE_SERVERS, new String[] { Common.S_FIELD_NAME, Common.S_FIELD_HOST, Common.S_FIELD_PORT,
 				Common.S_FIELD_PASS }, Common.S_FIELD_INDEX + "='" + idx + "'", null, null, null, null, null);
 		if (mCursor.moveToFirst()) {
@@ -174,7 +174,7 @@ public class Database {
 	
 	public Server getServerFromName(String name) throws SQLiteException {
 		Server s = new Server();
-		Log.v(TAG, "getServerFromName(name)");
+		Log.v(TAG, "getServerFromName(String name)");
 		Cursor mCursor = theDB.query(true, Common.TABLE_SERVERS, new String[] { Common.S_FIELD_HOST, Common.S_FIELD_INDEX, Common.S_FIELD_PORT,
 				Common.S_FIELD_PASS }, Common.S_FIELD_NAME + "='" + name + "'", null, null, null, null, null);
 		if (mCursor.moveToFirst()) {
@@ -188,7 +188,7 @@ public class Database {
 	}
 	
 	public boolean getNameExits(String name) throws SQLiteException {
-		Log.v(TAG, "getNameExits(name)");
+		Log.v(TAG, "getNameExits(String name)");
 		Cursor mCursor = theDB.query(true, Common.TABLE_SERVERS, new String[] { Common.S_FIELD_HOST, Common.S_FIELD_INDEX, Common.S_FIELD_PORT,
 				Common.S_FIELD_PASS }, Common.S_FIELD_NAME + "='" + name + "'", null, null, null, null, null);
 		if (mCursor.getCount() < 1) {
@@ -199,7 +199,7 @@ public class Database {
 	}
 	
 	public boolean getHostExits(String host) throws SQLiteException {
-		Log.v(TAG, "getNameExits(name)");
+		Log.v(TAG, "getHostExits(String host)");
 		Cursor mCursor = theDB.query(true, Common.TABLE_SERVERS, new String[] { Common.S_FIELD_NAME, Common.S_FIELD_INDEX, Common.S_FIELD_PORT,
 				Common.S_FIELD_PASS }, Common.S_FIELD_HOST + "='" + host + "'", null, null, null, null, null);
 		if (mCursor.getCount() < 1) {
@@ -208,5 +208,63 @@ public class Database {
 			return true;
 		}
 	}
+	
+	
+	public boolean BackupDB() {
+		Log.v(TAG, "BackupDB(String host, name, int newidx)");
+		ArrayList<Server> SS = this.getAllServers();
+		if (SS.size() < 1) { return false; }
+		for (int i = 0; i < SS.size(); ++i) {
+			
+		}
+		try {
+			Log.v(TAG, "addServer(Server s)");
+			if (s.getHost().trim() == "" || s.getHost() == null) { return -1; }
+			if (s.getPort() == 0 || s.getPort() == 0) { return -2; }
+			if (s.getName().trim() == "" || s.getName() == null) { return -3; }
+			ContentValues values = new ContentValues();
+			values.put(Common.S_FIELD_NAME, s.getName());
+			values.put(Common.S_FIELD_HOST, s.getHost());
+			values.put(Common.S_FIELD_PORT, s.getPort());
+			values.put(Common.S_FIELD_PASS, s.getPassword());
+			return theDB.insert(Common.TABLE_SERVERS, null, values);
+		}
+		catch (SQLiteException e) {
+			Log.e(TAG, "addServer() threw an exception!");
+			return -4;
+		}
+	}
+
+	public long editServerIndex(String host, String name, int newidx) {
+		try {
+			Log.v(TAG, "editServerIndex(String host, name, int newidx)");
+			ContentValues values = new ContentValues();
+			String where = Common.S_FIELD_NAME + " = '" + name + "' AND " + Common.S_FIELD_HOST + " = '" + host + "'";
+			Log.d(TAG, "editServerIndex(): SQLite Query 'where' clause:  " + where);
+			values.put(Common.S_FIELD_INDEX, newidx);
+			return theDB.update(Common.TABLE_SERVERS, values, where, null);
+		}
+		catch (SQLiteException e) {
+			Log.e(TAG, "editServerIndex() threw an exception!");
+			return -4;
+		}
+	}
+
+
+	public int SortIndexes() {
+		Log.v(TAG, "SortIndexes(): Sort DB/List indexes so they match.");
+		ArrayList<Server> Servers = getAllServers();
+		if(Servers.size() < 1) { return -1; }
+		for (int i = 0;i < Servers.size();++i) {
+			Servers.get(i).setIndex(i);
+			Log.d(TAG, "SortIndexs(): Changing DB Index of server '" + Servers.get(i).getName() + "' (List-Item #: " + String.valueOf(i)
+						+ ") to DB Index #: " + String.valueOf(i));
+			Log.d(TAG, "||------ Server Name: " + Servers.get(i).getName() + " --- DB Idx: " + String.valueOf(Servers.get(i).getIndex())
+						+ " --- List Idx: " + String.valueOf(i) + " -----||");
+		}
+		Log.d(TAG, "SortIndexes(): Successfully sorted/modified " + String.valueOf(Servers.size()) + " DB records and Server list items");
+		return Servers.size();
+	}
 }
+
 
