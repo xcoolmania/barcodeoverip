@@ -9,7 +9,7 @@
 
  - Python 2.7.2 - http://python.org/ftp/python/2.7.2/python-2.7.2.msi
  - pywin32 Build 217 - http://sourceforge.net/projects/pywin32/files/pywin32/Build%20217/pywin32-217.win32-py2.7.exe/download
- - SendKeys 0.3 (Python 2.7) - 
+ - SendKeys 0.3 (Python 2.7) - http://web.dyfis.net/SendKeys-0.3.win32-py2.7.exe 
  - python-netifaces (Use command 'easy_install netifaces' in Python shell to install)
 
 ---------------------------------------------------------------------------------------------------------------------------------------
@@ -29,12 +29,11 @@
 ---------------------------------------------------------------------------------------------------------------------------------------
 --> Depandancies:
 
- - Python 2.6.5
+ - Python 2.7.2
  - python-virtkeys
- - xlib
- - xtest
+ - xlib (*nix only)
+ - xtest (*nix only)
  - python-netifaces
-
 
 ---------------------------------------------------------------------------------------------------------------------------------------
 --> Running the script:

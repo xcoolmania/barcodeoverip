@@ -137,9 +137,6 @@ public class BoIPActivity extends ListActivity {
 										public void onClick(DialogInterface dialog, int id) {
 											DB.open();
 											if (!DB.deleteServer(Servers.get(info.position))) {
-												// int resval = DB.SortIndexes(); <---- This code is quite possibly useless....
-												// Log.d(TAG, "onContextItemSelected(): DB.SortIndexes() returned: " + String.valueOf(resval)); // <--REMOVE
-												// } else {
 												Log.e(TAG, "onContextItemSelected(): Failed to delete server from DB table!");
 											}
 											DB.close();

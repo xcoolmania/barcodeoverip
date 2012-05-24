@@ -86,7 +86,12 @@ public class ServerInfoActivity extends Activity {
 		btnSave.setOnClickListener(new View.OnClickListener() {
 			
 			public void onClick(View view) {
-				Save();
+				int out = Save();
+				if (out == -2) {
+					txtName.requestFocus();
+				} else {
+					txtHost.requestFocus();
+				}
 			}
 		});
 		
@@ -114,7 +119,6 @@ public class ServerInfoActivity extends Activity {
 			txtPort.setText(String.valueOf(Server.getPort()));
 		} else {
 			lblTitle.setText("Add New Server");
-			Log.d(TAG, Server.getName() + "," + Server.getHost() + "," + Server.getPort() + "," + Server.getPass());
 		}
 
 	}
@@ -123,28 +127,27 @@ public class ServerInfoActivity extends Activity {
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (!this.CheckSaved()) {
 			if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-				UnsavedWarning();
-				return false;
+				// UnsavedWarning();
+				int out = Save();
+				if (out == -2) {
+					txtName.requestFocus();
+				} else if (out == -1) {
+					txtHost.requestFocus();
+				}
 			}
 		}
-		this.finish();
+		// this.finish();
 		return super.onKeyDown(keyCode, event);
 	}
 	 
-	private void Save() {
+	private int Save() {
 		String oldn = Server.getName();
 		boolean boolres;
 		
 		if (!ValidateSettings()) {
 			Log.i(TAG, "Settings validation FAILED!");
-			return;
+			return -1;
 		}
-		DB.open();
-		boolean r = DB.getIndexExits(DB.getRecordCount());
-		boolean rr = false;
-		if(DB.getRecordCount() > 1) { rr = DB.getIndexExits(DB.getRecordCount()-1);	}	
-		DB.close();
-		if(r && !rr) { Server.setIndex(DB.getRecordCount()); }
 		if (txtPass.getText().toString().trim().equals("") || txtPass.getText().toString() == null) {
 			Server.setPass(Common.DEFAULT_PASS);
 		} else {
@@ -160,11 +163,29 @@ public class ServerInfoActivity extends Activity {
 		} else {
 			if (!txtName.getText().toString().trim().equals(Server.getName())) {
 				DB.open();
-				boolres = DB.getNameExits(txtName.getText().toString().trim());
+				boolres = DB.getNameExists(txtName.getText().toString().trim());
 				DB.close();
 				if (boolres) {
-					Toast.makeText(this, "Server name exists! Save aborted!", 6).show();
-					return;
+					AlertDialog.Builder builder = new AlertDialog.Builder(this);
+					builder.setMessage(getText(R.string.nameexists_msg_body)).setTitle(getText(R.string.nameexists_msg_title)).setCancelable(false) // Block 'Back' button
+											.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+												
+												@Override
+												public void onClick(DialogInterface dialog, int id) {
+													dialog.cancel();
+												}
+											}).setNegativeButton("No", new DialogInterface.OnClickListener() {
+												
+												@Override
+												public void onClick(DialogInterface dialog, int id) {
+													dialog.cancel();
+													finish();
+												}
+											});
+					AlertDialog adialog = builder.create();
+					adialog.show();
+					// Toast.makeText(this, "Server name already exists! Save aborted!", 6).show();
+					return -2;
 				}
 			}
 			Server.setName(txtName.getText().toString().trim());
@@ -173,11 +194,29 @@ public class ServerInfoActivity extends Activity {
 		Log.d(TAG, txtHost.getText().toString() + "," + Server.getHost() + "," + Server.getHost());
 		if (!txtHost.getText().toString().trim().equals(Server.getHost())) {
 			DB.open();
-			boolres = DB.getHostExits(txtHost.getText().toString().trim());
+			boolres = DB.getHostExists(txtHost.getText().toString().trim());
 			DB.close();
 			if (boolres) {
-				Toast.makeText(this, "Server host/IP already exists! Save aborted!", 6).show();
-				return;
+				AlertDialog.Builder builder = new AlertDialog.Builder(this);
+				builder.setMessage(getText(R.string.hostexists_msg_body)).setTitle(getText(R.string.hostexists_msg_title)).setCancelable(false) // Block 'Back' button
+										.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+											
+											@Override
+											public void onClick(DialogInterface dialog, int id) {
+												dialog.cancel();
+											}
+										}).setNegativeButton("No", new DialogInterface.OnClickListener() {
+											
+											@Override
+											public void onClick(DialogInterface dialog, int id) {
+												dialog.cancel();
+												finish();
+											}
+										});
+				AlertDialog adialog = builder.create();
+				adialog.show();
+				// Toast.makeText(this, "Server Host/IP already exists! Save aborted!", 6).show();
+				return -1;
 			}
 			Server.setHost(txtHost.getText().toString().trim());
 		}
@@ -192,14 +231,13 @@ public class ServerInfoActivity extends Activity {
 			if (res2 == -4) {
 				Toast.makeText(this, getText(R.string.settings_not_saved), 4).show();
 			} else {
-				int resval = DB.SortIndexes();
-				Log.d(TAG, "Save(): DB.SortIndexes() returned: " + String.valueOf(resval));
 				Toast.makeText(this, getText(R.string.settings_saved), 4).show();
 			}
 			Log.i(TAG, "addServer returned: '" + Long.toString(res2) + "'!");
 		}
 		DB.close();
 		Log.i(TAG, "Settings Saved!");
+		return 10;
 	}
 	
 	private boolean ValidateSettings() {
@@ -207,9 +245,7 @@ public class ServerInfoActivity extends Activity {
 			this.MsgBox("No host/IP given; it is required!");
 			return false;
 		}
-		// if (Common.isValidHost(txtHost.getText().toString().trim())) {
-		// this.MsgBox("No host/IP given; it is required!");
-		// }
+
 		if (!txtPort.getText().toString().trim().equals("") && !txtPort.getText().toString().equals(null)) {
 			try {
 				Common.isValidPort(txtPort.getText().toString().trim());
@@ -271,28 +307,28 @@ public class ServerInfoActivity extends Activity {
 		});
 		ad.show();
 	}
-
-	private void UnsavedWarning() {
-		// Warn of unsaved settings
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setMessage(getText(R.string.unsaved_msg_body)).setTitle(getText(R.string.unsaved_msg_title)).setCancelable(false) // Block 'Back' button
-									.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-										
-										@Override
-										public void onClick(DialogInterface dialog, int id) {
-											Save();
-										finish();
-										}
-									}).setNegativeButton("No", new DialogInterface.OnClickListener() {
-										
-										@Override
-										public void onClick(DialogInterface dialog, int id) {
-											dialog.cancel();
-										finish();
-										}
-									});
-		AlertDialog adialog = builder.create();
-		adialog.show();
-	}
-
+/*
+ * private void UnsavedWarning() {
+ * // Warn of unsaved settings
+ * AlertDialog.Builder builder = new AlertDialog.Builder(this);
+ * builder.setMessage(getText(R.string.unsaved_msg_body)).setTitle(getText(R.string.unsaved_msg_title)).setCancelable(false) // Block 'Back' button
+ * .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+ * 
+ * @Override
+ * public void onClick(DialogInterface dialog, int id) {
+ * Save();
+ * finish();
+ * }
+ * }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+ * 
+ * @Override
+ * public void onClick(DialogInterface dialog, int id) {
+ * dialog.cancel();
+ * finish();
+ * }
+ * });
+ * AlertDialog adialog = builder.create();
+ * adialog.show();
+ * }
+ */
 }
