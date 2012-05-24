@@ -97,7 +97,7 @@ public class Database {
 			if (s.getPort() == 0 || s.getPort() == 0) { return -2; }
 			if (s.getName().trim() == "" || s.getName() == null) { return -3; }
 			ContentValues values = new ContentValues();
-			values.put(Common.S_FIELD_INDEX, s.getIndex());
+			// values.put(Common.S_FIELD_INDEX, s.getIndex());
 			values.put(Common.S_FIELD_NAME, s.getName());
 			values.put(Common.S_FIELD_HOST, s.getHost());
 			values.put(Common.S_FIELD_PORT, s.getPort());
@@ -110,21 +110,24 @@ public class Database {
 		}
 	}
 	
-	public long editServer(int index, String name, String host, String port, String pass) {
-		try {
-			Log.v(TAG, "editServer(int index, name, host, port, pass)");
-			if(pass.trim() == "" || pass == null) { pass = "none"; }
-			ContentValues values = new ContentValues();
-			String where = Common.S_FIELD_INDEX + " = '" + String.valueOf(index) + "'";
-			values.put(Common.S_FIELD_NAME, name);
-			values.put(Common.S_FIELD_HOST, host);
-			values.put(Common.S_FIELD_PORT, port);
-			values.put(Common.S_FIELD_PASS, pass);
-			return theDB.update(Common.TABLE_SERVERS, values, where, null);
-		} catch(SQLiteException e) {
-			Log.e(TAG, "editServer() threw an exception!");
-			return -4;
-		}
+	public long editServer(String oldname, String name, String host, String port, String pass) {
+		return editServerInfo(oldname, name, host, port, pass);
+		/*
+		 * try {
+		 * Log.v(TAG, "editServer(int index, name, host, port, pass)");
+		 * if(pass.trim() == "" || pass == null) { pass = "none"; }
+		 * ContentValues values = new ContentValues();
+		 * // String where = Common.S_FIELD_INDEX + " = '" + String.valueOf(index) + "'";
+		 * values.put(Common.S_FIELD_NAME, name);
+		 * values.put(Common.S_FIELD_HOST, host);
+		 * values.put(Common.S_FIELD_PORT, port);
+		 * values.put(Common.S_FIELD_PASS, pass);
+		 * return theDB.update(Common.TABLE_SERVERS, values, where, null);
+		 * } catch(SQLiteException e) {
+		 * Log.e(TAG, "editServer() threw an exception!");
+		 * return -4;
+		 * }
+		 */
 	}
 	
 	public long editServerInfo(String oldname, String name, String host, String port, String pass) {
@@ -203,11 +206,13 @@ public class Database {
 		return this.NumRecords;
 	}
 	
-	public Server getServerFromIndex(int idx) throws SQLiteException {
-		if (this.NumRecords < 1) { return null; }
-		Log.v(TAG, "getServerFromIndex(int idx)");
-		return this.getAllServers(false).get(idx);
-	}
+	/*
+	 * public Server getServerFromIndex(int idx) throws SQLiteException {
+	 * if (this.NumRecords < 1) { return null; }
+	 * Log.v(TAG, "getServerFromIndex(int idx)");
+	 * return this.getAllServers(false).get(idx);
+	 * }
+	 */
 	
 	public Server getServerFromName(String name) throws SQLiteException {
 		if (this.NumRecords < 1) { return null; }
@@ -225,7 +230,7 @@ public class Database {
 		return s;
 	}
 	
-	public boolean getNameExits(String name) throws SQLiteException {
+	public boolean getNameExists(String name) throws SQLiteException {
 		if (this.NumRecords < 1) { return false; }
 		Log.v(TAG, "getNameExits(String name)");
 		Cursor mCursor = theDB.query(true, Common.TABLE_SERVERS, new String[] { Common.S_FIELD_HOST, Common.S_FIELD_INDEX, Common.S_FIELD_PORT,
@@ -237,7 +242,7 @@ public class Database {
 		}
 	}
 	
-	public boolean getHostExits(String host) throws SQLiteException {
+	public boolean getHostExists(String host) throws SQLiteException {
 		if (this.NumRecords < 1) { return false; }
 		Log.v(TAG, "getHostExits(String host)");
 		Cursor mCursor = theDB.query(true, Common.TABLE_SERVERS, new String[] { Common.S_FIELD_NAME, Common.S_FIELD_INDEX, Common.S_FIELD_PORT,
@@ -249,15 +254,17 @@ public class Database {
 		}
 	}
 
-	public boolean getIndexExits(int idx) throws SQLiteException {
-		if (this.NumRecords < 1) { return false; }
-		Log.v(TAG, "getIndexExits(int idx)");
-		if(idx < this.NumRecords && idx >= 0) {
-			return true;
-		} else {
-			return false;
-		}
-	}
+	/*
+	 * public boolean getIndexExits(int idx) throws SQLiteException {
+	 * if (this.NumRecords < 1) { return false; }
+	 * Log.v(TAG, "getIndexExits(int idx)");
+	 * if(idx < this.NumRecords && idx >= 0) {
+	 * return true;
+	 * } else {
+	 * return false;
+	 * }
+	 * }
+	 */
 	
 	/** ******************************************************* */
 	/** Functions for backup and indexing of the data in the DB */

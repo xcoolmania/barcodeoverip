@@ -6,7 +6,7 @@
 	<string name="author_label">(&#169;)2012 Tyler H. Jones, me@thj.me</string>
 	<string name="version">BarcodeOverIP Client v1.0.1</string>
 	<string name="versionnum">1.0.1</string>
-	<string name="googlecode_site">http://b.thj.me/website</string>
+	<string name="googlecode_site">http://b.thj.me/project</string>
 	<string name="project_site">http://b.thj.me</string>
 	<string name="project_donate_site">http://b.thj.me/donate</string>
 	<string name="developer_site">http://thj.me</string>
@@ -40,7 +40,7 @@
 	<!-- Widget text and hints -->
 	<string name="txtname_hint">Untitled Server</string>
 	<string name="txthost_hint">Host or IP</string>
-	<string name="txtport_hint">41788</string>
+	<string name="txtport_hint">41788</string> 
 	<string name="txtpass_hint">Password</string>
 	<string name="txtname_label">Server Name:</string>
 	<string name="txthost_label">Hostname or IP Address:</string>
@@ -62,6 +62,10 @@
 	<string name="editserver_msg_title">Edit Server Info</string>
 	<string name="deleteserver_msg_body">Are you sure you want to delete the selected server?</string>
 	<string name="deleteserver_msg_title">Confirm Deletion</string>
+	<string name="nameexists_msg_body">Target/Server name already in use!\n\nWould you like to correct this? If so press \'Yes\', otherwise pressing \'No\' will cancel this activity then return to the severs list view..</string>
+	<string name="nameexists_msg_title">Target/Server Name Exists!</string>
+	<string name="hostexists_msg_body">The given Hostname and/or IP is already in use by another server!\n\nWould you like to correct this? If so, press \'Yes\', otherwise pressing \'No\' will cancel this activity then return to the severs list view.</string>
+	<string name="hostexists_msg_title">Host/IP Already In Use!</string>
 	
 	<string name="unsaved_msg_body">There are unsaved changes to the current server! Would you like to save them now?</string>
 	<string name="unsaved_msg_title">Unsaved Settings!</string>
