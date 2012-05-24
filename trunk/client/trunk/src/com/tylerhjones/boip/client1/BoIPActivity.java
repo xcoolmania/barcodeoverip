@@ -1,6 +1,6 @@
 /*
  * 
- * BarcodeOverIP (Android < v3.2) Version 1.0.1
+ * BarcodeOverIP (Android < v4.0.3) Version 1.0.1
  * Copyright (C) 2012, Tyler H. Jones (me@tylerjones.me)
  * http://boip.tylerjones.me/
  * 
@@ -63,14 +63,14 @@ public class BoIPActivity extends ListActivity {
 	private static ArrayList<Server> Servers = new ArrayList<Server>();
 	private ServerAdapter theAdapter;
 	private Database DB = new Database(this);
-	private Server SelectedServer = new Server();
+	private Server CurServer = new Server();
 	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-		lv("onCreate() called!");
+		lv("onCreate() called!"); // <--REMOVE
 		
 		lv("*** VERSION *** | ", Common.getAppVersion(this, getClass()));
 		SharedPreferences sVal = getSharedPreferences(Common.PREFS, 0);
@@ -91,11 +91,11 @@ public class BoIPActivity extends ListActivity {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				SharedPreferences sVal = getSharedPreferences(Common.PREFS, 0);
 				Editor sEdit;
-				SelectedServer = Servers.get(position);
+				CurServer = Servers.get(position);
 				sEdit = sVal.edit();
-				sEdit.putInt(Common.PREF_CURSRV, SelectedServer.getIndex());
+				sEdit.putInt(Common.PREF_CURSRV, CurServer.getIndex());
 				sEdit.commit();
-				lv("*** BEFORE SCAN : SelectedServer ***  Index: " + String.valueOf(SelectedServer.getIndex()) + " -- Name: " + SelectedServer.getName());
+				lv("*** BEFORE SCAN : CurServer ***  Index: " + String.valueOf(CurServer.getIndex()) + " -- Name: " + CurServer.getName()); // <--REMOVE
 				IntentIntegrator integrator = new IntentIntegrator(BoIPActivity.this);
 				if (ValidateServer(Servers.get(position))) {
 					integrator.initiateScan(IntentIntegrator.ONE_D_CODE_TYPES);
@@ -136,10 +136,10 @@ public class BoIPActivity extends ListActivity {
 										@Override
 										public void onClick(DialogInterface dialog, int id) {
 											DB.open();
-											if(DB.deleteServer(Servers.get(info.position))) {
-												int resval = DB.SortIndexes();
-												Log.d(TAG, "onContextItemSelected(): DB.SortIndexes() returned: " + String.valueOf(resval));
-											} else {
+											if (!DB.deleteServer(Servers.get(info.position))) {
+												// int resval = DB.SortIndexes(); <---- This code is quite possibly useless....
+												// Log.d(TAG, "onContextItemSelected(): DB.SortIndexes() returned: " + String.valueOf(resval)); // <--REMOVE
+												// } else {
 												Log.e(TAG, "onContextItemSelected(): Failed to delete server from DB table!");
 											}
 											DB.close();
@@ -161,21 +161,24 @@ public class BoIPActivity extends ListActivity {
 		}
 	}
 
+	// UpdateList() Function - Updates both the UI list object and the servers list array to correctly show all configured servers/targets
 	private void UpdateList() {
-		
+		lv("UpdateList(): Starting list/data update function...");
 		Servers.clear();
 		DB.open();
+		if (DB.getRecordCount() < 1) {
+			DB.close();
+			return;
+		}
 		Servers = DB.getAllServers();
 		DB.close();
-		if(Servers.size() < 1) { return; }
-		lv("UpdateList(): Got Servers, clearing adapter...");
 		theAdapter.clear();
 
-		lv("UpdateList(): Got servers. Count: " + Servers.size());
-		if (Servers != null && Servers.size() > 0) {
+		lv("UpdateList(): Updated all lists/containers with servers from the DB. Servers count: " + DB.getRecordCount());
+		if (Servers != null && DB.getRecordCount() > 0) {
 			theAdapter.notifyDataSetChanged();
-			for (int i = 0; i < Servers.size(); i++) {
-				theAdapter.add(Servers.get(i));
+			for (Server s : Servers) {
+				theAdapter.add(s);
 			}
 		}
 	}
@@ -196,15 +199,15 @@ public class BoIPActivity extends ListActivity {
 				LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				v = vi.inflate(R.layout.serverlist_item, null);
 			}
-			Server SVR = items.get(position);
-			if (SVR != null) {
+			Server s = items.get(position);
+			if (s != null) {
 				TextView tt = (TextView) v.findViewById(R.id.toptext);
 				TextView bt = (TextView) v.findViewById(R.id.bottomtext);
 				if (tt != null) {
-					tt.setText(SVR.getName());
+					tt.setText(s.getName());
 				}
 				if (bt != null) {
-					bt.setText(SVR.getHost() + ":" + String.valueOf(SVR.getPort()));
+					bt.setText(s.getHost() + ":" + String.valueOf(s.getPort()));
 				}
 			}
 			return v;
@@ -248,7 +251,7 @@ public class BoIPActivity extends ListActivity {
 		if(ipaddr == null) { return; }
 		Server ns = new Server(s.getName(), ipaddr, s.getPass(), s.getPort(), s.getIndex());
 		
-		Log.v(TAG, "SendBarcode called! Barcode: '" + code + "'");
+		lv("SendBarcode called! Barcode: '" + code + "'");
 		lv(s.getName());
 		final BoIPClient client = new BoIPClient(ns);
 		String res = client.Validate();
@@ -281,7 +284,7 @@ public class BoIPActivity extends ListActivity {
 			} else if (res2.equals(Common.NOPE)) {
 				Toast.makeText(getApplicationContext(), "Server is not activated!", 4).show();
 			} else if (res2.equals(Common.OK)) {
-				lv("sendBarcode(): OK");
+				lv("sendBarcode(): All OK");
 			} else {
 				Toast.makeText(this, "Error! - " + Common.errorCodes().get(res2).toString(), 6).show();
 				lv("client.Validate returned: ", Common.errorCodes().get(res2).toString());
@@ -422,39 +425,24 @@ public class BoIPActivity extends ListActivity {
 			Log.e(TAG, "onActivityResult(): Exception occured while trying to update the server list.", e);
 		}
 		try {
-			SelectedServer = Servers.get(sVal.getInt(Common.PREF_CURSRV, 0));
-			/*
-			for(int i=0; i<Servers.size(); i++) {
-				if(!found) {
-					if(sVal.getInt(Common.PREF_CURSRV, 0) == Servers.get(i).getIndex()) {
-						found = true;
-						SelectedServer = Servers.get(i);
-						i = Servers.size() + 1;
-					}
-				}
-			}
-			*/
-			//if(!found) { SelectedServer = Servers.get(0); }
+			CurServer = Servers.get(sVal.getInt(Common.PREF_CURSRV, 0));
 		} catch(IndexOutOfBoundsException e) {
 			Log.e(TAG, "INDEX OUT OF BOUNDES!! - " + e.toString()); 
 			Log.wtf(TAG, "A barcode was scanned but no servers are defined! - " + e.toString()); 
 			return;
 		}
-		lv("*** AFTER SCAN : SelectedServer ***  Index: " + String.valueOf(SelectedServer.getIndex()) + " -- Name: " + SelectedServer.getName());
-		lv("Activity result -- ", String.valueOf(requestCode), String.valueOf(resultCode));
+		lv("*** AFTER SCAN : CurServer ***  Index: " + String.valueOf(CurServer.getIndex()) + " -- Name: " + CurServer.getName());
+		lv("Activity result (result, request) -- ", String.valueOf(requestCode), String.valueOf(resultCode));
 		IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
 		if(result != null) {
 			try {
 				if (resultCode == RESULT_OK) {
 					String barcode = result.getContents().toString();
-					this.SendBarcode(SelectedServer, barcode);
+					this.SendBarcode(CurServer, barcode);
 					Toast.makeText(this, "Barcode successfully sent to server!", 5).show();					
 				}
 			} catch(NullPointerException ne) {
 				Toast.makeText(this, "Hmm that did't work.. Try again. (1)", 10).show();
-				DB.open();
-				DB.SortIndexes();
-				DB.close();
 				this.UpdateList();
 				Log.e(TAG, ne.toString());
 			}

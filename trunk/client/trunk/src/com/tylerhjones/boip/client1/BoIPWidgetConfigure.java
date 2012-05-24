@@ -1,6 +1,6 @@
 /*
  * 
- * BarcodeOverIP (Android < v3.2) Version 1.0.1
+ * BarcodeOverIP (Android < v4.0.3) Version 1.0.1
  * Copyright (C) 2012, Tyler H. Jones (me@tylerjones.me)
  * http://boip.tylerjones.me/
  * 
@@ -52,7 +52,7 @@ public class BoIPWidgetConfigure extends ListActivity {
 	private ArrayList<Server> Servers = new ArrayList<Server>();
 	private ServerAdapter theAdapter;
 	private Database DB = new Database(this);
-	private Server SelectedServer = new Server();
+	private Server CurServer = new Server();
 
 	int WidgetID = AppWidgetManager.INVALID_APPWIDGET_ID;
 	
@@ -86,11 +86,9 @@ public class BoIPWidgetConfigure extends ListActivity {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				SharedPreferences sVal = getSharedPreferences(Common.WIDGET_PREFS, 0);
 				Editor sEdit;
-				SelectedServer = Servers.get(position);
+				CurServer = Servers.get(position);
 				sEdit = sVal.edit();
-				// The widget id is used as the key (format: wid0,wid1,etc..) with the server index stored as data
-				// This allows us to determine which widget belongs to what server and vice-versa.
-				sEdit.putInt(String.valueOf(WidgetID), SelectedServer.getIndex());
+				sEdit.putInt(String.valueOf(WidgetID), CurServer.getIndex());
 				sEdit.commit();
 
 				//
@@ -99,7 +97,7 @@ public class BoIPWidgetConfigure extends ListActivity {
 				
 				final Context context = BoIPWidgetConfigure.this;
 				AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-				BoIPWidgetProvider.updateAppWidget(context, appWidgetManager, WidgetID, SelectedServer.getIndex());
+				BoIPWidgetProvider.updateAppWidget(context, appWidgetManager, WidgetID, CurServer.getIndex());
 				
 				// Make sure we pass back the original appWidgetId
 				Intent resultValue = new Intent();
