@@ -38,8 +38,6 @@ System and Software Requirements:
   * Working wired/wireless network connection that isn't necessarily connected to the internet (BoIP doesn't need internet access, just local connectivity. 
 
 
-
-
 == Tips and Tricks ==
 
   * *ProTip #1*: Anywhere the domain text 'boip.tylerjones.me' is used in a URL it can be substituted with 'b.thj.me' instead.
