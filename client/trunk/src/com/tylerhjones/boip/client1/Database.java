@@ -1,6 +1,6 @@
 /*
  * 
- * BarcodeOverIP (Android < v3.2) Version 1.0.1
+ * BarcodeOverIP (Android < v4.0.3) Version 1.0.1
  * Copyright (C) 2012, Tyler H. Jones (me@tylerjones.me)
  * http://boip.tylerjones.me/
  * 
@@ -43,7 +43,6 @@ public class Database {
 	private int NumRecords = 0;
 	
 	public Database(Context c) {
-		Log.v(TAG, "Database class cunstructor called!");
 		this.context = c;
 	}
 	
@@ -64,7 +63,7 @@ public class Database {
 			this.NumRecords = curs.getCount();
 			curs.close();
 		} catch(SQLiteException e) {
-			Log.e(TAG, "open(): (NON-FATAL) An exception was thrown WHILE trying to get the number of records in the db table!", e);
+			Log.e(TAG, "open(): A non-fatal exception was thrown WHILE trying to get the number of records in the DB table.", e);
 		}
 		return this;
 	}
@@ -81,11 +80,14 @@ public class Database {
 	/******************************************************************************/
 	/** Database value/record modification functions **************************** */
 
-	//addServer(Server s, boolean isBkp): isBkup is used to set whether or not to write to the backup db table
+	/** ******************************************************* */
+	/** Functions for writing data to the DB */
+	
+	// If isBkup is true, then the data passed to the function will be written to the backup DB table insted of the main servers table
 	public long addServer(Server s) {
 		return addServer(s, false);
 	}
-	
+
 	public long addServer(Server s, boolean isBkp) {
 		try {
 			String tbl;
@@ -103,7 +105,7 @@ public class Database {
 			++NumRecords;
 			return theDB.insert(tbl, null, values);
 		} catch(SQLiteException e) {
-			Log.e(TAG, "addServer() threw an exception!");
+			Log.e(TAG, "addServer() threw a SQLiteException!", e);
 			return -4;
 		}
 	}
@@ -145,29 +147,43 @@ public class Database {
 		}
 	}
 	
-	public int getRecordCount() {
-		Log.d(TAG, "***** getRecordCount(): Found " + String.valueOf(this.NumRecords) + " records in the servers table.");
-		return this.NumRecords;
+	public boolean deleteServer(Server s) {
+		return deleteServer(s, false);
 	}
 	
+	public boolean deleteServer(Server s, boolean isBkp) {
+		String tbl = null;
+		if (isBkp) {
+			tbl = Common.TABLE_SERVERS_BKP;
+		} else {
+			tbl = Common.TABLE_SERVERS;
+		}
+		Log.v(TAG, "deleteServer(Server s, boolean isBkp)");
+		--NumRecords;
+		return theDB.delete(tbl, Common.S_FIELD_NAME + "='" + s.getName() + "'", null) > 0;
+	}
+	
+	/** ******************************************************* */
+	/** Functions for reading data from the DB */
+
 	public ArrayList<Server> getAllServers() {
 		return getAllServers(false);
 	}
 	
 	public ArrayList<Server> getAllServers(boolean isBkp) {
-		if(getRecordCount() < 1) { return null; }
+		if (this.NumRecords < 1) { return null; }
 		String tbl = null;
 		if(isBkp) { tbl = Common.TABLE_SERVERS_BKP; } else { tbl = Common.TABLE_SERVERS; }
 		Server s = new Server();
 		ArrayList<Server> sarray = new ArrayList<Server>();
-		Log.v(TAG, "getAllServers()");
+		Log.v(TAG, "getAllServers(): Using table '" + tbl + "'");
 		try {
 			Cursor curs = theDB.query(tbl, new String[] { Common.S_FIELD_NAME, Common.S_FIELD_HOST, Common.S_FIELD_PORT,
 					Common.S_FIELD_PASS, Common.S_FIELD_INDEX }, null, null, null, null, null);
 			int i = 0;
 			while (curs.moveToNext()) {
 				s = new Server();
-				Log.v(TAG, "** Cursor (name): " + curs.getString(0));
+				Log.v(TAG, "** Cursor (name): " + curs.getString(0)); // <--REMOVE
 				s.setName(curs.getString(0));
 				s.setHost(curs.getString(1));
 				s.setPort(Integer.valueOf(curs.getString(2)));
@@ -178,39 +194,23 @@ public class Database {
 			}
 			return sarray;
 		} catch(SQLiteException e) {
-			Log.e(TAG, "getAllServers() threw an exception!", e);
+			Log.e(TAG, "getAllServers() threw a SQLiteException!", e);
 			return null;
 		}
 	}
-
-	public boolean deleteServer(Server s) {
-		return deleteServer(s, false);
-	}
 	
-	public boolean deleteServer(Server s, boolean isBkp) {
-		String tbl = null;
-		if(isBkp) { tbl = Common.TABLE_SERVERS_BKP; } else { tbl = Common.TABLE_SERVERS; } 
-		Log.v(TAG, "deleteServer(Server s, boolean isBkp)");
-		--NumRecords;
-		return theDB.delete(tbl, Common.S_FIELD_NAME + "='" + s.getName() + "'", null) > 0;
+	public int getRecordCount() {
+		return this.NumRecords;
 	}
 	
 	public Server getServerFromIndex(int idx) throws SQLiteException {
-		Server s = new Server();
+		if (this.NumRecords < 1) { return null; }
 		Log.v(TAG, "getServerFromIndex(int idx)");
-		Cursor mCursor = theDB.query(true, Common.TABLE_SERVERS, new String[] { Common.S_FIELD_NAME, Common.S_FIELD_HOST, Common.S_FIELD_PORT,
-				Common.S_FIELD_PASS }, Common.S_FIELD_INDEX + "='" + idx + "'", null, null, null, null, null);
-		if (mCursor.moveToFirst()) {
-			s.setName(mCursor.getString(0));
-			s.setHost(mCursor.getString(1));
-			s.setPort(Integer.valueOf(mCursor.getString(2)));
-			s.setPassword(mCursor.getString(3));
-			s.setIndex(idx);
-		}
-		return s;
+		return this.getAllServers(false).get(idx);
 	}
 	
 	public Server getServerFromName(String name) throws SQLiteException {
+		if (this.NumRecords < 1) { return null; }
 		Server s = new Server();
 		Log.v(TAG, "getServerFromName(String name)");
 		Cursor mCursor = theDB.query(true, Common.TABLE_SERVERS, new String[] { Common.S_FIELD_HOST, Common.S_FIELD_INDEX, Common.S_FIELD_PORT,
@@ -226,6 +226,7 @@ public class Database {
 	}
 	
 	public boolean getNameExits(String name) throws SQLiteException {
+		if (this.NumRecords < 1) { return false; }
 		Log.v(TAG, "getNameExits(String name)");
 		Cursor mCursor = theDB.query(true, Common.TABLE_SERVERS, new String[] { Common.S_FIELD_HOST, Common.S_FIELD_INDEX, Common.S_FIELD_PORT,
 				Common.S_FIELD_PASS }, Common.S_FIELD_NAME + "='" + name + "'", null, null, null, null, null);
@@ -237,6 +238,7 @@ public class Database {
 	}
 	
 	public boolean getHostExits(String host) throws SQLiteException {
+		if (this.NumRecords < 1) { return false; }
 		Log.v(TAG, "getHostExits(String host)");
 		Cursor mCursor = theDB.query(true, Common.TABLE_SERVERS, new String[] { Common.S_FIELD_NAME, Common.S_FIELD_INDEX, Common.S_FIELD_PORT,
 				Common.S_FIELD_PASS }, Common.S_FIELD_HOST + "='" + host + "'", null, null, null, null, null);
@@ -248,79 +250,85 @@ public class Database {
 	}
 
 	public boolean getIndexExits(int idx) throws SQLiteException {
+		if (this.NumRecords < 1) { return false; }
 		Log.v(TAG, "getIndexExits(int idx)");
-		Cursor mCursor = theDB.query(true, Common.TABLE_SERVERS, new String[] { Common.S_FIELD_NAME, Common.S_FIELD_HOST, Common.S_FIELD_PORT,
-				Common.S_FIELD_PASS }, Common.S_FIELD_INDEX + "='" + idx + "'", null, null, null, null, null);
-		if (mCursor.getCount() < 1) {
-			return false;
-		} else {
+		if(idx < this.NumRecords && idx >= 0) {
 			return true;
+		} else {
+			return false;
 		}
 	}
 	
+	/** ******************************************************* */
+	/** Functions for backup and indexing of the data in the DB */
+
 	public boolean BackupDB() {
 		try {
-			Log.v(TAG, "BackupDB(String host, name, int newidx)");
-			ArrayList<Server> SS = this.getAllServers();
-			if (SS.size() < 1) { return false; }
+			if (this.NumRecords < 1) { return true; } // Return true here because the function didn't fail, it just isn't needed when there are no defined servers
+			Log.v(TAG, "BackupDB()");
+			ArrayList<Server> Svrs = this.getAllServers();
 			//Clear the backup DB table
 			theDB.execSQL("DELETE FROM " + Common.TABLE_SERVERS_BKP);
 			int i = 0;
-			for (Server s : SS) {
+			for (Server s : Svrs) {
 				s.setIndex(i);
 				++i;
-				long retval = this.addServer(s, true);
-				if (retval < 0) { 
-					Log.e(TAG, "BackupDB(): There was a problem when trying to backup the DB. App gave internal error code: " + String.valueOf(retval));
+				long r = this.addServer(s, true);
+				if (r < 0) {
+					Log.e(TAG, "BackupDB(): There was a problem when trying to backup the DB. App gave internal error code: " + String.valueOf(r));
 					return false;
 				} else {
-					Log.v(TAG, "Servers DB table succesfully backed up!");
+					Log.v(TAG, "BackupDB(): Servers DB table succesfully backed up!");
 				}
 			}
 			return true;
 		}
 		catch (SQLiteException e) {
-			Log.e(TAG, "BackupDB() threw an exception! - " + e.getMessage().toString());
+			Log.e(TAG, "BackupDB() threw an exception!", e);
 			return false;
 		}
 	}
 
-	public long editServerIndex(String host, String name, int newidx) {
-		try {
-			Log.v(TAG, "editServerIndex(String host, name, int newidx)");
-			ContentValues values = new ContentValues();
-			String where = Common.S_FIELD_NAME + " = '" + name + "' AND " + Common.S_FIELD_HOST + " = '" + host + "'";
-			Log.d(TAG, "editServerIndex(): SQLite Query 'where' clause:  " + where);
-			values.put(Common.S_FIELD_INDEX, newidx);
-			return theDB.update(Common.TABLE_SERVERS, values, where, null);
-		}
-		catch (SQLiteException e) {
-			Log.e(TAG, "editServerIndex() threw an exception!");
-			return -4;
-		}
-	}
-
-
-	public int SortIndexes() {
-		Log.v(TAG, "SortIndexes(): Sort DB/List indexes so they coorespond to one another.");
-		//Backup DB table first
-		this.BackupDB();
-		//Read in all server records from the DB table
-		ArrayList<Server> Servers = getAllServers();
-		if(Servers.size() < 1) { return -1; }
-		//Delete all records from the current servers table
-		theDB.execSQL("DELETE FROM " + Common.TABLE_SERVERS);
-		//Write data from Servers array back to the db table
-		int i = 0;
-		for (Server s : Servers) {
-			Log.d(TAG, "**DEBUG: SortIndexes(): Adding server: " + s.getName() + " (" + s.getHost() + ":" + s.getPort() + ") to the DB table with index '" + String.valueOf(i) + "'");
-			s.setIndex(i);
-			++i;
-			addServer(s);
-		}
-		Log.d(TAG, "SortIndexes(): Successfully sorted/modified " + String.valueOf(Servers.size()) + " DB records and Server list items");
-		return Servers.size();
-	}
+	/*
+	 * public long editServerIndex(String host, String name, int newidx) {
+	 * try {
+	 * Log.v(TAG, "editServerIndex(String host, name, int newidx)");
+	 * ContentValues values = new ContentValues();
+	 * String where = Common.S_FIELD_NAME + " = '" + name + "' AND " + Common.S_FIELD_HOST + " = '" + host + "'";
+	 * Log.d(TAG, "editServerIndex(): SQLite Query 'where' clause:  " + where); // <--REMOVE
+	 * values.put(Common.S_FIELD_INDEX, newidx);
+	 * return theDB.update(Common.TABLE_SERVERS, values, where, null);
+	 * }
+	 * catch (SQLiteException e) {
+	 * Log.e(TAG, "editServerIndex() threw an exception!", e);
+	 * return -4;
+	 * }
+	 * }
+	 * 
+	 * 
+	 * public int SortIndexes() {
+	 * Log.v(TAG, "SortIndexes(): Sort DB/List indexes so they coorespond to one another.");
+	 * // Backup DB table first
+	 * this.BackupDB();
+	 * // Read in all server records from the DB table
+	 * ArrayList<Server> Servers = getAllServers();
+	 * this.NumRecords = Servers.size(); // Just to be sure it is updated
+	 * if (this.NumRecords < 1) { return -1; }
+	 * // Delete all records from the current servers table
+	 * theDB.execSQL("DELETE FROM " + Common.TABLE_SERVERS);
+	 * // Write data from Servers array back to the DB table
+	 * int i = 0;
+	 * for (Server s : Servers) {
+	 * Log.d(TAG, "SortIndexes(): Adding server: "
+	 * + s.getName() + " (" + s.getHost() + ":" + s.getPort() + ") to the DB table with index '" + String.valueOf(i) + "'"); // <--REMOVE
+	 * s.setIndex(i);
+	 * ++i;
+	 * addServer(s);
+	 * }
+	 * Log.d(TAG, "SortIndexes(): Successfully sorted/modified " + String.valueOf(Servers.size()) + " DB records and Server list items"); //<--REMOVE
+	 * return Servers.size();
+	 * }
+	 */
 }
 
 

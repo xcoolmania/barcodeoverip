@@ -1,6 +1,6 @@
 /*
  * 
- * BarcodeOverIP (Android < v3.2) Version 1.0.1
+ * BarcodeOverIP (Android < v4.0.3) Version 1.0.1
  * Copyright (C) 2012, Tyler H. Jones (me@tylerjones.me)
  * http://boip.tylerjones.me/
  * 
@@ -29,13 +29,9 @@ package com.tylerhjones.boip.client1;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-// TODO: Auto-generated Javadoc
-/**
- * The Class DBTableClass.
- */
+
 public class DBTableClass {
 	
-	/** The Constant CREATE_TABLE. */
 	private static final String CREATE_TABLE="CREATE TABLE IF NOT EXISTS " 
 		+ Common.TABLE_SERVERS + " (" 
 		+ Common.S_FIELD_INDEX + " INTEGER PRIMARY KEY, " 
@@ -52,25 +48,13 @@ public class DBTableClass {
 		+ Common.S_FIELD_PORT + " INTEGER, " 
 		+ Common.S_FIELD_PASS + " TEXT)";
 
-	/**
-	 * On create.
-	 *
-	 * @param database the database
-	 */
+
 	public static void onCreate(SQLiteDatabase database) {
 		database.execSQL(CREATE_TABLE);
 		database.execSQL(CREATE_TABLE_BKP);
 	}
 
-	/**
-	 * On upgrade.
-	 *
-	 * @param db the DB
-	 * @param oldVersion the old version
-	 * @param newVersion the new version
-	 */
-	public static void onUpgrade(SQLiteDatabase db, int oldVersion,
-			int newVersion) {
+	public static void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		Log.w(Database.class.getName(), "Upgrading database from version "
 				+ oldVersion + " to " + newVersion
 				+ ", which will destroy all old data");

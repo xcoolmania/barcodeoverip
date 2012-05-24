@@ -1,6 +1,6 @@
 /*
  * 
- * BarcodeOverIP (Android < v3.2) Version 1.0.1
+ * BarcodeOverIP (Android < v4.0.3) Version 1.0.1
  * Copyright (C) 2012, Tyler H. Jones (me@tylerjones.me)
  * http://boip.tylerjones.me/
  * 
@@ -128,11 +128,11 @@ public class BoIPWidgetProvider extends AppWidgetProvider {
 	
 	public static void updateAppWidget(Context c, AppWidgetManager appWidgetManager, int mAppWidgetId, int idx) {
 		// Database and server settings variables
-		Server SelectedServer = GetServer(c, idx);
+		Server CurServer = GetServer(c, idx);
 		
 		RemoteViews views = new RemoteViews(c.getPackageName(), R.layout.boip_widget);
-		views.setTextViewText(R.id.w_server, SelectedServer.getName());
-		views.setTextViewText(R.id.w_server_ipport, SelectedServer.getHost() + ":" + String.valueOf(SelectedServer.getPort()));
+		views.setTextViewText(R.id.w_server, CurServer.getName());
+		views.setTextViewText(R.id.w_server_ipport, CurServer.getHost() + ":" + String.valueOf(CurServer.getPort()));
 		appWidgetManager.updateAppWidget(mAppWidgetId, views);
 	}
 	
