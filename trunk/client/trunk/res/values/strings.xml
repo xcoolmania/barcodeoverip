@@ -26,7 +26,7 @@
 
 	<!-- Message box and alert dialog strings -->
 	<string name="about_msg_title">About BarcodeOverIP</string>
-	<string name="about_msg_body"><b>BarcodeOverIP Client v1.0.1</b>\n&#169;2012 - Tyler H. Jones\nProject Website: http://boip.thj.me\n\nWelcome to BarcodeOverIP for Android!\nTo get started you must add a server by pressing \'Menu\' > \'Add Server\'. 
+	<string name="about_msg_body"><b>BarcodeOverIP Client v1.0.1</b>\n&#169;2012 - Tyler H. Jones\nProject Website: http://boip.tylerjones.me\n\nWelcome to BarcodeOverIP for Android!\nTo get started you must add a server by pressing \'Menu\' > \'Add Server\'. 
 	    Once you have added one or more servers, to scan a barcode,
 	    simply touch the desired server on the list and scan away!\nTo edit/remove a server, press and hold 
 	    the target server in the list and a menu will appear.\n
@@ -64,7 +64,7 @@
 	<string name="deleteserver_msg_title">Confirm Deletion</string>
 	<string name="nameexists_msg_body">Target/Server name already in use!\n\nWould you like to correct this? If so press \'Yes\', otherwise pressing \'No\' will cancel this activity then return to the severs list view..</string>
 	<string name="nameexists_msg_title">Target/Server Name Exists!</string>
-	<string name="hostexists_msg_body">The given Hostname and/or IP is already in use by another server!\n\nWould you like to correct this? If so, press \'Yes\', otherwise pressing \'No\' will cancel this activity then return to the severs list view.</string>
+	<string name="hostexists_msg_body">The given Hostname or IP is already in use by another server!\n\nWould you like to correct this? If so, press \'Yes\', otherwise pressing \'No\' will cancel this activity then return to the severs list view.</string>
 	<string name="hostexists_msg_title">Host/IP Already In Use!</string>
 	
 	<string name="unsaved_msg_body">There are unsaved changes to the current server! Would you like to save them now?</string>

@@ -126,8 +126,7 @@ public class ServerInfoActivity extends Activity {
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (!this.CheckSaved()) {
-			if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-				// UnsavedWarning();
+			if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 6) {
 				int out = Save();
 				if (out == -2) {
 					txtName.requestFocus();
@@ -136,7 +135,7 @@ public class ServerInfoActivity extends Activity {
 				}
 			}
 		}
-		// this.finish();
+		this.finish();
 		return super.onKeyDown(keyCode, event);
 	}
 	 
@@ -184,7 +183,6 @@ public class ServerInfoActivity extends Activity {
 											});
 					AlertDialog adialog = builder.create();
 					adialog.show();
-					// Toast.makeText(this, "Server name already exists! Save aborted!", 6).show();
 					return -2;
 				}
 			}
@@ -215,7 +213,6 @@ public class ServerInfoActivity extends Activity {
 										});
 				AlertDialog adialog = builder.create();
 				adialog.show();
-				// Toast.makeText(this, "Server Host/IP already exists! Save aborted!", 6).show();
 				return -1;
 			}
 			Server.setHost(txtHost.getText().toString().trim());
@@ -242,7 +239,7 @@ public class ServerInfoActivity extends Activity {
 	
 	private boolean ValidateSettings() {
 		if (txtHost.getText().toString().trim().equals("") || txtHost.getText().toString().equals(null)) {
-			this.MsgBox("No host/IP given; it is required!");
+			this.MsgBox("No hostname or IP given; it is required!");
 			return false;
 		}
 
