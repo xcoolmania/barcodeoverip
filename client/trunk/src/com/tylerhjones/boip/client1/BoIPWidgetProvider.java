@@ -74,11 +74,11 @@ public class BoIPWidgetProvider extends AppWidgetProvider {
 			PendingIntent pendingIntent = PendingIntent.getBroadcast(c, 0, in, 0);
 			views.setTextViewText(R.id.w_server, ServerName);
 			views.setTextViewText(R.id.w_server_ipport, ServerIPPort);
-			views.setOnClickPendingIntent(R.id.widget_layout, pendingIntent);
+			// views.setOnClickPendingIntent(R.id.widget_layout, pendingIntent);
 			views.setOnClickPendingIntent(R.id.w_server, pendingIntent);
 			views.setOnClickPendingIntent(R.id.w_server_ipport, pendingIntent);
 			views.setOnClickPendingIntent(R.id.widget_icon, pendingIntent);
-			views.setOnClickPendingIntent(R.id.w_server_title, pendingIntent);
+			//views.setOnClickPendingIntent(R.id.w_server_title, pendingIntent);
 			appWidgetManager.updateAppWidget(allWidgetIds[i], views);
 		}
         
@@ -122,7 +122,6 @@ public class BoIPWidgetProvider extends AppWidgetProvider {
 			catch (Exception ignore) {
 				// Nothing
 			}
-			Log.v(TAG, "*** Widget Clicked!!! ***");
 		}
 	}
 	

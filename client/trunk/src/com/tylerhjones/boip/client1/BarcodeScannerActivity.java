@@ -1,6 +1,6 @@
 /*
  * 
- * BarcodeOverIP (Android < v3.2) Version 1.0.1
+ * BarcodeOverIP (Android < v4.0.1) Version 1.0.1
  * Copyright (C) 2012, Tyler H. Jones (me@tylerjones.me)
  * http://boip.tylerjones.me/
  * 
@@ -46,10 +46,9 @@ public class BarcodeScannerActivity extends Activity {
 	
 	private static final String TAG = "BarcodeScannerActivity";
 
-	// private ProgressDialog ConnectingProgress = null;
 	private static ArrayList<Server> Servers = new ArrayList<Server>();
 	private Database DB = new Database(this);
-	private Server SelectedServer = new Server();
+	private Server CurServer = new Server();
 	private static int ServerID = -1;
 	
 	public static String SERVER_ID = "server_id";
@@ -64,7 +63,8 @@ public class BarcodeScannerActivity extends Activity {
 		super.onCreate(si);
 		
 		DB.open();
-		Servers = DB.getAllServers();
+		ArrayList<Server> Servers = DB.getAllServers();
+		ld(TAG, "onCreate(Bundle si): Get totlal number of  in the DB: '" + String.valueOf(DB.getRecordCount()) + "'");
 		DB.close();
 
 		if (si == null) {
@@ -76,7 +76,7 @@ public class BarcodeScannerActivity extends Activity {
 				lv("OnCreate() ServerID: ", String.valueOf(ServerID));
 			}
 			if (ServerID == BarcodeScannerActivity.INVALID_SERVER_ID || ServerID >= Servers.size()) {
-				lw("onCreate() ServerID is >= Servers.size() -OR- the server id is invalid!!");
+				lw("onCreate() ServerID is >= .size() -OR- the server id is invalid!!");
 				finish();
 			}
 
@@ -87,9 +87,9 @@ public class BarcodeScannerActivity extends Activity {
 
 		SharedPreferences sVal = getSharedPreferences(Common.PREFS, 0);
 		Editor sEdit;
-		SelectedServer = Servers.get(ServerID);
+		CurServer = Servers.get(ServerID);
 		sEdit = sVal.edit();
-		sEdit.putInt(Common.PREF_CURSRV, SelectedServer.getIndex());
+		sEdit.putInt(Common.PREF_CURSRV, CurServer.getIndex());
 		sEdit.commit();
 
 		IntentIntegrator integrator = new IntentIntegrator(BarcodeScannerActivity.this);
@@ -138,7 +138,6 @@ public class BarcodeScannerActivity extends Activity {
 		if (ipaddr == null) { return; }
 		Server ns = new Server(s.getName(), ipaddr, s.getPass(), s.getPort(), s.getIndex());
 		
-		// ConnectingProgress = ProgressDialog.show(BoIPActivity.this, "Please wait.", "Sending barcode to server...", true);
 		Log.v(TAG, "SendBarcode called! Barcode: '" + code + "'");
 		lv(s.getName());
 		final BoIPClient client = new BoIPClient(ns);
@@ -277,37 +276,22 @@ public class BarcodeScannerActivity extends Activity {
 	
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
 		SharedPreferences sVal = getSharedPreferences(Common.PREFS, 0);
-		boolean found = false;
+
 		try {
-			if (Servers.size() == 1) {
-				SelectedServer = Servers.get(0);
-			} else {
-				for (int i = 0; i < Servers.size(); i++) {
-					if (!found) {
-						if (sVal.getInt(Common.PREF_CURSRV, 0) == Servers.get(i).getIndex()) {
-							found = true;
-							SelectedServer = Servers.get(i);
-							i = Servers.size() + 1;
-						}
-					}
-				}
-				if (!found) {
-					SelectedServer = Servers.get(0);
-				}
-			}
+			CurServer = Servers.get(sVal.getInt(Common.PREF_CURSRV, 0));
 		}
 		catch (IndexOutOfBoundsException e) {
-			Log.wtf(TAG, "A barcode was scanned but no servers are defined! - " + e.toString());
+			Log.e(TAG, "INDEX OUT OF BOUNDS!! - " + e.toString());
 			return;
 		}
-		lv("*** AFTER SCAN : SelectedServer ***  Index: " + String.valueOf(SelectedServer.getIndex()) + " -- Name: " + SelectedServer.getName());
-		lv("Activity result -- ", String.valueOf(requestCode), String.valueOf(resultCode));
+		lv("*** AFTER SCAN : CurServer ***  Index: " + String.valueOf(CurServer.getIndex()) + " -- Name: " + CurServer.getName());
+		lv("Activity result (result, request) -- ", String.valueOf(requestCode), String.valueOf(resultCode));
 		IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
 		if (result != null) {
 			try {
 				if (resultCode == RESULT_OK) {
 					String barcode = result.getContents().toString();
-					this.SendBarcode(SelectedServer, barcode);
+					this.SendBarcode(CurServer, barcode);
 					Toast.makeText(this, "Barcode successfully sent to server!", 5).show();
 					finish();
 				}

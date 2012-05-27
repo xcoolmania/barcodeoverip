@@ -59,7 +59,6 @@ import com.google.zxing.integration.android.IntentResult;
 public class BoIPActivity extends ListActivity {
 	
 	private static final String TAG = "BoIPActivity";
-	// private ProgressDialog ConnectingProgress = null;
 	private static ArrayList<Server> Servers = new ArrayList<Server>();
 	private ServerAdapter theAdapter;
 	private Database DB = new Database(this);
@@ -117,7 +116,7 @@ public class BoIPActivity extends ListActivity {
 			AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
 			menu.setHeaderTitle(Servers.get(info.position).getName());
 			String[] menuItems = getResources().getStringArray(R.array.cmenu_serverlist);
-			for (int i = 0; i < menuItems.length; i++) {
+			for (int i = 0; i < menuItems.length; ++i) {
 				menu.add(Menu.NONE, i, i, menuItems[i]);
 			}
 		}
@@ -139,8 +138,18 @@ public class BoIPActivity extends ListActivity {
 											if (!DB.deleteServer(Servers.get(info.position))) {
 												Log.e(TAG, "onContextItemSelected(): Failed to delete server from DB table!");
 											}
-											DB.close();
-											if(DB.getRecordCount() < 1) { theAdapter.clear(); Servers.clear(); } else { UpdateList(); }
+											Servers.clear();
+											theAdapter.clear();
+											if (DB.getRecordCount() > 0) {
+												Servers = DB.getAllServers();
+												DB.close();
+												theAdapter.notifyDataSetChanged();
+												for (Server s : Servers) {
+													theAdapter.add(s);
+												}
+											} else {
+												DB.close();
+											}
 										}
 									}).setNegativeButton("No", new DialogInterface.OnClickListener() {
 										
@@ -157,6 +166,7 @@ public class BoIPActivity extends ListActivity {
 			return true;
 		}
 	}
+
 
 	// UpdateList() Function - Updates both the UI list object and the servers list array to correctly show all configured servers/targets
 	private void UpdateList() {
@@ -415,7 +425,6 @@ public class BoIPActivity extends ListActivity {
 
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
 		SharedPreferences sVal = getSharedPreferences(Common.PREFS, 0);
-		//boolean found = false;
 		try {
 			this.UpdateList();
 		} catch(Exception e) {
@@ -424,7 +433,7 @@ public class BoIPActivity extends ListActivity {
 		try {
 			CurServer = Servers.get(sVal.getInt(Common.PREF_CURSRV, 0));
 		} catch(IndexOutOfBoundsException e) {
-			Log.e(TAG, "INDEX OUT OF BOUNDES!! - " + e.toString()); 
+			Log.e(TAG, "INDEX OUT OF BOUNDS!! - " + e.toString());
 			Log.wtf(TAG, "A barcode was scanned but no servers are defined! - " + e.toString()); 
 			return;
 		}

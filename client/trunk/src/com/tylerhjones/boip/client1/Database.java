@@ -112,22 +112,6 @@ public class Database {
 	
 	public long editServer(String oldname, String name, String host, String port, String pass) {
 		return editServerInfo(oldname, name, host, port, pass);
-		/*
-		 * try {
-		 * Log.v(TAG, "editServer(int index, name, host, port, pass)");
-		 * if(pass.trim() == "" || pass == null) { pass = "none"; }
-		 * ContentValues values = new ContentValues();
-		 * // String where = Common.S_FIELD_INDEX + " = '" + String.valueOf(index) + "'";
-		 * values.put(Common.S_FIELD_NAME, name);
-		 * values.put(Common.S_FIELD_HOST, host);
-		 * values.put(Common.S_FIELD_PORT, port);
-		 * values.put(Common.S_FIELD_PASS, pass);
-		 * return theDB.update(Common.TABLE_SERVERS, values, where, null);
-		 * } catch(SQLiteException e) {
-		 * Log.e(TAG, "editServer() threw an exception!");
-		 * return -4;
-		 * }
-		 */
 	}
 	
 	public long editServerInfo(String oldname, String name, String host, String port, String pass) {
@@ -206,14 +190,6 @@ public class Database {
 		return this.NumRecords;
 	}
 	
-	/*
-	 * public Server getServerFromIndex(int idx) throws SQLiteException {
-	 * if (this.NumRecords < 1) { return null; }
-	 * Log.v(TAG, "getServerFromIndex(int idx)");
-	 * return this.getAllServers(false).get(idx);
-	 * }
-	 */
-	
 	public Server getServerFromName(String name) throws SQLiteException {
 		if (this.NumRecords < 1) { return null; }
 		Server s = new Server();
@@ -253,18 +229,6 @@ public class Database {
 			return true;
 		}
 	}
-
-	/*
-	 * public boolean getIndexExits(int idx) throws SQLiteException {
-	 * if (this.NumRecords < 1) { return false; }
-	 * Log.v(TAG, "getIndexExits(int idx)");
-	 * if(idx < this.NumRecords && idx >= 0) {
-	 * return true;
-	 * } else {
-	 * return false;
-	 * }
-	 * }
-	 */
 	
 	/** ******************************************************* */
 	/** Functions for backup and indexing of the data in the DB */
@@ -296,46 +260,6 @@ public class Database {
 		}
 	}
 
-	/*
-	 * public long editServerIndex(String host, String name, int newidx) {
-	 * try {
-	 * Log.v(TAG, "editServerIndex(String host, name, int newidx)");
-	 * ContentValues values = new ContentValues();
-	 * String where = Common.S_FIELD_NAME + " = '" + name + "' AND " + Common.S_FIELD_HOST + " = '" + host + "'";
-	 * Log.d(TAG, "editServerIndex(): SQLite Query 'where' clause:  " + where); // <--REMOVE
-	 * values.put(Common.S_FIELD_INDEX, newidx);
-	 * return theDB.update(Common.TABLE_SERVERS, values, where, null);
-	 * }
-	 * catch (SQLiteException e) {
-	 * Log.e(TAG, "editServerIndex() threw an exception!", e);
-	 * return -4;
-	 * }
-	 * }
-	 * 
-	 * 
-	 * public int SortIndexes() {
-	 * Log.v(TAG, "SortIndexes(): Sort DB/List indexes so they coorespond to one another.");
-	 * // Backup DB table first
-	 * this.BackupDB();
-	 * // Read in all server records from the DB table
-	 * ArrayList<Server> Servers = getAllServers();
-	 * this.NumRecords = Servers.size(); // Just to be sure it is updated
-	 * if (this.NumRecords < 1) { return -1; }
-	 * // Delete all records from the current servers table
-	 * theDB.execSQL("DELETE FROM " + Common.TABLE_SERVERS);
-	 * // Write data from Servers array back to the DB table
-	 * int i = 0;
-	 * for (Server s : Servers) {
-	 * Log.d(TAG, "SortIndexes(): Adding server: "
-	 * + s.getName() + " (" + s.getHost() + ":" + s.getPort() + ") to the DB table with index '" + String.valueOf(i) + "'"); // <--REMOVE
-	 * s.setIndex(i);
-	 * ++i;
-	 * addServer(s);
-	 * }
-	 * Log.d(TAG, "SortIndexes(): Successfully sorted/modified " + String.valueOf(Servers.size()) + " DB records and Server list items"); //<--REMOVE
-	 * return Servers.size();
-	 * }
-	 */
 }
 
 
