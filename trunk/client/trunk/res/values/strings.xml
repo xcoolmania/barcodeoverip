@@ -76,6 +76,9 @@
 	<string name="nameexists_msg_title">Duplicate Server Nickname!</string>
 	<string name="hostexists_msg_body">The given hostname/IP already exists in the defined servers list!\nDuplicate hostname/IP values are not allowed in the defined servers list\n\nWould you like to fix this conflict? If so, press \'Yes\', otherwise pressing \'No\' will cancel the server configuration and leave all settings untouched.</string>
 	<string name="hostexists_msg_title">Duplicate Hostname/IP!</string>
+	<string name="invalidport_msg_title">Invalid Port Number Given!</string>
+	<string name="invalidportrange_msg_body">The given port does not fall within the range of valid port numbers\nValid Range: Between 1 - 65535</string>
+	<string name="invalidportvar_msg_body">The given port is not a valid integer data type!</string>
 	
 	<string name="unsaved_msg_body">There are unsaved changes to the current server\'s configuration settings! Would you like to save them now?</string>
 	<string name="unsaved_msg_title">Unsaved Server Settings!</string>

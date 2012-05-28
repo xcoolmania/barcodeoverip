@@ -176,11 +176,22 @@ public class ServerInfoActivity extends Activity {
 		} else {
 			Server.setPass(txtPass.getText().toString().trim());
 		}
-		if (txtPort.getText().toString().trim().equals("") || txtPort.getText().toString() == null) {
-			Server.setPort(Common.DEFAULT_PORT);
-		} else {
-			Server.setPort(Integer.valueOf(txtPort.getText().toString().trim()));
+		try {
+			if(Common.isValidPort(txtPort.getText().toString().trim())) {
+				int p = Integer.valueOf(txtPort.getText().toString().trim());
+				Server.setPort(p);
+				Log.d(TAG, "Save(): Port set to: " + p);
+			} else {
+				int p = Integer.valueOf(txtPort.getText().toString().trim());
+				Log.d(TAG, "Save(): Port is an integer but in the wrong range: " + p);
+				Server.setPort(Common.DEFAULT_PORT);
+			}
 		}
+		catch (NumberFormatException e) {
+			Log.e(TAG, "Save(): Invalid port! Using default port: 41788");
+			Server.setPort(Common.DEFAULT_PORT);
+		}
+
 		Log.d(TAG, "Save(): Server.setName('" + txtName.getText().toString() + "')");
 		// Server.setName(txtName.getText().toString().trim());
 
@@ -241,7 +252,7 @@ public class ServerInfoActivity extends Activity {
 					Server.setPort(Integer.valueOf(txtPort.getText().toString().trim()));
 				}
 			}
-			catch (Exception e) {
+			catch (NumberFormatException e) {
 				return "Invalid port! Must be in range: 1 - 66535";
 			}
 		}
@@ -280,18 +291,20 @@ public class ServerInfoActivity extends Activity {
 			}
 			++i;
 		}
-
-		if (!txtPort.getText().toString().trim().equals("") && !txtPort.getText().toString().equals(null)) {
-			try {
-				Common.isValidPort(txtPort.getText().toString().trim());
-			}
-			catch (Exception e) {
-				MsgBox("Invalid Port", "Invalid port! The port can only be a number between 1024 and 65535)");
+		
+		try {
+			if (!Common.isValidPort(txtPort.getText().toString().trim())) {
+				MsgBox(getText(R.string.invalidport_msg_title).toString(), getText(R.string.invalidportrange_msg_body).toString());
 				txtPort.requestFocus();
 				return false;
 			}
 		}
-			
+		catch (NumberFormatException e) {
+			Log.e(TAG, "Save(): Invalid port! Using default port: 41788");
+			MsgBox(getText(R.string.invalidport_msg_title).toString(), getText(R.string.invalidportvar_msg_body).toString());
+			txtPort.requestFocus();
+			return false;
+		}
 		return true;
 	}
 
