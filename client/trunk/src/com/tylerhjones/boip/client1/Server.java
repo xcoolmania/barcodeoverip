@@ -27,6 +27,8 @@
 package com.tylerhjones.boip.client1;
 
 
+import android.util.Log;
+
 
 public class Server {
 	
@@ -79,14 +81,20 @@ public class Server {
 	}
 	
 	public void setPort(int Port) {
-		try {
-			Common.isValidPort(String.valueOf(Port));
-		}
-		catch (Exception e) {
+		Log.d("Server Class", "setPort(): Port is attempting to set to: " + String.valueOf(Port));
+		// try {
+		// Common.isValidPort(String.valueOf(Port));
+		// }
+		// catch (Exception e) {
+		if (Port < 1 || Port > 65535) {
 			this.Port = Common.DEFAULT_PORT;
-			return;
+		} else {
+			this.Port = Port;
 		}
-		this.Port = Port;
+		Log.d("Server Class", "setPort(): Port was ACTUALLY set to: " + String.valueOf(this.Port));
+		return;
+		// }
+		// this.Port = Port;
 	}
 	
 	/** Server index properties ************************************ */
