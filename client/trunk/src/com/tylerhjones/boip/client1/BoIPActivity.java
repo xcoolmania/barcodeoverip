@@ -411,7 +411,7 @@ public class BoIPActivity extends ListActivity {
 	private void showServerInfo(Server s) { // Server object given, edit server
 		Intent intent = new Intent();
 		intent.setClassName("com.tylerhjones.boip.client1", "com.tylerhjones.boip.client1.ServerInfoActivity");
-		intent.putExtra("com.tylerhjones.boip.client1.ServerName", s.getName());
+		intent.putExtra("com.tylerhjones.boip.client1.ServerIndex", s.getIndex());
 		intent.putExtra("com.tylerhjones.boip.client1.Action", Common.EDIT_SREQ);
 		startActivityForResult(intent, Common.EDIT_SREQ);
 	}
@@ -453,29 +453,26 @@ public class BoIPActivity extends ListActivity {
 				Log.e(TAG, ne.toString());
 			}
 		}
-		
-		if (requestCode == Common.ADD_SREQ) {
-			lv("AddServer Activity result");
-			this.UpdateList();
-			/*
-			if (resultCode == RESULT_OK) {
-				Toast.makeText(this, "Server added successfully!", 5).show();
-			} else {
-				Toast.makeText(this, "No changes were made.", 3).show();
-			}
-			*/
-		}
-		if (requestCode == Common.EDIT_SREQ) {
-			lv("EditServer Activity result");
-			this.UpdateList();
-			/*
-			if (resultCode == RESULT_OK) {
-				Toast.makeText(this, "Server edited successfully!", 5).show();
-			} else {
-				Toast.makeText(this, "No changes were made.", 3).show();
-			}
-			*/
-		}
+		/*
+		 * if (requestCode == Common.ADD_SREQ) {
+		 * lv("AddServer Activity result");
+		 * // this.UpdateList();
+		 * if (resultCode == RESULT_OK) {
+		 * Toast.makeText(this, "Server added successfully!", 5).show();
+		 * } else {
+		 * Toast.makeText(this, "No changes were made.", 3).show();
+		 * }
+		 * }
+		 * if (requestCode == Common.EDIT_SREQ) {
+		 * lv("EditServer Activity result");
+		 * // this.UpdateList();
+		 * if (resultCode == RESULT_OK) {
+		 * Toast.makeText(this, "Server edited successfully!", 5).show();
+		 * } else {
+		 * Toast.makeText(this, "No changes were made.", 3).show();
+		 * }
+		 * }
+		 */
 		//this.UpdateList();
 	}
 	
