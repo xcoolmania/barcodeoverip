@@ -70,9 +70,9 @@ public class BoIPActivity extends ListActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-		lv("onCreate() called!");
+		// lv("onCreate() called!");
 		
-		lv("*** VERSION *** | ", Common.getAppVersion(this, getClass()));
+		// lv("*** VERSION *** | ", Common.getAppVersion(this, getClass()));
 		SharedPreferences sVal = getSharedPreferences(Common.PREFS, 0);
 		Editor sEdit;
 		if (!sVal.getString(Common.PREF_VERSION, "0.0").equals(Common.getAppVersion(this, getClass()))) {
@@ -95,7 +95,7 @@ public class BoIPActivity extends ListActivity {
 				sEdit = sVal.edit();
 				sEdit.putInt(Common.PREF_CURSRV, SelectedServer.getIndex());
 				sEdit.commit();
-				lv("*** BEFORE SCAN : SelectedServer ***  Index: " + String.valueOf(SelectedServer.getIndex()) + " -- Name: " + SelectedServer.getName());
+				// lv("*** BEFORE SCAN : SelectedServer ***  Index: " + String.valueOf(SelectedServer.getIndex()) + " -- Name: " + SelectedServer.getName());
 				IntentIntegrator integrator = new IntentIntegrator(BoIPActivity.this);
 				if (ValidateServer(Servers.get(position))) {
 					integrator.initiateScan(IntentIntegrator.ONE_D_CODE_TYPES);
@@ -157,19 +157,22 @@ public class BoIPActivity extends ListActivity {
 	}
 
 	private void UpdateList() {
-		
+		lv("UpdateList(): Starting list/data update function...");
 		Servers.clear();
 		DB.open();
+		if (DB.getRecordCount() < 1) {
+			DB.close();
+			return;
+		}
 		Servers = DB.getAllServers();
 		DB.close();
-		lv("UpdateList(): Got Servers, clearing adapter...");
 		theAdapter.clear();
 
-		lv("UpdateList(): Got servers. Count: " + Servers.size());
-		if (Servers != null && Servers.size() > 0) {
+		lv("UpdateList(): Updated all lists/containers with servers from the DB. Servers count: " + DB.getRecordCount());
+		if (Servers != null && DB.getRecordCount() > 0) {
 			theAdapter.notifyDataSetChanged();
-			for (int i = 0; i < Servers.size(); i++) {
-				theAdapter.add(Servers.get(i));
+			for (Server s : Servers) {
+				theAdapter.add(s);
 			}
 		}
 	}
@@ -414,24 +417,20 @@ public class BoIPActivity extends ListActivity {
 
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
 		SharedPreferences sVal = getSharedPreferences(Common.PREFS, 0);
-		boolean found = false;
 		try {
-			for(int i=0; i<Servers.size(); i++) {
-				if(!found) {
-					if(sVal.getInt(Common.PREF_CURSRV, 0) == Servers.get(i).getIndex()) {
-						found = true;
-						SelectedServer = Servers.get(i);
-						i = Servers.size() + 1;
-					}
-				}
-			}
-			if(!found) { SelectedServer = Servers.get(0); }
+			this.UpdateList();
+		}
+		catch (Exception e) {
+			Log.e(TAG, "onActivityResult(): Exception occured while trying to update the server list.", e);
+		}
+		try {
+			SelectedServer = Servers.get(sVal.getInt(Common.PREF_CURSRV, 0));
 		} catch(IndexOutOfBoundsException e) {
 			Log.wtf(TAG, "A barcode was scanned but no servers are defined! - " + e.toString()); 
 			return;
 		}
-		lv("*** AFTER SCAN : SelectedServer ***  Index: " + String.valueOf(SelectedServer.getIndex()) + " -- Name: " + SelectedServer.getName());
-		lv("Activity result -- ", String.valueOf(requestCode), String.valueOf(resultCode));
+		// lv("*** AFTER SCAN : SelectedServer ***  Index: " + String.valueOf(SelectedServer.getIndex()) + " -- Name: " + SelectedServer.getName());
+		// lv("Activity result -- ", String.valueOf(requestCode), String.valueOf(resultCode));
 		IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
 		if(result != null) {
 			try {
@@ -445,30 +444,6 @@ public class BoIPActivity extends ListActivity {
 				Log.e(TAG, ne.toString());
 			}
 		}
-		
-		if (requestCode == Common.ADD_SREQ) {
-			lv("AddServer Activity result");
-			this.UpdateList();
-			/*
-			if (resultCode == RESULT_OK) {
-				Toast.makeText(this, "Server added successfully!", 5).show();
-			} else {
-				Toast.makeText(this, "No changes were made.", 3).show();
-			}
-			*/
-		}
-		if (requestCode == Common.EDIT_SREQ) {
-			lv("EditServer Activity result");
-			this.UpdateList();
-			/*
-			if (resultCode == RESULT_OK) {
-				Toast.makeText(this, "Server edited successfully!", 5).show();
-			} else {
-				Toast.makeText(this, "No changes were made.", 3).show();
-			}
-			*/
-		}
-		this.UpdateList();
 	}
 	
 	/** Logging shortcut functions **************************************************** */
