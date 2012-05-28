@@ -102,6 +102,7 @@ public class ServerInfoActivity extends Activity {
 			DB.close();
 			if (Server == null) {
 				Log.wtf(TAG, "DB gave null value!");
+				finish();
 				return;
 			}
 			txtName.setText(Server.getName());

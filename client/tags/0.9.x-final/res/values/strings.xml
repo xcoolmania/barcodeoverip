@@ -3,12 +3,12 @@
 
 	<string name="app_name">BarcodeOverIP</string>
 	<string name="app_desc">Use your Android device as a wireless barcode scanner for your PC/Laptop</string>
-	<string name="author_label">(&#169;)2012 Tyler H. Jones (inquirewue) - me@tylerjones.me</string>
-	<string name="version">BarcodeOverIP Client v0.9.4</string>
-	<string name="versionnum">0.9.4</string>
-	<string name="googlecode_site">https://code.google.com/hosting/settings</string>
+	<string name="author_label">(&#169;)2012 Tyler H. Jones (inquirewue) - me@thj.me</string>
+	<string name="version">BarcodeOverIP Client v0.9.5</string>
+	<string name="versionnum">0.9.5</string>
+	<string name="googlecode_site">http://boip.tylerjones.me/</string>
 	<string name="project_site">http://boip.tylerjones.me/</string>
-	<string name="project_donate_site">http://tbsf.me/boip/donate</string>
+	<string name="project_donate_site">http://b.thj.me/donate</string>
 	<string name="developer_site">http://tylerjones.me</string>
 	<string name="author">Tyler H. Jones</string>
 	<string name="server_info">Add/Modify Server</string>
@@ -24,13 +24,14 @@
 
 	<!-- Message box and alert dialog strings -->
 	<string name="about_msg_title">About BarcodeOverIP</string>
-	<string name="about_msg_body"><b>BarcodeOverIP Client v0.9.4</b>\n&#169;2012 - Tyler H. Jones\nProject Home: http://boip.tylerjones.me\n\nWelcome to BarcodeOverIP for Android!\nTo get started you must add a server by pressing \'Menu\' > \'Add Server\'. 
+	<string name="about_msg_body"><b>BarcodeOverIP Client v0.9.5</b>\n&#169;2012 - Tyler H. Jones\nProject Home: http://boip.tylerjones.me\n\nWelcome to BarcodeOverIP for Android!\nTo get started you must add a server by pressing \'Menu\' > \'Add Server\'. 
 	    Once you have added one or more servers, to scan a barcode,
 	    simply touch the desired server on the list and scan away!\nTo edit/remove a server, press and hold 
 	    the target server in the list and a menu will appear.\n
-	    <b>**NOTE: </b>The server application is available on the project site and the Google Code site as well.\n\n
-	    http://code.google.com/p/barcodeoverip\n
-	    http://tbsf.me/boip/donate\n
+	    <b>**NOTE: </b>The server application is available on BoIP\'s Google Code site or directly download the latest release using the static download URL.\n\n
+	    Static DL URL:  http://b.thj.me/server/latest\n
+	    Project Home:  http://boip.tylerjones.me\n
+	    Donations:  http://boip.tylerjones.me/donate\n
 	</string>	
 	<string name="beta_msg_title">Beta Version!</string>
 	<string name="beta_msg_body">This is a possibly unstable beta version of
@@ -47,14 +48,14 @@
 	<string name="editservers_msg_body">Edit servers activity is not done yet! Try again later!</string>
 
 	<!-- Widget text and hints -->
-	<string name="txtname_hint">Untitled Server</string>
-	<string name="txthost_hint">Host or IP</string>
+	<string name="txtname_hint">(Nickname)</string>
+	<string name="txthost_hint">(Hostname/IP)</string>
 	<string name="txtport_hint">41788</string>
-	<string name="txtpass_hint">Password</string>
-	<string name="txtname_label">Server Name:</string>
-	<string name="txthost_label">Hostname or IP Address:</string>
-	<string name="txtport_label">Port Number (Blank for default):</string>
-	<string name="txtpass_label">Password (Blank for none):</string>
+	<string name="txtpass_hint">(Empty)</string>
+	<string name="txtname_label">Server Nickname:</string>
+	<string name="txthost_label">Hostname/IP:</string>
+	<string name="txtport_label">Port:</string>
+	<string name="txtpass_label">Password:</string>
 	<string name="btnsave_label">Save Server</string>
 	
 	<!-- Menus text and info -->

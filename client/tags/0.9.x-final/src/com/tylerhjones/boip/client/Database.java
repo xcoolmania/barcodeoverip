@@ -40,6 +40,7 @@ public class Database {
 	private SQLiteDatabase theDB;
 	private Context context;
 	private DBHelper dbhelper;
+	private int NumRecords = 0;
 	
 	public Database(Context c) {
 		Log.v(TAG, "Database class cunstructor called...");
@@ -53,21 +54,29 @@ public class Database {
 		try {
 			dbhelper = new DBHelper(context);
 			theDB = dbhelper.getWritableDatabase();
-			Log.v(TAG, "Database opened!");
-			return this;
+			Log.v(TAG, "open(): Database opened!");
 		} catch(SQLiteException e) {
-			Log.e(TAG, "Database.open() threw an exception!", e);
+			Log.e(TAG, "open() threw an exception!", e);
 			return null;
 		}
+		try {
+			Cursor curs = theDB.query(Common.TABLE_SERVERS, new String[] { "COUNT(*)" }, null, null, null, null, null);
+			this.NumRecords = curs.getCount();
+			curs.close();
+		}
+		catch (SQLiteException e) {
+			Log.e(TAG, "open(): A non-fatal exception was thrown WHILE trying to get the number of records in the DB table.", e);
+		}
+		return this;
 	}
 
 	public void close() {
 		try {
 			dbhelper.close();
 		} catch(SQLiteException e) {
-			Log.e(TAG, "Database.close() threw an exception!", e);
+			Log.e(TAG, "close() threw an exception!", e);
 		}
-		Log.v(TAG, "Database closed!");
+		Log.v(TAG, "close(): Database closed!");
 	}
 	
 	/******************************************************************************/
@@ -132,6 +141,7 @@ public class Database {
 		Server s = new Server();
 		ArrayList<Server> sarray = new ArrayList<Server>();
 		Log.v(TAG, "Servers()");
+		int i = 0;
 		try {
 			Cursor curs = theDB.query(Common.TABLE_SERVERS, new String[] { Common.S_FIELD_NAME, Common.S_FIELD_HOST, Common.S_FIELD_PORT,
 					Common.S_FIELD_PASS, Common.S_FIELD_INDEX }, null, null, null, null, null);
@@ -142,7 +152,8 @@ public class Database {
 				s.setHost(curs.getString(1));
 				s.setPort(Integer.valueOf(curs.getString(2)));
 				s.setPassword(curs.getString(3));
-				s.setIndex(Integer.valueOf(curs.getString(4)));
+				s.setIndex(i);
+				++i;
 				sarray.add(s);
 			}
 			return sarray;
@@ -158,18 +169,20 @@ public class Database {
 	}
 	
 	public Server getServerFromIndex(int idx) throws SQLiteException {
-		Server s = new Server();
-		Log.v(TAG, "getServerFromIndex(idx)");
-		Cursor mCursor = theDB.query(true, Common.TABLE_SERVERS, new String[] { Common.S_FIELD_NAME, Common.S_FIELD_HOST, Common.S_FIELD_PORT,
-				Common.S_FIELD_PASS }, Common.S_FIELD_INDEX + "='" + idx + "'", null, null, null, null, null);
-		if (mCursor.moveToFirst()) {
-			s.setName(mCursor.getString(0));
-			s.setHost(mCursor.getString(1));
-			s.setPort(Integer.valueOf(mCursor.getString(2)));
-			s.setPassword(mCursor.getString(3));
-			s.setIndex(idx);
-		}
-		return s;
+		return getAllServers().get(idx);
+		/*
+		 * Server s = new Server();
+		 * Log.v(TAG, "getServerFromIndex(idx)");
+		 * Cursor mCursor = theDB.query(true, Common.TABLE_SERVERS, new String[] { Common.S_FIELD_NAME, Common.S_FIELD_HOST, Common.S_FIELD_PORT,
+		 * Common.S_FIELD_PASS }, Common.S_FIELD_INDEX + "='" + idx + "'", null, null, null, null, null);
+		 * if (mCursor.moveToFirst()) {
+		 * s.setName(mCursor.getString(0));
+		 * s.setHost(mCursor.getString(1));
+		 * s.setPort(Integer.valueOf(mCursor.getString(2)));
+		 * s.setPassword(mCursor.getString(3));
+		 * s.setIndex(idx);
+		 * }
+		 */
 	}
 	
 	public Server getServerFromName(String name) throws SQLiteException {
@@ -187,6 +200,10 @@ public class Database {
 		return s;
 	}
 	
+	public int getRecordCount() {
+		return this.NumRecords;
+	}
+
 	public boolean getNameExits(String name) throws SQLiteException {
 		Log.v(TAG, "getNameExits(name)");
 		Cursor mCursor = theDB.query(true, Common.TABLE_SERVERS, new String[] { Common.S_FIELD_HOST, Common.S_FIELD_INDEX, Common.S_FIELD_PORT,
