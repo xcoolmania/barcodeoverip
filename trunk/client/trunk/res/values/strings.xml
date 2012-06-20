@@ -85,6 +85,7 @@
 	<string name="settings_save_error">Server Settings Save ERROR! (Error -4)</string>	
 	<string name="settings_not_saved">No Server Settings Modified!</string>	
 	<string name="settings_saved">Server Settings Saved!</string>
+	<string name="settings_title">BarcodeOverIP Client Settings</string>
 	<string name="server_deleted">Server Deleted!</string>
 	<string name="server_not_deleted">Server Delete ERROR!</string>
 				

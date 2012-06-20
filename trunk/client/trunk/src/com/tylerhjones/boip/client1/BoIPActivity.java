@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Vector;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.Context;
@@ -39,6 +40,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -56,25 +58,34 @@ import android.widget.Toast;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+
 public class BoIPActivity extends ListActivity {
 	
 	private static final String TAG = "BoIPActivity";
-	private static ArrayList<Server> Servers = new ArrayList<Server>();
+	private ArrayList<Server> Servers = new ArrayList<Server>();
 	private ServerAdapter theAdapter;
 	private Database DB = new Database(this);
 	private Server CurServer = new Server();
 	
+	private FindServersThread ServerFinder; // FindServersThread class declaration
+	private Handler Handler; // FindServer thread handler
+	private Vector<String> FoundServers; // IP address of server only
+	
+	private boolean doFindServers = true;
+	
+	private MenuItem mnuMainAddServer;
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-		lv("onCreate() called!"); // <--REMOVE
 		
 		lv("*** VERSION *** | ", Common.getAppVersion(this, getClass()));
 		SharedPreferences sVal = getSharedPreferences(Common.PREFS, 0);
 		Editor sEdit;
-		if (!sVal.getString(Common.PREF_VERSION, "0.0").equals(Common.getAppVersion(this, getClass()))) {
+		ToggleFindServers(sVal.getBoolean(Common.PREF_FIND, true));
+		if (!sVal.getString(Common.PREF_VERSION, "1.0").equals(Common.getAppVersion(this, getClass()))) {
 			Common.showAbout(this);
 			sEdit = sVal.edit();
 			sEdit.putString(Common.PREF_VERSION, Common.getAppVersion(this, getClass()));
@@ -94,7 +105,6 @@ public class BoIPActivity extends ListActivity {
 				sEdit = sVal.edit();
 				sEdit.putInt(Common.PREF_CURSRV, CurServer.getIndex());
 				sEdit.commit();
-				lv("*** BEFORE SCAN : CurServer ***  Index: " + String.valueOf(CurServer.getIndex()) + " -- Name: " + CurServer.getName()); // <--REMOVE
 				IntentIntegrator integrator = new IntentIntegrator(BoIPActivity.this);
 				if (ValidateServer(Servers.get(position))) {
 					integrator.initiateScan(IntentIntegrator.ONE_D_CODE_TYPES);
@@ -102,26 +112,87 @@ public class BoIPActivity extends ListActivity {
 			}
 		});
 		
+		mnuMainAddServer = (MenuItem) this.findViewById(R.id.mnuMainAddServer);
+
+		this.FoundServers = new Vector<String>();
+		
 		if (!Common.isNetworked(this)) {
-			Common.showMsgBox(this, "No Network", "No active network connection was found! You must be connected to a network to use BarcodeOverIP!");
+			Common.showMsgBox(this, "No Network",
+				"No active network connection was found! You must be connected to a network to use BarcodeOverIP!\n\nPress 'OK' to quit BarcodeOverIP Client...");
+			this.finish();
+		} else {
+			if (!Common.isWifiActive(this)) {
+				Common.showMsgBox(this, "No Wifi Connection", "No active Wifi connection was found! Configuring BoIP is difficult when the target server is behind a router/NAT or on a separate network.\n\nIn other words, to make things MUCH easier it is STRONGLY reccomended that you connect to the same network the server is on using Wifi.");
+			}
 		}
 	}
 	
+	/** OS kills process */
+	public void onDestroy() {
+		super.onDestroy();
+	}
+	
+	/** App starts anything it needs to start */
+	public void onStart() {
+		super.onStart();
+	}
+	
+	/** App kills anything it started */
+	public void onStop() {
+		super.onStop();
+	}
+	
+	/** App starts displaying things */
+	public void onResume() {
+		super.onResume();
+		this.ServerFinder = new FindServersThread(new FindServersThread.FindListener() {
+			
+			public void onAddressReceived(String address) {
+				FoundServers.add(address);
+				ld("onResume() - Got host back, " + address);
+				Handler.post(new Runnable() {
+					
+					public void run() {
+						UpdateList();
+					}
+				});
+			}
+		});
+		if (doFindServers) {
+			this.ServerFinder.start();
+		}
+	}
+	
+	
+	/** App goes into background */
+	public void onPause() {
+		super.onPause();
+		if (!doFindServers) {
+			this.ServerFinder.closeSocket();
+		}
+	}
+
 	/*******************************************************************************************************/
 	/** Event handler functions ************************************************************************** */
 
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-		if (v.getId() == getListView().getId()) {
-			AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
-			menu.setHeaderTitle(Servers.get(info.position).getName());
-			String[] menuItems = getResources().getStringArray(R.array.cmenu_serverlist);
-			for (int i = 0; i < menuItems.length; ++i) {
-				menu.add(Menu.NONE, i, i, menuItems[i]);
+		if (!doFindServers) {
+			if (v.getId() == getListView().getId()) {
+				AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+				menu.setHeaderTitle(Servers.get(info.position).getName());
+				String[] menuItems = getResources().getStringArray(R.array.cmenu_serverlist);
+				for (int i = 0; i < menuItems.length; ++i) {
+					menu.add(Menu.NONE, i, i, menuItems[i]);
+				}
 			}
 		}
 	}
 	
+	
+	//
+	// FIXME: Need to make this compatible with FindServersThread
+	//
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
@@ -131,8 +202,9 @@ public class BoIPActivity extends ListActivity {
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setMessage(getText(R.string.deleteserver_msg_body)).setTitle(getText(R.string.deleteserver_msg_title)).setCancelable(false)
 									.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-										
-										@Override
+										//Toast.makeText(this, "Server name exists! Save aborted!", 6).show();
+										// return;
+																		@Override
 										public void onClick(DialogInterface dialog, int id) {
 											DB.open();
 											if (!DB.deleteServer(Servers.get(info.position))) {
@@ -167,22 +239,114 @@ public class BoIPActivity extends ListActivity {
 		}
 	}
 
+/*
+ * private ArrayList<Server> MergeServers() {
+ * if (this.FoundServers.size() < 1) { return this.Servers; }
+ * ArrayList<Server> TmpServers = new ArrayList<Server>();
+ * TmpServers.addAll(Servers);
+ * boolean found = false;
+ * for (String s : this.FoundServers) {
+ * for (Server svr : this.Servers) {
+ * if (svr.getHost() == s) {
+ * found = true;
+ * }
+ * }
+ * if (found) {
+ * lv("Server already exists in Servers, ignoring... Hostname: ", s);
+ * } else {
+ * TmpServers.add(new Server(s, s, Common.DEFAULT_PASS, Common.DEFAULT_PORT));
+ * }
+ * }
+ * 
+ * // FIXME: Remove this code before release
+ * // Debugging code for MergeServers()
+ * try {
+ * for (Server ss : TmpServers) {
+ * lv("MergeServers - Hostname: ", ss.getHost());
+ * lv("MergeServers - Nickname: ", ss.getHost());
+ * lv("MergeServers - Port #: ", String.valueOf(ss.getPort()));
+ * lv("MergeServers - Password: ", ss.getPassword());
+ * lv("MergeServers - Index: ", String.valueOf(ss.getIndex()));
+ * }
+ * }
+ * catch (Exception e) {
+ * lw("Exception occured: " + e.getMessage().toString());
+ * }
+ * // ------ END OF DEBUGGING CODE -------
+ * 
+ * // Keep this last line in the release, it is NOT debugging code
+ * return TmpServers;
+ * }
+ * 
+ * 
+ * // UpdateList() Function - Updates both the UI list object and the servers list array to correctly show all configured servers/targets
+ * private void UpdateList() {
+ * lv("UpdateList(): Starting list/data update function...");
+ * Servers.clear();
+ * Servers.clear();
+ * DB.open();
+ * if (DB.getRecordCount() < 1) {
+ * DB.close();
+ * return;
+ * }
+ * Servers = DB.getAllServers();
+ * DB.close();
+ * theAdapter.clear();
+ * Servers = MergeServers();
+ * 
+ * lv("UpdateList(): Updated all lists/containers with servers from the DB and found servers. Servers count: " + Servers.size());
+ * if (Servers != null && Servers.size() > 0) {
+ * theAdapter.notifyDataSetChanged();
+ * for (Server s : Servers) {
+ * theAdapter.add(s);
+ * }
+ * }
+ * }
+ */
+	
+	private void ToggleFindServers(boolean b) {
+		if (b) {
+			doFindServers = true;
+			this.ServerFinder.start();
+			mnuMainAddServer.setEnabled(false);
+			mnuMainAddServer.setTitle("Disabled, Server Finder is ON");
+		} else {
+			doFindServers = false;
+			this.ServerFinder.closeSocket();
+			mnuMainAddServer.setEnabled(true);
+			mnuMainAddServer.setTitle("Add Server");
+		}
+		UpdateList();
+	}
 
 	// UpdateList() Function - Updates both the UI list object and the servers list array to correctly show all configured servers/targets
 	private void UpdateList() {
-		lv("UpdateList(): Starting list/data update function...");
 		Servers.clear();
-		DB.open();
-		if (DB.getRecordCount() < 1) {
-			DB.close();
-			return;
-		}
-		Servers = DB.getAllServers();
-		DB.close();
 		theAdapter.clear();
-
-		lv("UpdateList(): Updated all lists/containers with servers from the DB. Servers count: " + DB.getRecordCount());
-		if (Servers != null && DB.getRecordCount() > 0) {
+		if (!doFindServers) { // Get servers from the SQLite DB
+			lv("UpdateList(): Starting list/data update function using SQLite DB...");
+			DB.open();
+			if (DB.getRecordCount() < 1) {
+				DB.close();
+				return;
+			}
+			Servers = DB.getAllServers();
+			DB.close();
+		} else { // Get servers by finding them on the network
+			lv("UpdateList(): Starting list/data update function using FindServersThread...");
+			if (this.FoundServers.size() < 1) {
+				lw("UpdateList() - No servers present in FoundServers!");
+				return;
+			}
+			int i = 0;
+			for (String s : this.FoundServers) {
+				Servers.add(new Server(s, s, Common.DEFAULT_PASS, Common.DEFAULT_PORT, i));
+				++i;
+			}
+		}
+		// Update the list adapter to reflect the changes in the list object
+		lv("UpdateList(): Updated all lists/containers with servers from the DB and found servers. Servers count: " + Servers.size());
+		if (Servers != null && Servers.size() > 0) {
 			theAdapter.notifyDataSetChanged();
 			for (Server s : Servers) {
 				theAdapter.add(s);
@@ -317,7 +481,7 @@ public class BoIPActivity extends ListActivity {
 			try {
 				addr = InetAddress.getByName(s);
 			} catch (UnknownHostException e) {
-				Toast.makeText(this, "Invalid Host/IP Address! (-1)", 10).show();
+			Toast.makeText(this, "Invalid Hostname/IP Address! (-1)", 10).show();
 				return null;
 			}
 			if(addr.isLoopbackAddress() || addr.isLinkLocalAddress() || addr.isAnyLocalAddress()) {
@@ -398,7 +562,9 @@ public class BoIPActivity extends ListActivity {
 				startActivity(new Intent(Intent.ACTION_VIEW, uri));
 				return true;
 			case R.id.mnuMainAddServer:
-				this.addServer();
+				if (!doFindServers) {
+					this.addServer();
+				}
 				return true;
 			default:
 				return super.onOptionsItemSelected(item);
@@ -433,7 +599,6 @@ public class BoIPActivity extends ListActivity {
 		try {
 			CurServer = Servers.get(sVal.getInt(Common.PREF_CURSRV, 0));
 		} catch(IndexOutOfBoundsException e) {
-			Log.e(TAG, "INDEX OUT OF BOUNDS!! - " + e.toString());
 			Log.wtf(TAG, "A barcode was scanned but no servers are defined! - " + e.toString()); 
 			return;
 		}
@@ -449,31 +614,9 @@ public class BoIPActivity extends ListActivity {
 				}
 			} catch(NullPointerException ne) {
 				Toast.makeText(this, "Hmm that did't work.. Try again. (1)", 10).show();
-				this.UpdateList();
 				Log.e(TAG, ne.toString());
 			}
 		}
-		/*
-		 * if (requestCode == Common.ADD_SREQ) {
-		 * lv("AddServer Activity result");
-		 * // this.UpdateList();
-		 * if (resultCode == RESULT_OK) {
-		 * Toast.makeText(this, "Server added successfully!", 5).show();
-		 * } else {
-		 * Toast.makeText(this, "No changes were made.", 3).show();
-		 * }
-		 * }
-		 * if (requestCode == Common.EDIT_SREQ) {
-		 * lv("EditServer Activity result");
-		 * // this.UpdateList();
-		 * if (resultCode == RESULT_OK) {
-		 * Toast.makeText(this, "Server edited successfully!", 5).show();
-		 * } else {
-		 * Toast.makeText(this, "No changes were made.", 3).show();
-		 * }
-		 * }
-		 */
-		//this.UpdateList();
 	}
 	
 	/** Logging shortcut functions **************************************************** */

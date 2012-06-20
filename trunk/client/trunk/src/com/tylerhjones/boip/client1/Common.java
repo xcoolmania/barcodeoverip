@@ -71,13 +71,21 @@ public class Common {
 	public static final String PREF_VERSION = "version";
 	public static final String PREF_CURSRV = "curserver";
 	public static final String PREF_WIDGET_ID = "wid";
+	public static final String PREF_FIND = "findservers";
 	
 	/** Default value constants *********************************************************** */
 	public static final int DEFAULT_PORT = 41788;
 	public static final String DEFAULT_HOST = "0.0.0.0";
 	public static final String DEFAULT_PASS = "none";
 	public static final String DEFAULT_NAME = "Untitled";
+
+	public static final int BUFFER_LEN = 1024;
+	public static final String MULTICAST_IPADDR = "231.0.2.4";
 	
+	// Host challenge phrase and response
+	public static final String HOST_CHALLENGE = "BoIP:NarwhalBaconTime"; // If you don't understand why I used NarwhalBaconTime then you need to visit http://reddit.com
+	public static final String HOST_RESPONSE = "BoIP:Midnight"; // Same goes for the response of 'Midnight' ^^^^^
+
 	/** Network communication message constants ******************************************** */
 	public static final String OK = "OK"; // Server's client/user authorization pass message
 	public static final String NOPE = "NOPE"; // Server's response to any and all data received while it is deactivated
@@ -154,12 +162,21 @@ public class Common {
 	
 	public static boolean isNetworked(Context c) { // Check if we are on a network
 		ConnectivityManager mManager = (ConnectivityManager) c.getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo current = mManager.getActiveNetworkInfo();
-		if (current == null) { return false; }
-		return (current.getState() == NetworkInfo.State.CONNECTED);
+		NetworkInfo network = mManager.getActiveNetworkInfo();
+		if (network == null) { return false; }
+		if (network.isConnected()) { return true; }
+		return false;
+		// return (current.getState() == NetworkInfo.State.CONNECTED);
+	}
+	
+	public static boolean isWifiActive(Context c) { // Check if we are connected to the network via WiFi
+		ConnectivityManager connManager = (ConnectivityManager) c.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo wifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+		if (wifi == null) { return false; }
+		if (wifi.isConnected()) { return true; }
+		return false;
 	}
 
-	
 	public static boolean isValidPort(String port) {
 		try {
 			int p = Integer.parseInt(port);
