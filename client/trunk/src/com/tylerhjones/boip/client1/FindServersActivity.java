@@ -43,7 +43,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,8 +55,7 @@ public class FindServersActivity extends Activity {
 	private FindServersThread ServerFinder; // FindServersThread class declaration
 	private Handler handler; // FindServer thread handler
 	private Vector<String> Servers; // IP address of server only
-	private SimpleAdapter adapter;
-	private Database DB = new Database(this);
+	// private Database DB = new Database(this);
 	
 	private int Port = Common.DEFAULT_PORT;
 
@@ -85,6 +83,7 @@ public class FindServersActivity extends Activity {
 			}
 		});
 		
+		txtFSPort = (EditText) this.findViewById(R.id.txtFSPort);
 		txtFSPort.setFocusable(true);
 		txtFSPort.setText(String.valueOf(Common.DEFAULT_PORT));
 
