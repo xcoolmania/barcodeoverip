@@ -23,8 +23,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".BoIPSettingsActivity">
-            android:label="@string/settings_title"
+            android:name=".FindServersActivity">
+            android:label="@string/findservers_title"
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
