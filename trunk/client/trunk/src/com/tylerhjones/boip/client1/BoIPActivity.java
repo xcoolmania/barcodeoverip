@@ -78,8 +78,7 @@ public class BoIPActivity extends ListActivity {
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.main);
+
 		
 		lv("*** VERSION *** | ", Common.getAppVersion(this, getClass()));
 		SharedPreferences sVal = getSharedPreferences(Common.PREFS, 0);
