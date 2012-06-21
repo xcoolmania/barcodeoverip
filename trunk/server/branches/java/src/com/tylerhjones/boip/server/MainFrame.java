@@ -1,6 +1,6 @@
 /*
  *
- *  BarcodeOverIP-Server (Java) Version 0.6.x
+ *  BarcodeOverIP-Server (Java) Version 0.7.x
  *  Copyright (C) 2012, Tyler H. Jones (me@tylerjones.me)
  *  http://boip.tylerjones.me
  *
@@ -47,7 +47,7 @@ public class MainFrame extends javax.swing.JFrame {
 
     private static final String NO = "NO";
     private static final String OK = "OK";
-    
+
     private ServerCore Server = new ServerCore();
 
     private Settings SET = new Settings();
@@ -70,7 +70,7 @@ public class MainFrame extends javax.swing.JFrame {
         
         // Get the size of the screen
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-
+        
         // Determine the new location of the window
         int w = this.getSize().width;
         int h = this.getSize().height;
@@ -412,7 +412,7 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_btnOkActionPerformed
 
     private void btnAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAboutActionPerformed
-        JOptionPane.showConfirmDialog(this, "Written by Tyler H. Jones (http://tylerjones.me) -- BarcodeOverIP project site: http://boip.tylerjones.me", "About BarcodeOverIP-Server 0.6.2", JOptionPane.PLAIN_MESSAGE);
+        JOptionPane.showConfirmDialog(this, "Written by Tyler H. Jones (http://tylerjones.me) -- BarcodeOverIP Project Site: http://boip.tylerjones.me", "About BarcodeOverIP-Server " + SET.VERSION, JOptionPane.PLAIN_MESSAGE);
     }//GEN-LAST:event_btnAboutActionPerformed
 
     private void chkAutoSetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkAutoSetActionPerformed
