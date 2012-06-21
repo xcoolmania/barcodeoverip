@@ -101,10 +101,10 @@ public class BoIPActivity extends ListActivity {
 			}
 		});
 		
-		MenuItem mnuAddServer = (MenuItem) this.findViewById(R.id.mnuMainAddServer);
-		MenuItem mnuFindServers = (MenuItem) this.findViewById(R.id.mnuMainFindServers);
-		MenuItem mnuAbout = (MenuItem) this.findViewById(R.id.mnuMainAbout);
-		MenuItem mnuDonate = (MenuItem) this.findViewById(R.id.mnuMainDonate);
+		// MenuItem mnuAddServer = (MenuItem) this.findViewById(R.id.mnuMainAddServer);
+		// MenuItem mnuFindServers = (MenuItem) this.findViewById(R.id.mnuMainFindServers);
+		// MenuItem mnuAbout = (MenuItem) this.findViewById(R.id.mnuMainAbout);
+		// MenuItem mnuDonate = (MenuItem) this.findViewById(R.id.mnuMainDonate);
 		//InputStream is = new BufferedInputStream(new FileInputStream();
 		// Drawable.createFromResourceStream(R.drawable.ic_add, this.getResources().get,this.getResources().openRawResource(R.drawable.ic_add)));
 
@@ -407,6 +407,7 @@ public class BoIPActivity extends ListActivity {
 				intent.setClassName("com.tylerhjones.boip.client1", "com.tylerhjones.boip.client1.FindServersActivity");
 				intent.putExtra("com.tylerhjones.boip.client1.Action", Common.ADD_SREQ);
 				startActivityForResult(intent, Common.ADD_SREQ);
+				return true;
 			case R.id.mnuMainAbout:
 				Common.showAbout(this);
 				return true;

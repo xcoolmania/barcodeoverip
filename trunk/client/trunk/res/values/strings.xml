@@ -87,6 +87,8 @@
 	<string name="settings_saved">Server Settings Saved!</string>
 	<string name="server_deleted">Server Deleted!</string>
 	<string name="server_not_deleted">Server Delete ERROR!</string>
+	
+	<string name="findservers_title">Find Active BoIP Servers</string>
 	<string name="lblFSTitle">Find Active BoIP Servers</string>
 	<string name="lblFSPortTitle">As long as this screen is visible, BarcodeOverIP will continue to look for active servers on the local network that are listening on the specified port. Set a custom port to look for servers with by editing the field below and pressing \'Apply Port\'.</string>
 	<string name="lblFoundServers">Found Active Servers:</string>
