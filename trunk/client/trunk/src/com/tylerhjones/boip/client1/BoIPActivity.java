@@ -26,11 +26,11 @@
 
 package com.tylerhjones.boip.client1;
 
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Vector;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.Context;
@@ -40,7 +40,6 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -66,25 +65,16 @@ public class BoIPActivity extends ListActivity {
 	private ServerAdapter theAdapter;
 	private Database DB = new Database(this);
 	private Server CurServer = new Server();
-	
-	private FindServersThread ServerFinder; // FindServersThread class declaration
-	private Handler Handler; // FindServer thread handler
-	private Vector<String> FoundServers; // IP address of server only
-	
-	private boolean doFindServers = true;
-	
-	private MenuItem mnuMainAddServer;
 
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-
+		super.onCreate(savedInstanceState);
 		
 		lv("*** VERSION *** | ", Common.getAppVersion(this, getClass()));
 		SharedPreferences sVal = getSharedPreferences(Common.PREFS, 0);
 		Editor sEdit;
-		ToggleFindServers(sVal.getBoolean(Common.PREF_FIND, true));
-		if (!sVal.getString(Common.PREF_VERSION, "1.0").equals(Common.getAppVersion(this, getClass()))) {
+		if (!sVal.getString(Common.PREF_VERSION, "0.0").equals(Common.getAppVersion(this, getClass()))) {
 			Common.showAbout(this);
 			sEdit = sVal.edit();
 			sEdit.putString(Common.PREF_VERSION, Common.getAppVersion(this, getClass()));
@@ -111,10 +101,14 @@ public class BoIPActivity extends ListActivity {
 			}
 		});
 		
-		mnuMainAddServer = (MenuItem) this.findViewById(R.id.mnuMainAddServer);
+		MenuItem mnuAddServer = (MenuItem) this.findViewById(R.id.mnuMainAddServer);
+		MenuItem mnuFindServers = (MenuItem) this.findViewById(R.id.mnuMainFindServers);
+		MenuItem mnuAbout = (MenuItem) this.findViewById(R.id.mnuMainAbout);
+		MenuItem mnuDonate = (MenuItem) this.findViewById(R.id.mnuMainDonate);
+		//InputStream is = new BufferedInputStream(new FileInputStream();
+		// Drawable.createFromResourceStream(R.drawable.ic_add, this.getResources().get,this.getResources().openRawResource(R.drawable.ic_add)));
 
-		this.FoundServers = new Vector<String>();
-		
+
 		if (!Common.isNetworked(this)) {
 			Common.showMsgBox(this, "No Network",
 				"No active network connection was found! You must be connected to a network to use BarcodeOverIP!\n\nPress 'OK' to quit BarcodeOverIP Client...");
@@ -126,72 +120,22 @@ public class BoIPActivity extends ListActivity {
 		}
 	}
 	
-	/** OS kills process */
-	public void onDestroy() {
-		super.onDestroy();
-	}
-	
-	/** App starts anything it needs to start */
-	public void onStart() {
-		super.onStart();
-	}
-	
-	/** App kills anything it started */
-	public void onStop() {
-		super.onStop();
-	}
-	
-	/** App starts displaying things */
-	public void onResume() {
-		super.onResume();
-		this.ServerFinder = new FindServersThread(new FindServersThread.FindListener() {
-			
-			public void onAddressReceived(String address) {
-				FoundServers.add(address);
-				ld("onResume() - Got host back, " + address);
-				Handler.post(new Runnable() {
-					
-					public void run() {
-						UpdateList();
-					}
-				});
-			}
-		});
-		if (doFindServers) {
-			this.ServerFinder.start();
-		}
-	}
-	
-	
-	/** App goes into background */
-	public void onPause() {
-		super.onPause();
-		if (!doFindServers) {
-			this.ServerFinder.closeSocket();
-		}
-	}
-
 	/*******************************************************************************************************/
 	/** Event handler functions ************************************************************************** */
 
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-		if (!doFindServers) {
-			if (v.getId() == getListView().getId()) {
-				AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
-				menu.setHeaderTitle(Servers.get(info.position).getName());
-				String[] menuItems = getResources().getStringArray(R.array.cmenu_serverlist);
-				for (int i = 0; i < menuItems.length; ++i) {
-					menu.add(Menu.NONE, i, i, menuItems[i]);
-				}
+		if (v.getId() == getListView().getId()) {
+			AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+			menu.setHeaderTitle(Servers.get(info.position).getName());
+			String[] menuItems = getResources().getStringArray(R.array.cmenu_serverlist);
+			for (int i = 0; i < menuItems.length; ++i) {
+				menu.add(Menu.NONE, i, i, menuItems[i]);
 			}
 		}
 	}
 	
-	
-	//
-	// FIXME: Need to make this compatible with FindServersThread
-	//
+
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
@@ -238,111 +182,19 @@ public class BoIPActivity extends ListActivity {
 		}
 	}
 
-/*
- * private ArrayList<Server> MergeServers() {
- * if (this.FoundServers.size() < 1) { return this.Servers; }
- * ArrayList<Server> TmpServers = new ArrayList<Server>();
- * TmpServers.addAll(Servers);
- * boolean found = false;
- * for (String s : this.FoundServers) {
- * for (Server svr : this.Servers) {
- * if (svr.getHost() == s) {
- * found = true;
- * }
- * }
- * if (found) {
- * lv("Server already exists in Servers, ignoring... Hostname: ", s);
- * } else {
- * TmpServers.add(new Server(s, s, Common.DEFAULT_PASS, Common.DEFAULT_PORT));
- * }
- * }
- * 
- * // FIXME: Remove this code before release
- * // Debugging code for MergeServers()
- * try {
- * for (Server ss : TmpServers) {
- * lv("MergeServers - Hostname: ", ss.getHost());
- * lv("MergeServers - Nickname: ", ss.getHost());
- * lv("MergeServers - Port #: ", String.valueOf(ss.getPort()));
- * lv("MergeServers - Password: ", ss.getPassword());
- * lv("MergeServers - Index: ", String.valueOf(ss.getIndex()));
- * }
- * }
- * catch (Exception e) {
- * lw("Exception occured: " + e.getMessage().toString());
- * }
- * // ------ END OF DEBUGGING CODE -------
- * 
- * // Keep this last line in the release, it is NOT debugging code
- * return TmpServers;
- * }
- * 
- * 
- * // UpdateList() Function - Updates both the UI list object and the servers list array to correctly show all configured servers/targets
- * private void UpdateList() {
- * lv("UpdateList(): Starting list/data update function...");
- * Servers.clear();
- * Servers.clear();
- * DB.open();
- * if (DB.getRecordCount() < 1) {
- * DB.close();
- * return;
- * }
- * Servers = DB.getAllServers();
- * DB.close();
- * theAdapter.clear();
- * Servers = MergeServers();
- * 
- * lv("UpdateList(): Updated all lists/containers with servers from the DB and found servers. Servers count: " + Servers.size());
- * if (Servers != null && Servers.size() > 0) {
- * theAdapter.notifyDataSetChanged();
- * for (Server s : Servers) {
- * theAdapter.add(s);
- * }
- * }
- * }
- */
-	
-	private void ToggleFindServers(boolean b) {
-		if (b) {
-			doFindServers = true;
-			this.ServerFinder.start();
-			mnuMainAddServer.setEnabled(false);
-			mnuMainAddServer.setTitle("Disabled, Server Finder is ON");
-		} else {
-			doFindServers = false;
-			this.ServerFinder.closeSocket();
-			mnuMainAddServer.setEnabled(true);
-			mnuMainAddServer.setTitle("Add Server");
-		}
-		UpdateList();
-	}
 
 	// UpdateList() Function - Updates both the UI list object and the servers list array to correctly show all configured servers/targets
 	private void UpdateList() {
 		Servers.clear();
 		theAdapter.clear();
-		if (!doFindServers) { // Get servers from the SQLite DB
-			lv("UpdateList(): Starting list/data update function using SQLite DB...");
-			DB.open();
-			if (DB.getRecordCount() < 1) {
-				DB.close();
-				return;
-			}
-			Servers = DB.getAllServers();
+		lv("UpdateList(): Starting list/data update function using SQLite DB...");
+		DB.open();
+		if (DB.getRecordCount() < 1) {
 			DB.close();
-		} else { // Get servers by finding them on the network
-			lv("UpdateList(): Starting list/data update function using FindServersThread...");
-			if (this.FoundServers.size() < 1) {
-				lw("UpdateList() - No servers present in FoundServers!");
-				return;
-			}
-			int i = 0;
-			for (String s : this.FoundServers) {
-				Servers.add(new Server(s, s, Common.DEFAULT_PASS, Common.DEFAULT_PORT, i));
-				++i;
-			}
+			return;
 		}
+		Servers = DB.getAllServers();
+		DB.close();
 		// Update the list adapter to reflect the changes in the list object
 		lv("UpdateList(): Updated all lists/containers with servers from the DB and found servers. Servers count: " + Servers.size());
 		if (Servers != null && Servers.size() > 0) {
@@ -550,9 +402,11 @@ public class BoIPActivity extends ListActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle item selection
 		switch (item.getItemId()) {
-			case R.id.mnuMainExit:
-				this.finish();
-				return true;
+			case R.id.mnuMainFindServers:
+				Intent intent = new Intent();
+				intent.setClassName("com.tylerhjones.boip.client1", "com.tylerhjones.boip.client1.FindServersActivity");
+				intent.putExtra("com.tylerhjones.boip.client1.Action", Common.ADD_SREQ);
+				startActivityForResult(intent, Common.ADD_SREQ);
 			case R.id.mnuMainAbout:
 				Common.showAbout(this);
 				return true;
@@ -561,9 +415,7 @@ public class BoIPActivity extends ListActivity {
 				startActivity(new Intent(Intent.ACTION_VIEW, uri));
 				return true;
 			case R.id.mnuMainAddServer:
-				if (!doFindServers) {
-					this.addServer();
-				}
+				this.addServer();
 				return true;
 			default:
 				return super.onOptionsItemSelected(item);

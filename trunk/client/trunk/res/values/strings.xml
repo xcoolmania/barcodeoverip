@@ -59,8 +59,8 @@
 	
 	
 	<!-- Menus text and info -->
-	<string name="mnuMainExit_title">Exit</string>
-	<string name="mnuMainAddServer_title">Add Server</string>
+	<string name="mnuMainFindServers_title">Auto Find Servers</string>
+	<string name="mnuMainAddServer_title">Manually Add Server</string>
 	<string name="mnuMainAbout_title">About</string>
 	<string name="mnuMainDonate_title">Donate</string>
 	<string name="mnuESDelete_title">Delete</string>
@@ -85,10 +85,14 @@
 	<string name="settings_save_error">Server Settings Save ERROR! (Error -4)</string>	
 	<string name="settings_not_saved">No Server Settings Modified!</string>	
 	<string name="settings_saved">Server Settings Saved!</string>
-	<string name="settings_title">BarcodeOverIP Client Settings</string>
 	<string name="server_deleted">Server Deleted!</string>
 	<string name="server_not_deleted">Server Delete ERROR!</string>
-				
+	<string name="lblFSTitle">Find Active BoIP Servers</string>
+	<string name="lblFSPortTitle">As long as this screen is visible, BarcodeOverIP will continue to look for active servers on the local network that are listening on the specified port. Set a custom port to look for servers with by editing the field below and pressing \'Apply Port\'.</string>
+	<string name="lblFoundServers">Found Active Servers:</string>
+	<string name="btnFSApplyPort">Apply Port</string>
+	<string name="DefaultPort">41788</string>
+
 	<string name="app_icon_desc">BarcodeOverIP Icon</string>
 	<string name="main_no_items">No Servers Defined! Press the \'Menu\' button and add one.</string>
 
