@@ -48,11 +48,11 @@ import android.widget.Toast;
 
 
 
-public class FindServersActivity extends Activity {
+public class DiscoverServersActivity extends Activity {
 	
-	private static final String TAG = "FindServersActivity";
+	private static final String TAG = "DiscoverServersActivity";
 	
-	private FindServersThread ServerFinder; // FindServersThread class declaration
+	private DiscoverServersThread ServerFinder; // DiscoverServersThread class declaration
 	private Handler handler; // FindServer thread handler
 	private Vector<String> Servers; // IP address of server only
 	// private Database DB = new Database(this);
@@ -62,7 +62,7 @@ public class FindServersActivity extends Activity {
 	private EditText txtFSPort;
 
 	// Empty default class constructor
-	public FindServersActivity() {
+	public DiscoverServersActivity() {
 		
 	}
 
@@ -126,7 +126,7 @@ public class FindServersActivity extends Activity {
 	/** App starts displaying things */
 	public void onResume() {
 		super.onResume();
-		this.ServerFinder = new FindServersThread(new FindServersThread.FindListener() {
+		this.ServerFinder = new DiscoverServersThread(new DiscoverServersThread.FindListener() {
 			
 			public void onAddressReceived(String address) {
 				Servers.add(address);
