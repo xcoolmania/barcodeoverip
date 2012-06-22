@@ -58,6 +58,10 @@ public class ServerCore implements Runnable {
 
     private String input = "";
 
+    private static final String CLIENT_MULTICAST_IP = "231.0.2.46";
+    private static final String CLIENT_CHALLENGE = "BoIP:NarwhalBaconTime";
+    private static final String SERVER_RESPONSE = "BoIP:Midnight";
+
     //Communication constants for client<-->server communiction
     private static final String R_DSEP = "\\|"; //Regex format for some string functions/methods
     private static final String R_SMC = ";$"; //Regex format for some string functions/methods
@@ -110,6 +114,15 @@ public class ServerCore implements Runnable {
                         pln(TAG + " -- Client sent data: " + input);
                         if(input != null) {
                             pln(TAG + " -- Rec'd data from " + this.socket.getInetAddress().toString() + ": '" + input + "'");
+                            if(this.socket.getInetAddress().toString().equals(CLIENT_MULTICAST_IP)) {
+                                pln(TAG + " -- Multicast Client Connected!");
+                                if(input.trim().equals(CLIENT_CHALLENGE)) {
+                                    pln(TAG + " -- Received valid challenge string from client (multicast)");
+                                    streamOut.println(SERVER_RESPONSE);
+                                    pln(TAG + " -- Sent proper response back to multicast client.");
+                                    return;
+                                }
+                            }
                             String res = ParseData(input.trim());
                             if(res.equals(CHKOK)) {
                                 pln(TAG + " -- Parser sent 'OK' to client");
