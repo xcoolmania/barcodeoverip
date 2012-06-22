@@ -38,55 +38,62 @@ import android.util.Log;
 public class DiscoverServersThread extends Thread {
 	
 	private static final String TAG = "DiscoverServersThread";
-	private int Port = Common.DEFAULT_PORT;
+	private int Port = 41788 + 32;
 	
 	// Define sockets and Listeners
 	private MulticastSocket socket;
 	private DatagramSocket inSocket;
-	private FindListener Listener;
+	private FindListener listener;
 	
 	// Constructors
-	public DiscoverServersThread(FindListener l) {
-		this.Listener = l;
+	public DiscoverServersThread(FindListener listener) {
+		this.listener = listener;
 	}
 	
-	public DiscoverServersThread(int p, FindListener l) {
-		this.Port = p;
-		this.Listener = l;
+	public DiscoverServersThread(int p, FindListener listener) {
+		li("DiscoverServersThread -- Constructor w/ port. this.Port = ", String.valueOf(p));
+		this.Port = p + 131;
+		this.listener = listener;
 	}
 	
 	public void run() {
+		li("run() -- Start MulticastSocketThread.");
 		try {
 			this.socket = new MulticastSocket(this.Port);
-			this.socket.joinGroup(InetAddress.getByName(Common.MULTICAST_IPADDR));
+			this.socket.joinGroup(InetAddress.getByName(Common.MULTICAST_IP));
 			this.inSocket = new DatagramSocket(this.Port + 1);
 			this.SendHostChallenge();
 			this.WaitForResponse();
 		}
 		catch (IOException e) {
+			Log.e(TAG, "run() IOException: " + e.getMessage().toString());
 		}
 		catch (InterruptedException e) {
+			Log.e(TAG, "run() InterruptedException: " + e.getMessage().toString());
 		}
 	}
 	
 	public void closeSocket() {
+		li("closeSocket() -- Closing sockets.");
 		this.socket.close();
 		this.inSocket.close();
 	}
 	
 	private void SendHostChallenge() throws IOException, InterruptedException {
+		li("SendHostChallenge() -- Send the challenge string to all hosts.");
 		byte[] barray = Common.HOST_CHALLENGE.getBytes();
 		DatagramPacket packet = new DatagramPacket(barray, barray.length);
-		packet.setAddress(InetAddress.getByName(Common.MULTICAST_IPADDR));
+		packet.setAddress(InetAddress.getByName(Common.MULTICAST_IP));
 		packet.setPort(this.Port);
 		this.socket.send(packet);
+		li("SendHostChallenge() -- Sent multicast packet containing: ", packet.toString());
 		Thread.sleep(500);
 	}
 	
 	private void WaitForResponse() throws IOException {
+		li("WaitForResponse() -- Waiting for a host to respond to our challenge string.");
 		byte[] barray = new byte[Common.BUFFER_LEN];
 		DatagramPacket packet = new DatagramPacket(barray, barray.length);
-		Log.d(TAG, "Going to wait for packet");
 		while (true) {
 			this.inSocket.receive(packet);
 			this.handleReceivedPacket(packet);
@@ -95,15 +102,33 @@ public class DiscoverServersThread extends Thread {
 
 	private void handleReceivedPacket(DatagramPacket packet) {
 		String data = new String(packet.getData());
-		Log.d(TAG, "Got packet! data:" + data);
-		Log.d(TAG, "IP:" + packet.getAddress().getHostAddress());
+		li("handleReceivedPacket() -- Got packet data: ", packet.toString());
+		li("Server IP: " + packet.getAddress().getHostAddress());
+		li("Server Port [ Real | Shown ]: " + packet.getPort() + " | " + String.valueOf(this.Port - 131));
 		if (data.substring(0, Common.HOST_RESPONSE.length()).compareTo(Common.HOST_RESPONSE) == 0) {
-			this.Listener.onAddressReceived(packet.getAddress().getHostAddress());
+			li("handleReceivedPacket() -- Server's response OK! Add to list");
+			this.listener.onAddressReceived(packet.getAddress().getHostAddress());
 		}
 	}
 
 	
 	public static interface FindListener {
 		void onAddressReceived(String address);
+	}
+	
+	public void li(String msg) { // Info message
+		Log.v(TAG, msg);
+	}
+	
+	public void li(String msg, String val) { // Info message with one string value passed
+		Log.v(TAG, msg + val);
+	}
+	
+	public void lw(String msg) { // Warning message
+		Log.w(TAG, msg);
+	}
+	
+	public void lw(String msg, String val) { // Warning message with one string value passed
+		Log.w(TAG, msg + val);
 	}
 }

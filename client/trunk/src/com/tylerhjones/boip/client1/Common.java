@@ -80,7 +80,7 @@ public class Common {
 	public static final String DEFAULT_NAME = "Untitled";
 
 	public static final int BUFFER_LEN = 1024;
-	public static final String MULTICAST_IPADDR = "231.0.2.46";
+	public static final String MULTICAST_IP = "231.0.2.46";
 	
 	// Host challenge phrase and response
 	public static final String HOST_CHALLENGE = "BoIP:NarwhalBaconTime"; // If you don't understand why I used NarwhalBaconTime then you need to visit http://reddit.com
@@ -247,5 +247,5 @@ public class Common {
 		}
 		return hexString.toString();
 	}
-	
+
 }

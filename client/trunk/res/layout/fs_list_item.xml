@@ -2,7 +2,7 @@
 
 <RelativeLayout 
 	android:layout_width="wrap_content" 
-	xmlns:android="http://schemas.android.com/apk/res/android" android:layout_height="50dip">
+	xmlns:android="http://schemas.android.com/apk/res/android" android:layout_height="wrap_content">
 	<TextView 
 		android:text="@+id/foundserver_ip" 
 		android:id="@+id/foundserver_ip" 
@@ -12,7 +12,7 @@
 		android:layout_marginLeft="10dp" 
 		android:layout_margin="8dp" 
 		android:typeface="monospace" 
-		android:textSize="9pt">
+		android:textSize="16dp">
 	</TextView>
 	
 	
