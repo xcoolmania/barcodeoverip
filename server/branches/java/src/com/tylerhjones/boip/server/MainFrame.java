@@ -20,7 +20,8 @@
  *  Package Name: com.tylerhjones.boip.server
  *  Created By: Tyler H. Jones on Feb 25, 2012, 10:40:16 AM
  *
- *  Description: TODO
+ *  Description: This is the settings window GUI class. The GUI is configured
+ *  and run from this class.
  *
  */
 
@@ -40,7 +41,7 @@ import java.util.jar.JarFile;
 import javax.swing.JOptionPane;
 
 
-//Main class
+// MainFrame class
 public class MainFrame extends javax.swing.JFrame {
 
     private String TAG = "MainFrame";
@@ -64,46 +65,7 @@ public class MainFrame extends javax.swing.JFrame {
 
     /** Creates new form MainFrame */
     public MainFrame() {
-        serverThread.start();
         initComponents();
-        Server.setInfoLabel(lblLastClient);
-        
-        // Get the size of the screen
-        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-        
-        // Determine the new location of the window
-        int w = this.getSize().width;
-        int h = this.getSize().height;
-        int x = (dim.width-w)/2;
-        int y = (dim.height-h)/2;
-
-        // Move the window
-        this.setLocation(x, y);        
-
-        txtHost.setText(SET.getHost());
-        txtPassword.setText(SET.getPass());
-        txtPort.setText(String.valueOf(SET.getPort()));
-        chkAppendNL.setSelected(Boolean.valueOf(SET.getAppendNL()));
-
-        String ip = this.FindSystemIP();
-        if(ip.equals(NO)) {
-            JOptionPane.showMessageDialog(this.getParent(), "The IP address of the current system could not be determined.\nEither there is no network connection or you need to set the IP manually.", "Can't Determine IP Address", JOptionPane.WARNING_MESSAGE);
-            chkAutoSet.setSelected(false);
-            lblHostTitle.setEnabled(true);
-            txtHost.setEnabled(true);
-            lblPortTitle.setEnabled(true);
-            txtPort.setEnabled(true);
-        } else {
-            chkAutoSet.setSelected(true);
-            lblHostTitle.setEnabled(false);
-            txtHost.setEnabled(false);
-            lblPortTitle.setEnabled(false);
-            txtPort.setEnabled(false);
-            SET.setHost(ip);
-            SET.setPort(41788);
-            lblHost.setText("IP = " + ip);
-            lblPort.setText("Port = 41788");
-        }
     }
 
     /** This method is called from within the constructor to
@@ -136,7 +98,7 @@ public class MainFrame extends javax.swing.JFrame {
         lblHost = new javax.swing.JLabel();
         lblPort = new javax.swing.JLabel();
 
-        setTitle("BarcodeOverIP-Server 0.6.2 - Settings");
+        setTitle("BarcodeOverIP-Server");
         setAlwaysOnTop(true);
         setName("MainWindow"); // NOI18N
         setResizable(false);
@@ -174,7 +136,7 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
-        btnToggleServer.setFont(new java.awt.Font("DejaVu Sans", 1, 13)); // NOI18N
+        btnToggleServer.setFont(new java.awt.Font("DejaVu Sans", 1, 13));
         btnToggleServer.setText("Deactivate Server");
         btnToggleServer.setToolTipText("Deactivate the server to prevent barcodes being received and typed");
         btnToggleServer.setMaximumSize(new java.awt.Dimension(402, 29));
@@ -186,7 +148,7 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
-        jLabel1.setFont(new java.awt.Font("DejaVu Sans", 0, 14)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("DejaVu Sans", 0, 14));
         jLabel1.setText("<html>Enter the IP and Port given below into your BarcodeOverIP Client app to scan and send barcodes to this computer. It's that easy!</html>");
         jLabel1.setVerticalAlignment(javax.swing.SwingConstants.TOP);
         jLabel1.setFocusable(false);
@@ -256,7 +218,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addComponent(lblPortTitle)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtPort, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(72, Short.MAX_VALUE))
+                .addContainerGap(107, Short.MAX_VALUE))
         );
         frameAdvancedLayout.setVerticalGroup(
             frameAdvancedLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -278,7 +240,7 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
-        jLabel2.setFont(new java.awt.Font("DejaVu Sans", 1, 13)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("DejaVu Sans", 1, 13));
         jLabel2.setLabelFor(lblLastClient);
         jLabel2.setText("Last Client:");
         jLabel2.setToolTipText("(IP, UPC, When (Min/Hrs))");
@@ -286,11 +248,11 @@ public class MainFrame extends javax.swing.JFrame {
         lblLastClient.setLabelFor(btnExit);
         lblLastClient.setText("NONE!");
 
-        lblHost.setFont(new java.awt.Font("DejaVu Sans", 1, 36)); // NOI18N
+        lblHost.setFont(new java.awt.Font("DejaVu Sans", 1, 36));
         lblHost.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblHost.setText("IP = 0.0.0.0");
 
-        lblPort.setFont(new java.awt.Font("DejaVu Sans", 1, 36)); // NOI18N
+        lblPort.setFont(new java.awt.Font("DejaVu Sans", 1, 36));
         lblPort.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblPort.setText("Port = 41788");
 
@@ -307,35 +269,35 @@ public class MainFrame extends javax.swing.JFrame {
                         .addComponent(btnApply, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnAbout, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 126, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 145, Short.MAX_VALUE)
                         .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(24, 24, 24)
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lblLastClient, javax.swing.GroupLayout.DEFAULT_SIZE, 377, Short.MAX_VALUE))
+                        .addComponent(lblLastClient, javax.swing.GroupLayout.DEFAULT_SIZE, 396, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(frameAdvanced, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(chkAutoSet, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 478, Short.MAX_VALUE)
+                            .addComponent(chkAutoSet, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 497, Short.MAX_VALUE)
                             .addComponent(chkAppendNL, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 478, Short.MAX_VALUE)
-                            .addComponent(btnToggleServer, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 478, Short.MAX_VALUE)))
+                            .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 497, Short.MAX_VALUE)
+                            .addComponent(btnToggleServer, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 497, Short.MAX_VALUE)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(24, 24, 24)
                         .addComponent(jLabel4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtPassword, javax.swing.GroupLayout.DEFAULT_SIZE, 294, Short.MAX_VALUE))
+                        .addComponent(txtPassword, javax.swing.GroupLayout.DEFAULT_SIZE, 323, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 478, Short.MAX_VALUE))
+                        .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 497, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(lblPort, javax.swing.GroupLayout.DEFAULT_SIZE, 478, Short.MAX_VALUE))
+                        .addComponent(lblPort, javax.swing.GroupLayout.DEFAULT_SIZE, 497, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(lblHost, javax.swing.GroupLayout.DEFAULT_SIZE, 478, Short.MAX_VALUE)))
+                        .addComponent(lblHost, javax.swing.GroupLayout.DEFAULT_SIZE, 497, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -430,6 +392,47 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_chkAutoSetActionPerformed
 
 
+    public void init() {
+        serverThread.start();
+        Server.setInfoLabel(lblLastClient);
+
+        // Get the size of the screen
+        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+
+        // Determine the new location of the window
+        int w = this.getSize().width;
+        int h = this.getSize().height;
+        int x = (dim.width-w)/2;
+        int y = (dim.height-h)/2;
+
+        // Move the window
+        this.setLocation(x, y);
+
+        txtHost.setText(SET.getHost());
+        txtPassword.setText(SET.getPass());
+        txtPort.setText(String.valueOf(SET.getPort()));
+        chkAppendNL.setSelected(Boolean.valueOf(SET.getAppendNL()));
+
+        String ip = this.FindSystemIP();
+        if(ip.equals(NO)) {
+            JOptionPane.showMessageDialog(this.getParent(), "The IP address of the current system could not be determined.\nEither there is no network connection or you need to set the IP manually.", "Can't Determine IP Address", JOptionPane.WARNING_MESSAGE);
+            chkAutoSet.setSelected(false);
+            lblHostTitle.setEnabled(true);
+            txtHost.setEnabled(true);
+            lblPortTitle.setEnabled(true);
+            txtPort.setEnabled(true);
+        } else {
+            chkAutoSet.setSelected(true);
+            lblHostTitle.setEnabled(false);
+            txtHost.setEnabled(false);
+            lblPortTitle.setEnabled(false);
+            txtPort.setEnabled(false);
+            SET.setHost(ip);
+            SET.setPort(41788);
+            lblHost.setText("IP = " + ip);
+            lblPort.setText("Port = 41788");
+        }
+    }
 
     public void setTrayIcon(TrayIcon ico) {
         this.SysTrayIcon = ico;

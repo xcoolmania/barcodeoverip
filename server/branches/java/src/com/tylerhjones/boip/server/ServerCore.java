@@ -20,7 +20,10 @@
  *  Package Name: com.tylerhjones.boip.server
  *  Created By: Tyler H. Jones <me@tylerjones.me> on Feb 26, 2012 9:50:26 AM
  *
- *  Description: TODO
+ *  Description: This is the server threading class is written. The server
+ *  thread start another thread for the socket listener to use, otherwise
+ *  the app would hang all the time. This allows us to configure and navigate
+ *  the server settings GUI while the server socket is still listening.
  *
  */
 
@@ -89,6 +92,7 @@ public class ServerCore implements Runnable {
         lblLastClient = lbl; 
     }
 
+    @Override
     public void run() { //The thread 'thread' starts here
         this.runThread = true;
 
@@ -123,7 +127,7 @@ public class ServerCore implements Runnable {
                                 streamOut.println(res + "\n"); //Always need to append a '\n' char to the server's response string (it lets the server know when it should stop talking) 
                             } else if(res.equals(VER)) {
                                 pln(TAG + " -- Parser sent version info to client.");
-                                streamOut.println("BarcodeOverIP-Server v0.6.2 (Java) -- http://tylerhjones.me / http://boip.tylerjones.me");
+                                streamOut.println("BarcodeOverIP-Server " + SET.VERSION + " -- http://boip.tylerjones.me");
                                 streamOut.print("\n*******************************************************************\nBarcodeOverIP-server " + SET.APP_INFO + " \nThis server is for use with mobile device applications.\nYou must have the right client to use it!\nPlease visit: https://code.google.com/p/barcodeoverip/ for more\ninformation on available clients.\n\nWritten by: Tyler H. Jones (me@tylerjones.me) (C) 2012\nGoogle Code Website: https://code.google.com/p/barcodeoverip/\n*******************************************************************\n\n");
                             } else if(res.length() > 0 && res != null){
                                 pln(TAG + " -- Parser returned a barcode for system input: " + res);
@@ -208,7 +212,7 @@ public class ServerCore implements Runnable {
     }
 
     public void deactivate() {
-        //Since all the server is doing while it is "deactivated" is sending refusal
+        // Since all the server is doing while it is "deactivated" is sending refusal
         // messages to the client when a command is recieved from that client, it is 
         // nessecary to keep the connection open so the client doesn't crash.
         if(thread == null) { thread.start(); }
@@ -216,13 +220,13 @@ public class ServerCore implements Runnable {
     }
 
     private void openStreams() throws IOException {
-        //streamIn = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
+        // streamIn = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
         streamIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         streamOut = new PrintStream(socket.getOutputStream());
     }
 
     private void closeStreams() throws IOException {
-        //Close the input/output streams and the socket to save resources
+        // Close the input/output streams and the socket to save resources
         if (socket != null)    socket.close();
         if (streamIn != null)  streamIn.close();
         if (streamOut != null)  streamOut.close();
