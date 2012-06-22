@@ -23,7 +23,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".FindServersActivity">
+            android:name=".DiscoverServersActivity">
             android:label="@string/findservers_title"
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

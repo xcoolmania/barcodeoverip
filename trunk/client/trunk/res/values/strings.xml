@@ -59,8 +59,8 @@
 	
 	
 	<!-- Menus text and info -->
-	<string name="mnuMainFindServers_title">Auto Find Servers</string>
-	<string name="mnuMainAddServer_title">Manually Add Server</string>
+	<string name="mnuMainFindServers_title">Find Servers</string>
+	<string name="mnuMainAddServer_title">Add Server</string>
 	<string name="mnuMainAbout_title">About</string>
 	<string name="mnuMainDonate_title">Donate</string>
 	<string name="mnuESDelete_title">Delete</string>

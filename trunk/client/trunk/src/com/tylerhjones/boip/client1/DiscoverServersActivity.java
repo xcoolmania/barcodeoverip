@@ -57,7 +57,7 @@ public class DiscoverServersActivity extends Activity {
 	private Vector<String> Servers; // IP address of server only
 	// private Database DB = new Database(this);
 	
-	private int Port = Common.DEFAULT_PORT;
+	private int Port = Common.DEFAULT_PORT + 131;
 
 	private EditText txtFSPort;
 
@@ -90,7 +90,6 @@ public class DiscoverServersActivity extends Activity {
 		this.Servers = new Vector<String>();
 		
 		((ListView) this.findViewById(R.id.fs_list)).setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			
 			public void onItemClick(AdapterView adapter, View v, int position, long id) {
 				onServerClick(position);
 			}
@@ -126,14 +125,16 @@ public class DiscoverServersActivity extends Activity {
 	/** App starts displaying things */
 	public void onResume() {
 		super.onResume();
-		this.ServerFinder = new DiscoverServersThread(new DiscoverServersThread.FindListener() {
+		// this.StartSocketThread();
+		this.ServerFinder = new DiscoverServersThread(this.Port, new DiscoverServersThread.FindListener() {
 			
 			public void onAddressReceived(String address) {
 				Servers.add(address);
-				Log.d(TAG, "onResume() - Got response from server, " + address);
+				Log.i(TAG, "onResume() - Got response from server, " + address);
 				handler.post(new Runnable() {
+					
 					public void run() {
-						UpdateList();
+						UpdateServerList();
 					}
 				});
 			}
@@ -141,27 +142,80 @@ public class DiscoverServersActivity extends Activity {
 		this.ServerFinder.start();
 	}
 	
+	private void UpdateServerList() {
+		FoundServersAdapter adapter = new FoundServersAdapter(this.Servers, this.getApplication());
+		((ListView) this.findViewById(R.id.fs_list)).setAdapter(adapter);
+	}
+
 	/** App goes into background */
 	public void onPause() {
 		super.onPause();
 		this.ServerFinder.closeSocket();
 	}
 	
-	private class FoundServersAdapter implements ListAdapter {
+	public class FoundServersAdapter implements ListAdapter {
 		
+		//
 		private Vector<String> hosts;
 		private Context context;
 		
-		public FoundServersAdapter(Vector<String> s, Context c) {
-			this.hosts = s;
-			this.context = c;
+		public FoundServersAdapter(Vector<String> hosts, Context context) {
+			this.hosts = hosts;
+			this.context = context;
+		}
+
+		public int getCount() {
+			// TODO Auto-generated method stub
+			return this.hosts.size();
+		}
+
+		public Object getItem(int position) {
+			// TODO Auto-generated method stub
+			return this.hosts.get(position);
+		}
+
+		public long getItemId(int position) {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		public int getItemViewType(int position) {
+			// TODO Auto-generated method stub
+			return 0;
 		}
 		
 		public View getView(int position, View view, ViewGroup parent) {
+			//
+
 			view = this.inflateView(view);
-			TextView tv = (TextView) view.findViewById(R.id.foundserver_ip);
-			tv.setText(this.hosts.get(position));
+			TextView foundserver_ip = (TextView) view.findViewById(R.id.foundserver_ip);
+			foundserver_ip.setText(this.hosts.get(position));
 			return view;
+		}
+
+		public int getViewTypeCount() {
+			// TODO Auto-generated method stub
+			return 1;
+		}
+
+		public boolean hasStableIds() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		public boolean isEmpty() {
+			// TODO Auto-generated method stub
+			return this.hosts.size() == 0;
+		}
+
+		public void registerDataSetObserver(DataSetObserver observer) {
+			// TODO Auto-generated method stub
+
+		}
+
+		public void unregisterDataSetObserver(DataSetObserver observer) {
+			// TODO Auto-generated method stub
+
 		}
 		
 		private View inflateView(View cell) {
@@ -171,76 +225,41 @@ public class DiscoverServersActivity extends Activity {
 			}
 			return cell;
 		}
-		
-		@Override
-		public int getCount() {
-			return 0;
-		}
-		
-		@Override
-		public Object getItem(int position) {
-			return null;
-		}
-		
-		@Override
-		public long getItemId(int position) {
-			return 0;
-		}
-		
-		@Override
-		public int getItemViewType(int position) {
-			return 0;
-		}
-		
-		@Override
-		public int getViewTypeCount() {
-			return 0;
-		}
-		
-		@Override
-		public boolean hasStableIds() {
-			return false;
-		}
-		
-		@Override
-		public boolean isEmpty() {
-			return false;
-		}
-		
-		@Override
-		public void registerDataSetObserver(DataSetObserver observer) {
-		}
-		
-		@Override
-		public void unregisterDataSetObserver(DataSetObserver observer) {
-		}
-		
-		@Override
+
 		public boolean areAllItemsEnabled() {
-			return false;
+			// TODO Auto-generated method stub
+			return true;
 		}
-		
-		@Override
+
 		public boolean isEnabled(int position) {
-			return false;
+			// TODO Auto-generated method stub
+			return true;
 		}
 	}
 
-	private void UpdateList() {
-		FoundServersAdapter adapter = new FoundServersAdapter(this.Servers, this.getApplication());
-		((ListView) this.findViewById(R.id.fs_list)).setAdapter(adapter);
+	
+	private void setPort(int p) {
+		if (p < 1024 || p > 65400) {
+			this.Port = Common.DEFAULT_PORT + 131;
+		} else {
+			this.Port = p + 131;
+		}
 	}
 	
 	private void onClickApplyPort() {
+		this.ServerFinder.closeSocket();
 		String strPort = this.txtFSPort.getText().toString();
 		if(this.isValidPort(strPort)) {
 			this.Port = Integer.valueOf(this.txtFSPort.getText().toString());
 			Toast.makeText(this, "Server port update, OK!", 5).show();
-			return;
+		} else {
+			Toast.makeText(this, "Target port update, INVALID PORT!", 8).show();
+			this.txtFSPort.requestFocus();
+			this.txtFSPort.setText(String.valueOf(Common.DEFAULT_PORT));
+			this.setPort(Common.DEFAULT_PORT);
 		}
-		Toast.makeText(this, "Target port update, INVALID PORT!", 8).show();
-		this.txtFSPort.requestFocus();
-		this.txtFSPort.setText(String.valueOf(Common.DEFAULT_PORT));
+		// this.ServerFinder.closeSocket();
+		this.onResume();
 	}
 
 	private void onServerClick(int item) {
@@ -251,7 +270,7 @@ public class DiscoverServersActivity extends Activity {
 	private boolean isValidPort(String port) {
 		try {
 			int p = Integer.parseInt(port);
-			if(p < 1 || p > 65535 ) { throw new NumberFormatException(); }
+			if (p < 1024 || p > 65400) { throw new NumberFormatException(); }
 		} catch (NumberFormatException e) {
 			return false;
 		}
