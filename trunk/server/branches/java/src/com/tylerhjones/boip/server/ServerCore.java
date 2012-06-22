@@ -43,8 +43,6 @@ import java.net.Socket;
  */
 public class ServerCore implements Runnable {
     private static final String TAG = "ServerCore";
-    //private static Settings SETS = new Settings(); //The settings handler class
-    //private static int MaxConns = 5;
 
     protected Settings SET = new Settings();
 
@@ -57,10 +55,6 @@ public class ServerCore implements Runnable {
     private boolean runThread = false; //The thread watches this variable to know when to stop running
 
     private String input = "";
-
-    private static final String CLIENT_MULTICAST_IP = "231.0.2.46";
-    private static final String CLIENT_CHALLENGE = "BoIP:NarwhalBaconTime";
-    private static final String SERVER_RESPONSE = "BoIP:Midnight";
 
     //Communication constants for client<-->server communiction
     private static final String R_DSEP = "\\|"; //Regex format for some string functions/methods
@@ -86,17 +80,15 @@ public class ServerCore implements Runnable {
     KeypressEmulator KP = new KeypressEmulator(); //The keyboard keypress emulation class
 
     public ServerCore() {
-        System.out.println(TAG + " -- Constructor was called!");
     }
     
     @Override
     public void run() { //The thread 'thread' starts here
         this.runThread = true;
-
+        this.startListener();
         synchronized(this){
             this.thread = Thread.currentThread();
         }
-        if(!startListener()) { return; }
 
         while (runThread()) { //Main thread loop
             if(!listener.isClosed()) {
@@ -114,15 +106,6 @@ public class ServerCore implements Runnable {
                         pln(TAG + " -- Client sent data: " + input);
                         if(input != null) {
                             pln(TAG + " -- Rec'd data from " + this.socket.getInetAddress().toString() + ": '" + input + "'");
-                            if(this.socket.getInetAddress().toString().equals(CLIENT_MULTICAST_IP)) {
-                                pln(TAG + " -- Multicast Client Connected!");
-                                if(input.trim().equals(CLIENT_CHALLENGE)) {
-                                    pln(TAG + " -- Received valid challenge string from client (multicast)");
-                                    streamOut.println(SERVER_RESPONSE);
-                                    pln(TAG + " -- Sent proper response back to multicast client.");
-                                    return;
-                                }
-                            }
                             String res = ParseData(input.trim());
                             if(res.equals(CHKOK)) {
                                 pln(TAG + " -- Parser sent 'OK' to client");
@@ -157,7 +140,7 @@ public class ServerCore implements Runnable {
             }
             }
         }
-        stopListener();
+        this.stopListener();
         pln(TAG + " -- The thread loop exited, exiting thread.");
         
     }
@@ -233,19 +216,19 @@ public class ServerCore implements Runnable {
         data = data.toUpperCase();
         if(data.equals(VER)) { return VER; }
         if(!data.endsWith(SMC)) {
-            pln(TAG + " -- Parser - Invalid data format and/or syntax! - Command does not end with '" + SMC + "'.");
+            pln(TAG + "ParseData(data) -- Invalid data format and/or syntax! - Command does not end with '" + SMC + "'.");
             return ER1;
         } else if(data.indexOf(DSEP) < 2 || ((data.length() - 1) - data.indexOf(DSEP)) < 3) {
-            pln(TAG + " -- Parser - Invalid data format and/or syntax! - Command does not seem contain the '" + DSEP + "' data separator.");
+            pln(TAG + "ParseData(data) -- Invalid data format and/or syntax! - Command does not seem contain the '" + DSEP + "' data separator.");
             return ER2;
         } else {
             data = data.split(R_SMC)[0];
             try {
                 begin = data.split(R_DSEP)[0].trim();
                 end = data.split(R_DSEP)[2].trim();
-                pln(TAG + " -- Parser - Begin: '" + begin + "',  End: '" + end + "'");
+                pln(TAG + "ParseData(data) -- Begin: '" + begin + "',  End: '" + end + "'");
             } catch(ArrayIndexOutOfBoundsException e) {
-                perr(TAG + " -- Parser - Invalid data format and/or syntax! - Command does not seem to be assembled right. It cannot be parsed. - Exception: " + e.getMessage());
+                perr(TAG + "ParseData(data) -- Invalid data format and/or syntax! - Command does not seem to be assembled right. It cannot be parsed. - Exception: " + e.getMessage());
                 return ER3;
             }
             if(begin.equals(CHK)) { chkd = true; } 
