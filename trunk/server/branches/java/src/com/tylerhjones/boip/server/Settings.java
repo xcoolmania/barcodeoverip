@@ -20,7 +20,7 @@
  *  Package Name: com.tylerhjones.boip.server
  *  Created By: Tyler H. Jones <me@tylerjones.me> on Feb 26, 2012 9:50:26 AM
  *
- *  Description: TODO
+ *  Description: This is the settings class for read/write of app settings.
  *
  */
 
@@ -31,11 +31,11 @@ import  java.util.prefs.Preferences;
 
 public class Settings {
 
-    public final String VERSION = "0.7.0-Beta";
+    public final String VERSION = "0.7.1-Final";
     public final String APP_NAME = "BarcodeOverIP-Server";
     public final String APP_AUTHOR = "Tyler H. Jones";
     public final String APP_WEBSITE = "http://boip.tylerjones.me";
-    public final String APP_INFO = "0.7.0-Beta (Java)";
+    public final String APP_INFO = "0.7.1-Final (Java)";
 
     private static final String PREF_NAME = "boip-server";
     private static final String S_HOST = "host";

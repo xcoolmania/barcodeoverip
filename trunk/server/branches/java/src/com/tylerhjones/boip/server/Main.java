@@ -20,7 +20,8 @@
  *  Package Name: com.tylerhjones.boip.server
  *  Created By: Tyler H. Jones <me@tylerjones.me> on Feb 26, 2012 9:50:26 AM
  *
- *  Description: TODO
+ *  Description: This is the main class, it is where the program begins.
+ *  The MainFrame and SystemTray icons are initialized and set here.
  *
  */
 
@@ -39,83 +40,76 @@ import javax.swing.JOptionPane;
  * @author tyler
  */
 public class Main {
-    //private static ServerCore CORE;
+
+    private static Settings SET = new Settings();
     private static MainFrame MAINF;
-    private static boolean isSysTray = true;
 
     /**
      * @param args the command line arguments
      */
 
     public static void main(String[] args) {
-        //CORE = new ServerCore();
         MAINF = new MainFrame();
-        //CORE.setWindow(MAINF);
+        MAINF.setIconImage(Toolkit.getDefaultToolkit().getImage(Main.class.getResource("/icon24.png")));
+        MAINF.setVisible(true);
+        MAINF.setResizable(false);
+        MAINF.setTitle("BarcodeOverIP-Server " + SET.VERSION + " - Settings");
 
         //Catch the 'X' button being pressed on the main window
         MAINF.addWindowListener(new WindowAdapter() {
+
             @Override
-	    public void windowClosing(WindowEvent e) {
-                if(!isSysTray) {
+            public void windowClosing(WindowEvent e) {
+                if (SystemTray.isSupported()) {
                     MAINF.setVisible(false);
                     MAINF.dispose();
                     System.exit(0);
-                } else {
+                } else { // Don't exit app when the 'X' is pressed, just minimize to system tray
                     MAINF.setVisible(false);
                 }
 	    }
+
             @Override
 	    public void windowIconified(WindowEvent e) {
 	    	MAINF.setVisible(false);
 	    }
 	});
         
-        MAINF.setIconImage(Toolkit.getDefaultToolkit().getImage(Main.class.getResource("/icon24.png")));
-        MAINF.setVisible(true);
-        
+        MAINF.init();
         //------------------------------------------------------
         //--- Setup System Tray Icon
 
-        if (SystemTray.isSupported()) { //Check if the system can use a systray icon
-            ImageIcon icon = createImageIcon("/icon24.png", "BarcodeOverIP App-Tray Icon"); // ./build/classes/icon.png
-            MAINF.setIconImage(icon.getImage());
+        final TrayIcon tray;
 
-            TrayIcon tray = new TrayIcon(icon.getImage().getScaledInstance(16, 16, Image.SCALE_DEFAULT), "BarcodeOverIP-Server - Starting Up");
-            tray.addMouseListener(new MouseListener(){
-                public void mouseClicked(MouseEvent e) {
-                    if(MAINF.isVisible()) {
-                        MAINF.setVisible(false);
-                    } else {
-                        MAINF.setVisible(true);
-                    }
-                }
-                public void mouseEntered(MouseEvent e) {}
-                public void mouseExited(MouseEvent e) {}
-                public void mousePressed(MouseEvent e) {}
-                public void mouseReleased(MouseEvent e) {}
+	if (SystemTray.isSupported()) {
+	    ImageIcon icon = new ImageIcon(Main.class.getResource("/icon24.png"));
+	    tray = new TrayIcon(icon.getImage().getScaledInstance(16, 16, Image.SCALE_DEFAULT), "BarcodeOverIP-Server Starting...");
+	    tray.addMouseListener(new MouseListener(){
+                @Override
+		public void mouseClicked(MouseEvent e) {
+        		if(MAINF.isVisible())
+				MAINF.setVisible(false);
+			else
+				MAINF.setVisible(true);
+		}
+                @Override
+		public void mouseEntered(MouseEvent e) {}
+                @Override
+		public void mouseExited(MouseEvent e) {}
+                @Override
+		public void mousePressed(MouseEvent e) {}
+                @Override
+		public void mouseReleased(MouseEvent e) {}
             });
 
             try {
                 SystemTray.getSystemTray().add(tray);
                 MAINF.setTrayIcon(tray);
-            } catch (AWTException e) {
+	    } catch (AWTException e) {
                 System.err.println("Error adding system-tray icon!");
-            }
-        } else {
+	    }
+	} else {
             JOptionPane.showMessageDialog(MAINF, "No system-tray was found or your system does not support one. You must NOT close the settings window!", "No System-tray!", JOptionPane.WARNING_MESSAGE);
-            isSysTray = false;
         }
     }
-
-    private static ImageIcon createImageIcon(String path,
-                                           String description) {
-        java.net.URL imgURL = Main.class.getResource(path);
-        if (imgURL != null) {
-            return new ImageIcon(imgURL, description);
-        } else {
-            System.err.println("Couldn't find image: " + path);
-            return null;
-        }
-    }
-
 }
