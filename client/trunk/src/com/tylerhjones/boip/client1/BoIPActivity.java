@@ -404,7 +404,7 @@ public class BoIPActivity extends ListActivity {
 		switch (item.getItemId()) {
 			case R.id.mnuMainFindServers:
 				Intent intent = new Intent();
-				intent.setClassName("com.tylerhjones.boip.client1", "com.tylerhjones.boip.client1.FindServersActivity");
+				intent.setClassName("com.tylerhjones.boip.client1", "com.tylerhjones.boip.client1.DiscoverServersActivity");
 				intent.putExtra("com.tylerhjones.boip.client1.Action", Common.ADD_SREQ);
 				startActivityForResult(intent, Common.ADD_SREQ);
 				return true;

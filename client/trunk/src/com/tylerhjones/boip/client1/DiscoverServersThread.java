@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  * 
- * Filename: DiscoveServersThread.java
+ * Filename: DiscoverServersThread.java
  * Package Name: com.tylerhjones.boip.client
  * Created By: Tyler H. Jones on June 21, 2012 at 12:22:43 PM
  * 
@@ -35,9 +35,9 @@ import java.net.MulticastSocket;
 import android.util.Log;
 
 
-public class FindServersThread extends Thread {
+public class DiscoverServersThread extends Thread {
 	
-	private static final String TAG = "FindServersThread";
+	private static final String TAG = "DiscoverServersThread";
 	private int Port = Common.DEFAULT_PORT;
 	
 	// Define sockets and Listeners
@@ -46,11 +46,11 @@ public class FindServersThread extends Thread {
 	private FindListener Listener;
 	
 	// Constructors
-	public FindServersThread(FindListener l) {
+	public DiscoverServersThread(FindListener l) {
 		this.Listener = l;
 	}
 	
-	public FindServersThread(int p, FindListener l) {
+	public DiscoverServersThread(int p, FindListener l) {
 		this.Port = p;
 		this.Listener = l;
 	}
