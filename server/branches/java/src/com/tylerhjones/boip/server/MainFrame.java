@@ -1,6 +1,6 @@
 /*
  *
- *  BarcodeOverIP-Server (Java) Version 0.7.x
+ *  BarcodeOverIP-Server (Java) Version 1.0.x
  *  Copyright (C) 2012, Tyler H. Jones (me@tylerjones.me)
  *  http://boip.tylerjones.me
  *
@@ -39,6 +39,8 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.jar.JarFile;
 import javax.swing.JOptionPane;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 
 // MainFrame class
@@ -77,26 +79,25 @@ public class MainFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabel5 = new javax.swing.JLabel();
         btnExit = new javax.swing.JButton();
         btnOk = new javax.swing.JButton();
-        btnApply = new javax.swing.JButton();
-        btnToggleServer = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         txtPassword = new javax.swing.JTextField();
         jSeparator1 = new javax.swing.JSeparator();
         btnAbout = new javax.swing.JButton();
         chkAppendNL = new javax.swing.JCheckBox();
-        frameAdvanced = new javax.swing.JPanel();
-        txtHost = new javax.swing.JTextField();
-        lblHostTitle = new javax.swing.JLabel();
-        lblPortTitle = new javax.swing.JLabel();
-        txtPort = new javax.swing.JTextField();
         chkAutoSet = new javax.swing.JCheckBox();
-        jLabel2 = new javax.swing.JLabel();
-        lblLastClient = new javax.swing.JLabel();
         lblHost = new javax.swing.JLabel();
         lblPort = new javax.swing.JLabel();
+        jSeparator2 = new javax.swing.JSeparator();
+        txtHost = new javax.swing.JTextField();
+        txtPort = new javax.swing.JTextField();
+        btnApplyIPPort = new javax.swing.JButton();
+
+        jLabel5.setFont(new java.awt.Font("Dialog", 1, 10)); // NOI18N
+        jLabel5.setText("http://boip.tylerjones.me/");
 
         setTitle("BarcodeOverIP-Server");
         setAlwaysOnTop(true);
@@ -105,9 +106,9 @@ public class MainFrame extends javax.swing.JFrame {
 
         btnExit.setText("Exit");
         btnExit.setToolTipText("Exit the server application and close all connections.");
-        btnExit.setMaximumSize(new java.awt.Dimension(85, 29));
-        btnExit.setMinimumSize(new java.awt.Dimension(65, 29));
-        btnExit.setPreferredSize(new java.awt.Dimension(85, 29));
+        btnExit.setMaximumSize(new java.awt.Dimension(94, 25));
+        btnExit.setMinimumSize(new java.awt.Dimension(94, 25));
+        btnExit.setPreferredSize(new java.awt.Dimension(94, 25));
         btnExit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnExitActionPerformed(evt);
@@ -116,39 +117,16 @@ public class MainFrame extends javax.swing.JFrame {
 
         btnOk.setText("Hide");
         btnOk.setToolTipText("Hide this window and let the server run in the system tray.");
-        btnOk.setMaximumSize(new java.awt.Dimension(85, 29));
-        btnOk.setMinimumSize(new java.awt.Dimension(65, 29));
-        btnOk.setPreferredSize(new java.awt.Dimension(85, 29));
+        btnOk.setMaximumSize(new java.awt.Dimension(94, 25));
+        btnOk.setMinimumSize(new java.awt.Dimension(94, 25));
+        btnOk.setPreferredSize(new java.awt.Dimension(94, 25));
         btnOk.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnOkActionPerformed(evt);
             }
         });
 
-        btnApply.setText("Apply");
-        btnApply.setToolTipText("Save changes to server configuraton");
-        btnApply.setMaximumSize(new java.awt.Dimension(85, 29));
-        btnApply.setMinimumSize(new java.awt.Dimension(65, 29));
-        btnApply.setPreferredSize(new java.awt.Dimension(85, 29));
-        btnApply.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnApplyActionPerformed(evt);
-            }
-        });
-
-        btnToggleServer.setFont(new java.awt.Font("DejaVu Sans", 1, 13));
-        btnToggleServer.setText("Deactivate Server");
-        btnToggleServer.setToolTipText("Deactivate the server to prevent barcodes being received and typed");
-        btnToggleServer.setMaximumSize(new java.awt.Dimension(402, 29));
-        btnToggleServer.setMinimumSize(new java.awt.Dimension(402, 29));
-        btnToggleServer.setPreferredSize(new java.awt.Dimension(402, 29));
-        btnToggleServer.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnToggleServerActionPerformed(evt);
-            }
-        });
-
-        jLabel1.setFont(new java.awt.Font("DejaVu Sans", 0, 14));
+        jLabel1.setFont(new java.awt.Font("DejaVu Sans", 0, 14)); // NOI18N
         jLabel1.setText("<html>Enter the IP and Port given below into your BarcodeOverIP Client app to scan and send barcodes to this computer. It's that easy!</html>");
         jLabel1.setVerticalAlignment(javax.swing.SwingConstants.TOP);
         jLabel1.setFocusable(false);
@@ -156,22 +134,31 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel1.setMinimumSize(new java.awt.Dimension(402, 45));
         jLabel1.setPreferredSize(new java.awt.Dimension(402, 45));
 
+        jLabel4.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
         jLabel4.setLabelFor(txtPassword);
-        jLabel4.setText("Password (Optional):");
+        jLabel4.setText("Password:");
+        jLabel4.setToolTipText("Set a password to limit access to the server. Default is blank (no password), set blank to remove password.");
         jLabel4.setFocusable(false);
 
-        txtPassword.setToolTipText("Set a password to limit access to the server. Make blank to remove the password requirement.");
+        txtPassword.setToolTipText("Set a password to limit access to the server. Default is blank (no password), set blank to remove password.");
         txtPassword.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtPasswordActionPerformed(evt);
             }
         });
+        txtPassword.addInputMethodListener(new java.awt.event.InputMethodListener() {
+            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
+                txtPasswordInputMethodTextChanged(evt);
+            }
+            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
+            }
+        });
 
         btnAbout.setText("About");
         btnAbout.setToolTipText("Click for info about BarcodeOverIP-Server");
-        btnAbout.setMaximumSize(new java.awt.Dimension(85, 29));
-        btnAbout.setMinimumSize(new java.awt.Dimension(65, 29));
-        btnAbout.setPreferredSize(new java.awt.Dimension(85, 29));
+        btnAbout.setMaximumSize(new java.awt.Dimension(94, 25));
+        btnAbout.setMinimumSize(new java.awt.Dimension(94, 25));
+        btnAbout.setPreferredSize(new java.awt.Dimension(94, 25));
         btnAbout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnAboutActionPerformed(evt);
@@ -179,178 +166,143 @@ public class MainFrame extends javax.swing.JFrame {
         });
 
         chkAppendNL.setSelected(true);
-        chkAppendNL.setText("Append a cairrage return (enter key) to received barcodes");
+        chkAppendNL.setText("Add 'Enter' key after barcode.");
         chkAppendNL.setToolTipText("Adds a simulated press of the enter key after the barcode is received and typed by the system. Defualt is TRUE.");
-
-        frameAdvanced.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Advanced Settings", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 14))); // NOI18N
-        frameAdvanced.setEnabled(false);
-        frameAdvanced.setFocusable(false);
-        frameAdvanced.setName("Advanced Settings"); // NOI18N
-
-        txtHost.setText("0.0.0.0");
-        txtHost.setToolTipText("Default = 0.0.0.0 (All interfaces)");
-        txtHost.setEnabled(false);
-
-        lblHostTitle.setLabelFor(txtHost);
-        lblHostTitle.setText("Host/IP:");
-        lblHostTitle.setEnabled(false);
-        lblHostTitle.setFocusable(false);
-
-        lblPortTitle.setLabelFor(lblPortTitle);
-        lblPortTitle.setText("Port:");
-        lblPortTitle.setEnabled(false);
-        lblPortTitle.setFocusable(false);
-
-        txtPort.setText("41788");
-        txtPort.setToolTipText("Default = 41788");
-        txtPort.setEnabled(false);
-
-        javax.swing.GroupLayout frameAdvancedLayout = new javax.swing.GroupLayout(frameAdvanced);
-        frameAdvanced.setLayout(frameAdvancedLayout);
-        frameAdvancedLayout.setHorizontalGroup(
-            frameAdvancedLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(frameAdvancedLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(lblHostTitle)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtHost, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblPortTitle)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtPort, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(107, Short.MAX_VALUE))
-        );
-        frameAdvancedLayout.setVerticalGroup(
-            frameAdvancedLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(frameAdvancedLayout.createSequentialGroup()
-                .addGroup(frameAdvancedLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtHost, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblHostTitle)
-                    .addComponent(lblPortTitle)
-                    .addComponent(txtPort, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+        chkAppendNL.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                chkAppendNLStateChanged(evt);
+            }
+        });
 
         chkAutoSet.setSelected(true);
-        chkAutoSet.setText("Automatically determine server IP & port number");
+        chkAutoSet.setText("Detect and set server IP/port");
         chkAutoSet.setToolTipText("BoIP will look at you system's nerwork configuration and assign a port and an IP to listen for connections on.");
+        chkAutoSet.setActionCommand("Automatically detect and set the IP and port");
+        chkAutoSet.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         chkAutoSet.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 chkAutoSetActionPerformed(evt);
             }
         });
 
-        jLabel2.setFont(new java.awt.Font("DejaVu Sans", 1, 13));
-        jLabel2.setLabelFor(lblLastClient);
-        jLabel2.setText("Last Client:");
-        jLabel2.setToolTipText("(IP, UPC, When (Min/Hrs))");
+        lblHost.setFont(new java.awt.Font("DejaVu Sans", 1, 36)); // NOI18N
+        lblHost.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        lblHost.setText("IP:");
+        lblHost.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
 
-        lblLastClient.setLabelFor(btnExit);
-        lblLastClient.setText("NONE!");
+        lblPort.setFont(new java.awt.Font("DejaVu Sans", 1, 36)); // NOI18N
+        lblPort.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        lblPort.setText("Port:");
+        lblPort.setFocusable(false);
+        lblPort.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
 
-        lblHost.setFont(new java.awt.Font("DejaVu Sans", 1, 36));
-        lblHost.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblHost.setText("IP = 0.0.0.0");
+        txtHost.setEditable(false);
+        txtHost.setFont(new java.awt.Font("DejaVu Sans", 1, 36)); // NOI18N
+        txtHost.setText("209.173.188.123");
+        txtHost.setToolTipText("Default = 0.0.0.0 (All interfaces)");
 
-        lblPort.setFont(new java.awt.Font("DejaVu Sans", 1, 36));
-        lblPort.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblPort.setText("Port = 41788");
+        txtPort.setEditable(false);
+        txtPort.setFont(new java.awt.Font("DejaVu Sans", 1, 36)); // NOI18N
+        txtPort.setText("41788");
+        txtPort.setToolTipText("Default = 41788");
+
+        btnApplyIPPort.setText("Save IP/Port");
+        btnApplyIPPort.setToolTipText("Apply manually set server IP/port. NOTE: This requires the app to be reload");
+        btnApplyIPPort.setActionCommand("Apply (Needs App Reload)");
+        btnApplyIPPort.setEnabled(false);
+        btnApplyIPPort.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnApplyIPPortActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(btnOk, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnApply, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnAbout, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 145, Short.MAX_VALUE)
-                        .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(24, 24, 24)
-                        .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lblLastClient, javax.swing.GroupLayout.DEFAULT_SIZE, 396, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 548, Short.MAX_VALUE)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                        .addGap(12, 12, 12)
+                                        .addComponent(btnAbout, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(40, 40, 40)
+                                        .addComponent(btnApplyIPPort)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 60, Short.MAX_VALUE)
+                                        .addComponent(btnOk, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(23, 23, 23)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 554, Short.MAX_VALUE))
+                        .addContainerGap())
+                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(frameAdvanced, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(chkAutoSet, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 497, Short.MAX_VALUE)
-                            .addComponent(chkAppendNL, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 497, Short.MAX_VALUE)
-                            .addComponent(btnToggleServer, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 497, Short.MAX_VALUE)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(24, 24, 24)
-                        .addComponent(jLabel4)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtPassword, javax.swing.GroupLayout.DEFAULT_SIZE, 323, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 497, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(lblPort, javax.swing.GroupLayout.DEFAULT_SIZE, 497, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(lblHost, javax.swing.GroupLayout.DEFAULT_SIZE, 497, Short.MAX_VALUE)))
-                .addContainerGap())
+                            .addComponent(jLabel4)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(lblHost, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(lblPort, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtPassword, javax.swing.GroupLayout.DEFAULT_SIZE, 422, Short.MAX_VALUE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(txtPort, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(chkAppendNL)
+                                    .addComponent(chkAutoSet)))
+                            .addComponent(txtHost, javax.swing.GroupLayout.DEFAULT_SIZE, 422, Short.MAX_VALUE))
+                        .addGap(18, 18, 18))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(12, 12, 12)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblHost, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(lblPort, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(24, 24, 24)
-                .addComponent(chkAutoSet)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnToggleServer, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(1, 1, 1)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblHost, javax.swing.GroupLayout.PREFERRED_SIZE, 42, Short.MAX_VALUE)
+                    .addComponent(txtHost, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblPort, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(txtPort, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(7, 7, 7))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(chkAutoSet)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(chkAppendNL)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel4))
-                .addGap(7, 7, 7)
-                .addComponent(chkAppendNL)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(frameAdvanced, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(lblLastClient))
-                .addGap(13, 13, 13)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnOk, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnApply, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnAbout, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(51, 51, 51)
+                        .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(btnOk, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(btnAbout, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnApplyIPPort))))
                 .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-    private void btnToggleServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnToggleServerActionPerformed
-        if(btnToggleServer.getText().equals("Activate Server")) {
-            setServerState(true);
-            btnToggleServer.setText("Deactivate Server");
-            btnToggleServer.setToolTipText("Deactivate the server to prevent barcodes being sent and typed in");
-            LogI(TAG, "Activated the server.");
-        } else {
-            setServerState(false);
-            btnToggleServer.setText("Activate Server");
-            btnToggleServer.setToolTipText("Activate the server to allow barcodes to be sent and typed in");
-            LogI(TAG, "Deactivated the server.");
-        }
-    }//GEN-LAST:event_btnToggleServerActionPerformed
 
     private void txtPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPasswordActionPerformed
         // TODO add your handling code here:
@@ -359,18 +311,14 @@ public class MainFrame extends javax.swing.JFrame {
     private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitActionPerformed
         int n = JOptionPane.showConfirmDialog(this, "Are you sure you want to exit?", "Confirm quit", JOptionPane.YES_NO_OPTION);
         if (n == JOptionPane.YES_OPTION) {
+            Server.stopListener();
             dispose();
             System.exit(0);
         }
     }//GEN-LAST:event_btnExitActionPerformed
 
-    private void btnApplyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnApplyActionPerformed
-        this.saveChanges();
-    }//GEN-LAST:event_btnApplyActionPerformed
-
     private void btnOkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOkActionPerformed
-        this.saveChanges();
-        this.setVisible(false);
+
     }//GEN-LAST:event_btnOkActionPerformed
 
     private void btnAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAboutActionPerformed
@@ -378,23 +326,52 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_btnAboutActionPerformed
 
     private void chkAutoSetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkAutoSetActionPerformed
+        SET.setAutoSet(chkAutoSet.isSelected());
         if(chkAutoSet.isSelected()) {
-            lblHostTitle.setEnabled(false);
-            txtHost.setEnabled(false);
-            lblPortTitle.setEnabled(false);
-            txtPort.setEnabled(false);
+            txtHost.setEditable(false);
+            txtPort.setEditable(false);
+            btnApplyIPPort.setEnabled(false);
+            String ip = this.FindSystemIP();
+            if(ip.equals(NO)) {
+                JOptionPane.showMessageDialog(this.getParent(), "The IP address of the current system could not be determined.\nEither there is no network connection or you need to set the IP manually.", "Can't Determine IP Address", JOptionPane.WARNING_MESSAGE);
+                chkAutoSet.setSelected(false);
+                SET.setAutoSet(false);
+                txtHost.setEditable(true);
+                txtPort.setEditable(true);
+                btnApplyIPPort.setEnabled(true);
+            } else {
+                chkAutoSet.setSelected(true);
+                SET.setAutoSet(true);
+                txtHost.setEditable(false);
+                txtPort.setEditable(false);
+                btnApplyIPPort.setEnabled(false);
+                SET.setHost(ip);
+                SET.setPort(41788);
+                txtHost.setText(ip);
+                txtPort.setText("41788");
+                this.ApplyIPPort();
+            }
         } else {
-            lblHostTitle.setEnabled(true);
-            txtHost.setEnabled(true);
-            lblPortTitle.setEnabled(true);
-            txtPort.setEnabled(true);
+            txtHost.setEditable(true);
+            txtPort.setEditable(true);
+            btnApplyIPPort.setEnabled(true);
         }
     }//GEN-LAST:event_chkAutoSetActionPerformed
+
+    private void btnApplyIPPortActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnApplyIPPortActionPerformed
+        this.ApplyIPPort();
+    }//GEN-LAST:event_btnApplyIPPortActionPerformed
+
+    private void chkAppendNLStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_chkAppendNLStateChanged
+        SET.setAppendNL(chkAppendNL.isSelected());
+    }//GEN-LAST:event_chkAppendNLStateChanged
+
+    private void txtPasswordInputMethodTextChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_txtPasswordInputMethodTextChanged
+    }//GEN-LAST:event_txtPasswordInputMethodTextChanged
 
 
     public void init() {
         serverThread.start();
-        Server.setInfoLabel(lblLastClient);
 
         // Get the size of the screen
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
@@ -408,36 +385,63 @@ public class MainFrame extends javax.swing.JFrame {
         // Move the window
         this.setLocation(x, y);
 
-        txtHost.setText(SET.getHost());
         txtPassword.setText(SET.getPass());
-        txtPort.setText(String.valueOf(SET.getPort()));
         chkAppendNL.setSelected(Boolean.valueOf(SET.getAppendNL()));
+        chkAutoSet.setSelected(Boolean.valueOf(SET.getAutoSet()));
 
-        String ip = this.FindSystemIP();
-        if(ip.equals(NO)) {
-            JOptionPane.showMessageDialog(this.getParent(), "The IP address of the current system could not be determined.\nEither there is no network connection or you need to set the IP manually.", "Can't Determine IP Address", JOptionPane.WARNING_MESSAGE);
-            chkAutoSet.setSelected(false);
-            lblHostTitle.setEnabled(true);
-            txtHost.setEnabled(true);
-            lblPortTitle.setEnabled(true);
-            txtPort.setEnabled(true);
+        txtPassword.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                warn();
+            }
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                warn();
+            }
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                warn();
+            }
+
+             public void warn() {
+                SET.setPass(txtPassword.getText());
+            }
+        });
+
+        if(SET.getAutoSet()) {
+            String ip = this.FindSystemIP();
+            if(ip.equals(NO)) {
+                JOptionPane.showMessageDialog(this.getParent(), "The IP address of the current system could not be determined.\nEither there is no network connection or you need to set the IP manually.", "Can't Determine IP Address", JOptionPane.WARNING_MESSAGE);
+                chkAutoSet.setSelected(false);
+                SET.setAutoSet(false);
+                txtHost.setEditable(true);
+                txtPort.setEditable(true);
+                btnApplyIPPort.setEnabled(true);
+            } else {
+                chkAutoSet.setSelected(true);
+                SET.setAutoSet(true);
+                txtHost.setEditable(false);
+                txtPort.setEditable(false);
+                btnApplyIPPort.setEnabled(false);
+                SET.setHost(ip);
+                SET.setPort(41788);
+                txtHost.setText(ip);
+                txtPort.setText("41788");
+            }
         } else {
-            chkAutoSet.setSelected(true);
-            lblHostTitle.setEnabled(false);
-            txtHost.setEnabled(false);
-            lblPortTitle.setEnabled(false);
-            txtPort.setEnabled(false);
-            SET.setHost(ip);
-            SET.setPort(41788);
-            lblHost.setText("IP = " + ip);
-            lblPort.setText("Port = 41788");
+            txtHost.setText(SET.getHost());
+            txtPort.setText(String.valueOf(SET.getPort()));
+            txtHost.setEditable(true);
+            txtPort.setEditable(true);
+            btnApplyIPPort.setEnabled(true);
         }
+        //Server.startListener();
+        Server.activate();
     }
 
     public void setTrayIcon(TrayIcon ico) {
         this.SysTrayIcon = ico;
         this.SysTrayIcon.setToolTip("BarcodeOverIP " + SET.VERSION + " - Active\n(Right or Left click to show settings window)\nHost:Port - " + SET.getHost() + ":" + String.valueOf(SET.getPort()));
-        //this.setIconImage(getImage("/icon24.ico"));
     }
 
     private String FindSystemIP() {
@@ -484,7 +488,7 @@ public class MainFrame extends javax.swing.JFrame {
         return OK; //All is ok
     }
 
-    private boolean saveChanges() {
+    private boolean ApplyIPPort() {
         String validres = validateValues();
         if(!validres.equals(OK)) {
             JOptionPane.showMessageDialog(this, validres, "Invalid Value!", JOptionPane.INFORMATION_MESSAGE);
@@ -499,32 +503,21 @@ public class MainFrame extends javax.swing.JFrame {
             SET.setHost(txtHost.getText().trim());
             SET.setPort(Integer.valueOf(txtPort.getText().trim()));
         }
-        SET.setAppendNL(chkAppendNL.isSelected());
-        SET.setPass(txtPassword.getText().trim());
         LogI(TAG, "Changes successfully saved!");
 
-        lblHost.setText("IP = " + SET.getHost());
-        lblPort.setText("Port = " + SET.getPort());
+        txtHost.setText(SET.getHost());
+        txtPort.setText(String.valueOf(SET.getPort()));
 
-        //Start and stop the server to force it to take the changes
-        Server.stopListener();
-        Server.startListener();
-
+        int n = JOptionPane.showConfirmDialog(this, "The changes to the IP and/or Port settings will not take effect until BoIP-Server is restarted. Would you like to exit now?", "App Restart Required", JOptionPane.YES_NO_OPTION);
+        if (n == JOptionPane.YES_OPTION) {
+            Server.stopListener();
+            dispose();
+            System.exit(0);
+        }
+        
         return true;
     }
 
-    private boolean setServerState(boolean val) {  // TRUE = Active
-        if(val) {
-            Server.activate();
-            this.btnToggleServer.setToolTipText("Activate the server to allow barcodes to be received and typed");
-            this.SysTrayIcon.setToolTip("BarcodeOverIP " + SET.VERSION + " - Active\n(Right or Left click to show settings window)\nHost:Port - " + SET.getHost() + ":" + String.valueOf(SET.getPort()));
-        } else {
-            Server.deactivate();
-            this.btnToggleServer.setToolTipText("Deactivate the server to prevent barcodes being received and typed");
-            this.SysTrayIcon.setToolTip("BarcodeOverIP " + SET.VERSION + " - Inactive\n(Right or Left click to show settings window)\nHost:Port - " + SET.getHost() + ":" + String.valueOf(SET.getPort()));
-        }
-        return val;
-    }
 
     public void LogD(String tag, String info) { Log(tag, info, 0); }
     public void LogI(String tag, String info) { Log(tag, info, 1); }
@@ -585,22 +578,18 @@ public class MainFrame extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAbout;
-    private javax.swing.JButton btnApply;
+    private javax.swing.JButton btnApplyIPPort;
     private javax.swing.JButton btnExit;
     private javax.swing.JButton btnOk;
-    private javax.swing.JButton btnToggleServer;
     private javax.swing.JCheckBox chkAppendNL;
     private javax.swing.JCheckBox chkAutoSet;
-    private javax.swing.JPanel frameAdvanced;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JSeparator jSeparator2;
     private javax.swing.JLabel lblHost;
-    private javax.swing.JLabel lblHostTitle;
-    private javax.swing.JLabel lblLastClient;
     private javax.swing.JLabel lblPort;
-    private javax.swing.JLabel lblPortTitle;
     private javax.swing.JTextField txtHost;
     private javax.swing.JTextField txtPassword;
     private javax.swing.JTextField txtPort;
