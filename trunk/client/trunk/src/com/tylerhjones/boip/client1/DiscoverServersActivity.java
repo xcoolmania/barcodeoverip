@@ -23,9 +23,7 @@
  * Description: Add and edit servers
  */
 
-
 package com.tylerhjones.boip.client1;
-
 
 import java.util.Vector;
 import android.app.Activity;
@@ -43,8 +41,6 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-
-
 public class DiscoverServersActivity extends Activity {
 	
 	private static final String TAG = "DiscoverServersActivity";
@@ -57,11 +53,8 @@ public class DiscoverServersActivity extends Activity {
 	private int Port = Common.DEFAULT_PORT + 131;
 
 	// Empty default class constructor
-	public DiscoverServersActivity() {
-		
-	}
+	public DiscoverServersActivity() {}
 
-	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -72,7 +65,7 @@ public class DiscoverServersActivity extends Activity {
 		
 		this.Servers = new Vector<String>();
 		
-		((ListView) this.findViewById(R.id.fs_list)).setOnItemClickListener(new AdapterView.OnItemClickListener() {
+		((ListView) this.findViewById(R.id.lvDiscover)).setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView adapter, View v, int position, long id) {
 				onServerClick(position);
 			}
@@ -90,12 +83,12 @@ public class DiscoverServersActivity extends Activity {
 		}
 	}
 	
-	/** OS kills process */
+	@Override
 	public void onDestroy() {
 		super.onDestroy();
 	}
 	
-	/** App starts anything it needs to start */
+	@Override
 	public void onStart() {
 		super.onStart();
 		// this.StartSocketThread();
@@ -115,30 +108,33 @@ public class DiscoverServersActivity extends Activity {
 		this.ServerFinder.start();
 	}
 	
-	/** App kills anything it started */
 	public void onStop() {
 		super.onStop();
 	}
 	
-	/** App starts displaying things */
+	@Override
 	public void onResume() {
 		super.onResume();
 	}
 
-	private void UpdateServerList() {
-		FoundServersAdapter adapter = new FoundServersAdapter(this.Servers, this.getApplication());
-		((ListView) this.findViewById(R.id.fs_list)).setAdapter(adapter);
-	}
-
-	/** App goes into background */
+	@Override
 	public void onPause() {
 		super.onPause();
 		this.ServerFinder.closeSocket();
 	}
+
+	private void UpdateServerList() {
+		FoundServersAdapter adapter = new FoundServersAdapter(this.Servers, this.getApplication());
+		((ListView) this.findViewById(R.id.lvDiscover)).setAdapter(adapter);
+	}
+
+	private void onServerClick(int item) {
+		// Dialog box to confirm add server
+		// launch BoIPServerInfoActivity and pass it the new server & port
+	}
 	
 	public class FoundServersAdapter implements ListAdapter {
 		
-		//
 		private Vector<String> hosts;
 		private Context context;
 		
@@ -148,28 +144,22 @@ public class DiscoverServersActivity extends Activity {
 		}
 
 		public int getCount() {
-			// TODO Auto-generated method stub
 			return this.hosts.size();
 		}
 
 		public Object getItem(int position) {
-			// TODO Auto-generated method stub
 			return this.hosts.get(position);
 		}
 
 		public long getItemId(int position) {
-			// TODO Auto-generated method stub
 			return 0;
 		}
 
 		public int getItemViewType(int position) {
-			// TODO Auto-generated method stub
 			return 0;
 		}
 		
 		public View getView(int position, View view, ViewGroup parent) {
-			//
-
 			view = this.inflateView(view);
 			TextView foundserver_ip = (TextView) view.findViewById(R.id.foundserver_ip);
 			foundserver_ip.setText(this.hosts.get(position));
@@ -177,29 +167,20 @@ public class DiscoverServersActivity extends Activity {
 		}
 
 		public int getViewTypeCount() {
-			// TODO Auto-generated method stub
 			return 1;
 		}
 
 		public boolean hasStableIds() {
-			// TODO Auto-generated method stub
 			return false;
 		}
 
 		public boolean isEmpty() {
-			// TODO Auto-generated method stub
 			return this.hosts.size() == 0;
 		}
 
-		public void registerDataSetObserver(DataSetObserver observer) {
-			// TODO Auto-generated method stub
-
-		}
-
-		public void unregisterDataSetObserver(DataSetObserver observer) {
-			// TODO Auto-generated method stub
-
-		}
+		public void registerDataSetObserver(DataSetObserver observer) {}
+		
+		public void unregisterDataSetObserver(DataSetObserver observer) {}
 		
 		private View inflateView(View cell) {
 			if (cell == null) {
@@ -210,20 +191,12 @@ public class DiscoverServersActivity extends Activity {
 		}
 
 		public boolean areAllItemsEnabled() {
-			// TODO Auto-generated method stub
 			return true;
 		}
 
 		public boolean isEnabled(int position) {
-			// TODO Auto-generated method stub
 			return true;
 		}
-	}
-
-
-	private void onServerClick(int item) {
-		// Dialog box to confirm add server
-		// launch BoIPServerInfoActivity and pass it the new server & port
 	}
 	
 }

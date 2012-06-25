@@ -1,19 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="fill_parent" android:layout_height="fill_parent">
-	<TextView android:text="@string/lblFSTitle" android:id="@+id/lblFSTitle"
+	
+	<TextView android:text="@string/DSA_tvTitle" android:id="@+id/tvTitle"
 		android:layout_width="wrap_content" android:layout_height="wrap_content"
 		android:textSize="20dp" android:textStyle="bold"
 		android:layout_centerHorizontal="true"></TextView>
 	
-	<TextView android:id="@+id/lblFoundServers"
+	<TextView android:id="@+id/tvFound"
 		android:layout_width="wrap_content" android:layout_height="wrap_content"
-		android:layout_marginLeft="5dp" android:text="@string/lblFoundServers"
+		android:layout_marginLeft="5dp" android:text="@string/DSA_tvFound"
 		android:layout_marginTop="5dp" android:layout_marginBottom="5dp"
 		android:textStyle="bold" android:layout_centerHorizontal="true"
-		android:layout_below="@id/lblFSTitle" />
-	<ListView android:id="@+id/fs_list" android:layout_width="fill_parent"
+		android:layout_below="@id/tvTitle" />
+	
+	<ListView android:id="@+id/lvDiscover" android:layout_width="fill_parent"
 		android:layout_height="fill_parent" android:layout_alignParentBottom="true"
-		android:layout_below="@id/lblFoundServers"/>
+		android:layout_below="@id/tvFound"/>
 
 </RelativeLayout>
