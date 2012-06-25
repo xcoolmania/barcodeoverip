@@ -47,7 +47,7 @@
 
 	<!-- Widget text and hints -->
 	<string name="txtname_hint">(Unique)</string>
-	<string name="txthost_hint">(Valid + Unique)</string>
+	<string name="txthost_hint">(Unique Hostname or IP)</string>
 	<string name="txtport_hint">41788 (Default)</string> 
 	<string name="txtpass_hint">Empty (Default)</string>
 	<string name="txtname_label">Nickname (Required):</string>
@@ -89,10 +89,8 @@
 	<string name="server_not_deleted">Server Delete ERROR!</string>
 	
 	<string name="findservers_title">Find Active BoIP Servers</string>
-	<string name="lblFSTitle">Find Active BoIP Servers</string>
-	<string name="lblFSPortTitle">As long as this screen is visible, BarcodeOverIP will continue to look for active servers on the local network that are listening on the specified port. Set a custom port to look for servers with by editing the field below and pressing \'Apply Port\'.</string>
-	<string name="lblFoundServers">Found Active Servers:</string>
-	<string name="btnFSApplyPort">Apply Port</string>
+	<string name="lblFSTitle">Discover BoIP Servers</string>
+	<string name="lblFoundServers">Found Active Servers (Port 41788):</string>
 	<string name="DefaultPort">41788</string>
 
 	<string name="app_icon_desc">BarcodeOverIP Icon</string>

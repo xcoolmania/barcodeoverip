@@ -32,6 +32,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -50,6 +52,8 @@ public class ServerInfoActivity extends Activity {
 	
 	private Database DB = new Database(this);
 	private int thisAction = 0;
+	private boolean isSaved = false;
+	private boolean isModified = false;
 	
 	/** Widget definitions ******************8 */
 	private EditText txtHost;
@@ -89,19 +93,69 @@ public class ServerInfoActivity extends Activity {
 		txtPort = (EditText) this.findViewById(R.id.txtPort);
 		txtPass = (EditText) this.findViewById(R.id.txtPass);
 		
+		txtName.addTextChangedListener(new TextWatcher() {
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				isModified = true;
+			}
+			
+			@Override
+			public void afterTextChanged(Editable s) {
+			}
+			
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+			}
+		});
+		
+		txtHost.addTextChangedListener(new TextWatcher() {
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				isModified = true;
+			}
+			
+			@Override
+			public void afterTextChanged(Editable s) {
+			}
+			
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+			}
+		});
+		
+		txtPort.addTextChangedListener(new TextWatcher() {
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				isModified = true;
+			}
+			
+			@Override
+			public void afterTextChanged(Editable s) {
+			}
+			
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+			}
+		});
+		
+		txtPass.addTextChangedListener(new TextWatcher() {
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				isModified = true;
+			}
+			
+			@Override
+			public void afterTextChanged(Editable s) {
+			}
+			
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+			}
+		});
+
 		/** Setup buttons ********************************************** */
 		btnSave = (Button) findViewById(R.id.btnSave);
 		btnSave.setOnClickListener(new View.OnClickListener() {
 			
 			public void onClick(View view) {
-				
 				if(ValidateSettings()) {
-					int out = Save();
-					if (out == -2) {
-						txtName.requestFocus();
-					} else {
-						txtHost.requestFocus();
-					}
+					Save();
 				}
 			}
 		});
@@ -110,7 +164,7 @@ public class ServerInfoActivity extends Activity {
 		btnCancel.setOnClickListener(new View.OnClickListener() {
 			
 			public void onClick(View view) {
-				if (IsModified()) {
+				if (isModified) {
 					UnsavedWarning();
 				} else {
 					finish();
@@ -135,6 +189,7 @@ public class ServerInfoActivity extends Activity {
 					txtPass.setText(Server.getPass());
 				}
 				txtPort.setText(String.valueOf(Server.getPort()));
+				isModified = false;
 			} else {
 				Log.wtf(TAG, "SIdx gave null or -1 value!");
 				return;
@@ -148,29 +203,23 @@ public class ServerInfoActivity extends Activity {
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-			String out = ValidateSettingsMsg();
-			if (out != null) {
-				Toast.makeText(this, out, 7).show();
-				Log.d(TAG, "onKeyDown(): Invalid Setting Message: " + out);
+			if (!isSaved) {
+				UnsavedWarning();
 			} else {
-				if (IsModified()) {
-					int o = Save();
-					Log.d(TAG, "onKeyDown(): NEW, Save result: " + String.valueOf(o));
-				}
+				this.finish();
 			}
 		}
-		this.finish();
 		return super.onKeyDown(keyCode, event);
 	}
 	 
 	private int Save() {
 		
-		/*
-		 * if (!ValidateSettings()) {
-		 * Log.i(TAG, "Save(): Settings validation FAILED!");
-		 * return 0;
-		 * }
-		 */
+		
+		if (!ValidateSettings()) {
+			Log.i(TAG, "Save(): Settings validation FAILED!");
+			return 0;
+		}
+
 		if (txtPass.getText().toString().trim().equals("") || txtPass.getText().toString() == null) {
 			Server.setPass(Common.DEFAULT_PASS);
 		} else {
@@ -200,7 +249,7 @@ public class ServerInfoActivity extends Activity {
 
 		DB.open();
 		if (thisAction == Common.EDIT_SREQ) {
-			if (IsModified()) {
+			if (isModified) {
 				long res = DB.editServerInfo(Server.getName(), txtName.getText().toString().trim(), txtHost.getText().toString().trim(),
 				String.valueOf(Server.getPort()), Server.getPass());
 				Server = DB.getAllServers().get(SIdx);
@@ -221,45 +270,11 @@ public class ServerInfoActivity extends Activity {
 			Log.i(TAG, "Save(): Server added to list! DB.addServer returned: '" + Long.toString(res2) + "'!");
 		}
 		DB.close();
+		this.isSaved = true;
 		Log.i(TAG, "Save(): Settings Saved!");
 		return 10;
 	}
 	
-	private String ValidateSettingsMsg() {
-		if (txtHost.getText().toString().trim().equals("") || txtHost.getText().toString().equals(null)) {
-			return "No hostname or IP given, not saved!";
-		} 
-		if (txtName.getText().toString().trim().equals("") || txtName.getText().toString().equals(null)) {
-			return "No server nickname given, not saved!";
-		} 
-		DB.open();
-		int i = 0;
-		ArrayList<Server> ServersArray = new ArrayList<Server>();
-		ServersArray = DB.getAllServers();
-		DB.close();
-		for (Server s : ServersArray) {
-			if (s.getHost().toString().trim().equals(txtHost.getText()) && i != SIdx) {
-				return "Duplicate Hostname/IP found, not saved!";
-			}
-			if (s.getName().toString().trim().equals(txtName.getText()) && i != SIdx) { return "Duplicate server nickname found, not saved!";
-			}
-			++i;
-		}
-
-		if (!txtPort.getText().toString().trim().equals("") && !txtPort.getText().toString().equals(null)) {
-			try {
-				if (Common.isValidPort(txtPort.getText().toString().trim())) {
-					Server.setPort(Integer.valueOf(txtPort.getText().toString().trim()));
-				}
-			}
-			catch (NumberFormatException e) {
-				return "Invalid port! Must be in range: 1 - 66535";
-			}
-		}
-			
-		return null;
-	}
-
 	private boolean ValidateSettings() {
 
 		if (txtHost.getText().toString().trim().equals("") || txtHost.getText().toString().equals(null)) {
@@ -308,29 +323,6 @@ public class ServerInfoActivity extends Activity {
 		return true;
 	}
 
-	private boolean IsModified() {
-		Log.d(TAG, "Name -- Original Value: " + Server.getName() + ", New Value: " + txtName.getText().toString());
-		Log.d(TAG, "Host -- Original Value: " + Server.getHost() + ", New Value: " + txtHost.getText().toString());
-		Log.d(TAG, "Pass -- Original Value: " + Server.getPass() + ", New Value: " + txtPass.getText().toString());
-		Log.d(TAG, "Port -- Original Value: " + String.valueOf(Server.getPort()) + ", New Value: " + txtPort.getText().toString());
-
-		if (txtName.getText().toString().equals(Server.getName())) {
-			Log.i(TAG, "IsModified(): Name value not changed!");
-			if (txtHost.getText().toString().equals(Server.getHost())) {
-				Log.i(TAG, "IsModified(): Host value not changed!");
-				if (txtPass.getText().toString().equals(Server.getPass())
-					|| (txtPass.getText().toString().trim().equals("") && Server.getPass().equals("none"))) {
-					Log.i(TAG, "IsModified(): Pass value not changed!");
-					if (Integer.valueOf(txtPort.getText().toString()) == Server.getPort()) {
-						Log.i(TAG, "IsModified(): Port value not changed! -- All values NOT CHANGED!");
-						return false;
-					}
-				}
-			}
-		}
-		return true;
-	}
-	
 	private void MsgBox(String msg) {
 		this.MsgBox("Server Settings", msg);
 	}
