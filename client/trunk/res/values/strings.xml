@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+	<!-- Project and version info --> 
 	<string name="app_name">BarcodeOverIP</string>
 	<string name="app_full_name">BarcodeOverIP Client</string>
 	<string name="app_full_namever">BarcodeOverIP Client 1.0.1-Beta1</string>
 	<string name="ver_full_name">1.0.1-Beta1</string>
-	<string name="ver_rel_type">beta</string>
+	<string name="ver_rel_type">beta1</string>
 	<string name="ver_rel_name">Beta1</string>
 	<string name="ver_full_num">1.0.1-b1</string>
 	<string name="ver_base_num">1.0.1</string>
 	<string name="app_desc">Use your Android device as a wireless barcode scanner for your PC/Laptop</string>
-	
 	<string name="copyright">(&#169;)2012 Tyler H. Jones, me@thj.me</string>
 	<string name="googlecode_site">http://b.thj.me/project</string>
 	<string name="project_site">http://boip.tylerjones.me</string>
@@ -19,6 +19,7 @@
 	<string name="author">Tyler H. Jones</string>
 	<string name="author_email">me@tylerjones.me</string>
 	
+	<!-- ServerInfoActiviy items -->
 	<string name="server_info">Add/Modify Server</string>
 	<string name="es_listinfo_label">Saved Servers Browser</string>
 	<string name="servername">Server Name</string>
@@ -26,12 +27,6 @@
 	<string name="close">Close</string>
     <string name="list_title">BarcodeOverIP - Saved Servers List</string>
 	
-
-	<!-- Application General Information -->
-	<string name="about">About</string>
-	<string name="website">Website</string>
-	<string name="donate">Donate</string>
-
 	<!-- Message box and alert dialog strings -->
 	<string name="about_msg_title">About BarcodeOverIP</string>
 	<string name="about_msg_body"><b>BarcodeOverIP Client 1.0.1-Beta1</b>\n&#169;2012 - Tyler H. Jones\nProject Website: http://boip.tylerjones.me\n\nWelcome to BarcodeOverIP for Android!\nTo get started you must add a server by pressing \'Menu\' > \'Add Server\'. 
@@ -45,19 +40,6 @@
 	<string name="editservers_msg_title">Edit Servers</string>
 	<string name="editservers_msg_body">Edit servers activity is not done yet! Try again later!</string>
 
-	<!-- Widget text and hints -->
-	<string name="txtname_hint">(Unique)</string>
-	<string name="txthost_hint">(Unique Hostname or IP)</string>
-	<string name="txtport_hint">41788 (Default)</string> 
-	<string name="txtpass_hint">Empty (Default)</string>
-	<string name="txtname_label">Nickname (Required):</string>
-	<string name="txthost_label">Hostname/IP (Required):</string>
-	<string name="txtport_label">Port:</string>
-	<string name="txtpass_label">Password:</string>
-	<string name="btnsave_label">Save Server</string>
-	<string name="btncancel_label">Cancel</string>
-	
-	
 	<!-- Menus text and info -->
 	<string name="mnuMainFindServers_title">Find Servers</string>
 	<string name="mnuMainAddServer_title">Add Server</string>
@@ -66,6 +48,7 @@
 	<string name="mnuESDelete_title">Delete</string>
 	<string name="mnuESEdit_title">Edit</string>
 
+	<!-- Messages (Toasts/Msgboxes) text -->
 	<string name="addserver_msg_body">Enter the new server\'s details and click \'Save Server\' or press the back button to continue.</string>
 	<string name="addserver_msg_title">Add New Server</string>
 	<string name="editserver_msg_body">Change the desired values then click \'Save Server\' or press the back button to continue.</string>
@@ -79,7 +62,6 @@
 	<string name="invalidport_msg_title">Invalid Port Number Given!</string>
 	<string name="invalidportrange_msg_body">The given port does not fall within the range of valid port numbers\nValid Range: Between 1 - 65535</string>
 	<string name="invalidportvar_msg_body">The given port is not a valid integer data type!</string>
-	
 	<string name="unsaved_msg_body">There are unsaved changes to the current server\'s configuration settings! Would you like to save them now?</string>
 	<string name="unsaved_msg_title">Unsaved Server Settings!</string>
 	<string name="settings_save_error">Server Settings Save ERROR! (Error -4)</string>	
@@ -88,9 +70,10 @@
 	<string name="server_deleted">Server Deleted!</string>
 	<string name="server_not_deleted">Server Delete ERROR!</string>
 	
-	<string name="findservers_title">Find Active BoIP Servers</string>
-	<string name="lblFSTitle">Discover BoIP Servers</string>
-	<string name="lblFoundServers">Found Active Servers (Port 41788):</string>
+	<!-- DiscoverServersActivity items -->
+	<string name="DSA_title">Find Active BoIP Servers</string>
+	<string name="DSA_tvTitle">Discover BoIP Servers</string>
+	<string name="DSA_tvFound">Found Active Servers (Port 41788):</string>
 	<string name="DefaultPort">41788</string>
 
 	<string name="app_icon_desc">BarcodeOverIP Icon</string>
@@ -101,6 +84,18 @@
 		<item>Remove</item>
 	</string-array>
 
+	<!-- Widget text and hints -->
+	<string name="txtname_hint">(Unique)</string>
+	<string name="txthost_hint">(Unique Hostname or IP)</string>
+	<string name="txtport_hint">41788 (Default)</string> 
+	<string name="txtpass_hint">Empty (Default)</string>
+	<string name="txtname_label">Nickname (Required):</string>
+	<string name="txthost_label">Hostname/IP (Required):</string>
+	<string name="txtport_label">Port:</string>
+	<string name="txtpass_label">Password:</string>
+	<string name="btnsave_label">Save Server</string>
+	<string name="btncancel_label">Cancel</string>
+	
 	<string-array name="cboServers_array">
 		<item>Choose Server</item>
 	</string-array>
