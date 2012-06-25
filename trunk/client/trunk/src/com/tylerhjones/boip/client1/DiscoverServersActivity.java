@@ -39,12 +39,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
 
@@ -58,8 +55,6 @@ public class DiscoverServersActivity extends Activity {
 	// private Database DB = new Database(this);
 	
 	private int Port = Common.DEFAULT_PORT + 131;
-
-	private EditText txtFSPort;
 
 	// Empty default class constructor
 	public DiscoverServersActivity() {
@@ -75,18 +70,6 @@ public class DiscoverServersActivity extends Activity {
 
 		this.handler = new Handler();
 		
-		Button btnApplyPort = (Button) this.findViewById(R.id.btnFSApplyPort);
-		btnApplyPort.setOnClickListener(new View.OnClickListener() {
-			
-			public void onClick(View v) {
-				onClickApplyPort();
-			}
-		});
-		
-		txtFSPort = (EditText) this.findViewById(R.id.txtFSPort);
-		txtFSPort.setFocusable(true);
-		txtFSPort.setText(String.valueOf(Common.DEFAULT_PORT));
-
 		this.Servers = new Vector<String>();
 		
 		((ListView) this.findViewById(R.id.fs_list)).setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -115,16 +98,6 @@ public class DiscoverServersActivity extends Activity {
 	/** App starts anything it needs to start */
 	public void onStart() {
 		super.onStart();
-	}
-	
-	/** App kills anything it started */
-	public void onStop() {
-		super.onStop();
-	}
-	
-	/** App starts displaying things */
-	public void onResume() {
-		super.onResume();
 		// this.StartSocketThread();
 		this.ServerFinder = new DiscoverServersThread(this.Port, new DiscoverServersThread.FindListener() {
 			
@@ -142,6 +115,16 @@ public class DiscoverServersActivity extends Activity {
 		this.ServerFinder.start();
 	}
 	
+	/** App kills anything it started */
+	public void onStop() {
+		super.onStop();
+	}
+	
+	/** App starts displaying things */
+	public void onResume() {
+		super.onResume();
+	}
+
 	private void UpdateServerList() {
 		FoundServersAdapter adapter = new FoundServersAdapter(this.Servers, this.getApplication());
 		((ListView) this.findViewById(R.id.fs_list)).setAdapter(adapter);
@@ -237,45 +220,10 @@ public class DiscoverServersActivity extends Activity {
 		}
 	}
 
-	
-	private void setPort(int p) {
-		if (p < 1024 || p > 65400) {
-			this.Port = Common.DEFAULT_PORT + 131;
-		} else {
-			this.Port = p + 131;
-		}
-	}
-	
-	private void onClickApplyPort() {
-		this.ServerFinder.closeSocket();
-		String strPort = this.txtFSPort.getText().toString();
-		if(this.isValidPort(strPort)) {
-			this.Port = Integer.valueOf(this.txtFSPort.getText().toString());
-			Toast.makeText(this, "Server port update, OK!", 5).show();
-		} else {
-			Toast.makeText(this, "Target port update, INVALID PORT!", 8).show();
-			this.txtFSPort.requestFocus();
-			this.txtFSPort.setText(String.valueOf(Common.DEFAULT_PORT));
-			this.setPort(Common.DEFAULT_PORT);
-		}
-		// this.ServerFinder.closeSocket();
-		this.onResume();
-	}
 
 	private void onServerClick(int item) {
 		// Dialog box to confirm add server
 		// launch BoIPServerInfoActivity and pass it the new server & port
 	}
 	
-	private boolean isValidPort(String port) {
-		try {
-			int p = Integer.parseInt(port);
-			if (p < 1024 || p > 65400) { throw new NumberFormatException(); }
-		} catch (NumberFormatException e) {
-			return false;
-		}
-		return true;
-	}
-
-
 }
