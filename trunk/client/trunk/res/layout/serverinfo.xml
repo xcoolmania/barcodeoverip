@@ -52,21 +52,14 @@
 		    android:text="@string/txtpass_label" android:paddingTop="8dp" />
 		<EditText android:id="@+id/txtPass" android:layout_width="match_parent"
 			android:layout_height="wrap_content" android:hint="@string/txtpass_hint"
-			android:nextFocusDown="@+id/btnSave" />
+			android:nextFocusDown="@+id/btnDone" />
 	
 		<Button
-		    android:id="@+id/btnSave"
+		    android:id="@+id/btnDone"
 		    android:layout_width="fill_parent"
 		    android:layout_marginTop="15dp"
 		    android:layout_height="50dp" android:textSize="14dp"
-		    android:text="@string/btnsave_label" android:textStyle="bold"
-		    android:nextFocusDown="@+id/btnCancel" />
-		
-		<Button
-		    android:id="@+id/btnCancel"
-		    android:layout_width="fill_parent"
-		    android:layout_height="50dp" android:textSize="14dp"
-		    android:text="@string/btncancel_label" android:textStyle="bold"/>
+		    android:text="@string/btndone_label" android:textStyle="bold" />
 	
 	</LinearLayout>
 

@@ -26,7 +26,6 @@
 
 package com.tylerhjones.boip.client1;
 
-
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -56,7 +55,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
-
 
 public class BoIPActivity extends ListActivity {
 	

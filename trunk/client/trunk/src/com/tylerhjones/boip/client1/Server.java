@@ -79,10 +79,6 @@ public class Server {
 	
 	public void setPort(int Port) {
 		Log.d("Server Class", "setPort(): Port is attempting to set to: " + String.valueOf(Port));
-		// try {
-		// Common.isValidPort(String.valueOf(Port));
-		// }
-		// catch (Exception e) {
 		if (Port < 1 || Port > 65535) {
 			this.Port = Common.DEFAULT_PORT;
 		} else {
@@ -90,8 +86,6 @@ public class Server {
 		}
 		Log.d("Server Class", "setPort(): Port was ACTUALLY set to: " + String.valueOf(this.Port));
 		return;
-		// }
-		// this.Port = Port;
 	}
 	
 	/** Server index properties ************************************ */
