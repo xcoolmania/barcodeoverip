@@ -52,7 +52,6 @@ public class ServerInfoActivity extends Activity {
 	
 	private Database DB = new Database(this);
 	private int thisAction = 0;
-	private boolean isSaved = false;
 	private boolean isModified = false;
 	
 	/** Widget definitions ******************8 */
@@ -60,8 +59,7 @@ public class ServerInfoActivity extends Activity {
 	private EditText txtPort;
 	private EditText txtPass;
 	private EditText txtName;
-	private Button btnSave;	
-	private Button btnCancel;
+	private Button btnDone;
 	private TextView lblTitle;
 	
 	// Default class constructor with initial Server object 
@@ -150,29 +148,17 @@ public class ServerInfoActivity extends Activity {
 		});
 
 		/** Setup buttons ********************************************** */
-		btnSave = (Button) findViewById(R.id.btnSave);
-		btnSave.setOnClickListener(new View.OnClickListener() {
+		btnDone = (Button) findViewById(R.id.btnDone);
+		btnDone.setOnClickListener(new View.OnClickListener() {
 			
 			public void onClick(View view) {
 				if(ValidateSettings()) {
 					Save();
-				}
-			}
-		});
-		
-		btnCancel = (Button) findViewById(R.id.btnCancel);
-		btnCancel.setOnClickListener(new View.OnClickListener() {
-			
-			public void onClick(View view) {
-				if (isModified) {
-					UnsavedWarning();
-				} else {
 					finish();
 				}
 			}
 		});
-
-
+		
 		if (action == Common.EDIT_SREQ) {
 			lblTitle.setText("Edit Server Settings");
 			SIdx = getIntent().getIntExtra("com.tylerhjones.boip.client1.ServerIndex", -1);
@@ -203,11 +189,8 @@ public class ServerInfoActivity extends Activity {
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-			if (!isSaved) {
-				UnsavedWarning();
-			} else {
-				this.finish();
-			}
+			Save();
+			this.finish();
 		}
 		return super.onKeyDown(keyCode, event);
 	}
@@ -270,7 +253,6 @@ public class ServerInfoActivity extends Activity {
 			Log.i(TAG, "Save(): Server added to list! DB.addServer returned: '" + Long.toString(res2) + "'!");
 		}
 		DB.close();
-		this.isSaved = true;
 		Log.i(TAG, "Save(): Settings Saved!");
 		return 10;
 	}
@@ -341,26 +323,4 @@ public class ServerInfoActivity extends Activity {
 		ad.show();
 	}
 	
-	private void UnsavedWarning() {
-		// Warn of unsaved settings
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setMessage(getText(R.string.unsaved_msg_body)).setTitle(getText(R.string.unsaved_msg_title)).setCancelable(false) // Block 'Back' button
-								.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-									
-									@Override
-									public void onClick(DialogInterface dialog, int id) {
-										dialog.cancel();
-									}
-								}).setNegativeButton("No", new DialogInterface.OnClickListener() {
-									
-									@Override
-									public void onClick(DialogInterface dialog, int id) {
-										dialog.cancel();
-										finish();
-									}
-								});
-		AlertDialog adialog = builder.create();
-		adialog.show();
-	}
-
 }

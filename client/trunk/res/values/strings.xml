@@ -93,8 +93,7 @@
 	<string name="txthost_label">Hostname/IP (Required):</string>
 	<string name="txtport_label">Port:</string>
 	<string name="txtpass_label">Password:</string>
-	<string name="btnsave_label">Save Server</string>
-	<string name="btncancel_label">Cancel</string>
+	<string name="btndone_label">Done</string>
 	
 	<string-array name="cboServers_array">
 		<item>Choose Server</item>
