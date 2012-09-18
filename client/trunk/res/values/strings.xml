@@ -62,8 +62,6 @@
 	<string name="invalidport_msg_title">Invalid Port Number Given!</string>
 	<string name="invalidportrange_msg_body">The given port does not fall within the range of valid port numbers\nValid Range: Between 1 - 65535</string>
 	<string name="invalidportvar_msg_body">The given port is not a valid integer data type!</string>
-	<string name="unsaved_msg_body">There are unsaved changes to the current server\'s configuration settings! Would you like to save them now?</string>
-	<string name="unsaved_msg_title">Unsaved Server Settings!</string>
 	<string name="settings_save_error">Server Settings Save ERROR! (Error -4)</string>	
 	<string name="settings_not_saved">No Server Settings Modified!</string>	
 	<string name="settings_saved">Server Settings Saved!</string>
@@ -86,9 +84,9 @@
 
 	<!-- Widget text and hints -->
 	<string name="txtname_hint">(Unique)</string>
-	<string name="txthost_hint">(Unique Hostname or IP)</string>
+	<string name="txthost_hint">(Unique Hostname/IP)</string>
 	<string name="txtport_hint">41788 (Default)</string> 
-	<string name="txtpass_hint">Empty (Default)</string>
+	<string name="txtpass_hint">NONE (Default)</string>
 	<string name="txtname_label">Nickname (Required):</string>
 	<string name="txthost_label">Hostname/IP (Required):</string>
 	<string name="txtport_label">Port:</string>

@@ -248,19 +248,19 @@ public class BoIPActivity extends ListActivity {
 		String res = client.Validate();
 		if (res.equals("ERR9")) {
 			Common.showMsgBox(this, "Wrong Password!",
-				"The password you gave does not match the on on the server. Please change it on your app and press 'Apply Server Settings' and then try again.'");
+				"The password you gave does not match the password set on the server. Verify that the passwords match on the server and client then try again.'");
 		} else if (res.equals("ERR1")) {
-			Toast.makeText(this, "Invalid data and/or request syntax!", 4).show();
+			Toast.makeText(this, "Invalid data and/or request syntax!", Toast.LENGTH_SHORT).show();
 		} else if (res.equals("ERR2")) {
-			Toast.makeText(this, "Server received a blank request.", 4).show();
+			Toast.makeText(this, "Server received a blank request.", Toast.LENGTH_SHORT).show();
 		} else if (res.equals("ERR3")) {
-			Toast.makeText(this, "Invalid data/syntax, could not parse data.", 4).show();
+			Toast.makeText(this, "Invalid data/syntax, could not parse data.", Toast.LENGTH_SHORT).show();
 		} else if (res.equals(Common.NOPE)) {
-			Toast.makeText(this, "Server is not activated!", 4).show();
+			Toast.makeText(this, "Server is not activated!", Toast.LENGTH_SHORT).show();
 		} else if (res.equals(Common.OK)) {
 			return true;
 		} else {
-			Toast.makeText(this, "Error! - " + Common.errorCodes().get(res).toString(), 6).show();
+			Toast.makeText(this, "Error! - " + Common.errorCodes().get(res).toString(), Toast.LENGTH_SHORT).show();
 			Log.v(TAG, "client.Validate returned: " + Common.errorCodes().get(res).toString());
 		}
 		return false;
@@ -281,13 +281,13 @@ public class BoIPActivity extends ListActivity {
 				"Wrong Password!",
 				"The password you gave does not match the on on the server. Please change it on your app and press 'Apply Server Settings' and then try again.'");
 		} else if (res.equals("ERR1")) {
-			Toast.makeText(getApplicationContext(), "Invalid data and/or request syntax!", 4).show();
+			Toast.makeText(getApplicationContext(), "Invalid data and/or request syntax!", Toast.LENGTH_SHORT).show();
 		} else if (res.equals("ERR2")) {
-			Toast.makeText(getApplicationContext(), "Invalid data, possible missing data separator.", 4).show();
+			Toast.makeText(getApplicationContext(), "Invalid data, possible missing data separator.", Toast.LENGTH_SHORT).show();
 		} else if (res.equals("ERR3")) {
-			Toast.makeText(getApplicationContext(), "Invalid data/syntax, could not parse data.", 4).show();
+			Toast.makeText(getApplicationContext(), "Invalid data/syntax, could not parse data.", Toast.LENGTH_SHORT).show();
 		} else if (res.equals(Common.NOPE)) {
-			Toast.makeText(getApplicationContext(), "Server is not activated!", 4).show();
+			Toast.makeText(getApplicationContext(), "Server is not activated!", Toast.LENGTH_SHORT).show();
 		} else if (res.equals(Common.OK)) {
 			String res2 = client.sendBarcode(code);
 			if (res2.equals("ERR9")) {
@@ -296,21 +296,21 @@ public class BoIPActivity extends ListActivity {
 					"Wrong Password!",
 					"The password you gave does not match the on on the server. Please change it on your app and press 'Apply Server Settings' and then try again.'");
 			} else if (res2.equals("ERR1")) {
-				Toast.makeText(getApplicationContext(), "Invalid data and/or request syntax!", 4).show();
+				Toast.makeText(getApplicationContext(), "Invalid data and/or request syntax!", Toast.LENGTH_SHORT).show();
 			} else if (res2.equals("ERR2")) {
-				Toast.makeText(getApplicationContext(), "Invalid data, possible missing data separator.", 4).show();
+				Toast.makeText(getApplicationContext(), "Invalid data, possible missing data separator.", Toast.LENGTH_SHORT).show();
 			} else if (res.equals("ERR3")) {
-				Toast.makeText(getApplicationContext(), "Invalid data/syntax, could not parse data.", 4).show();
+				Toast.makeText(getApplicationContext(), "Invalid data/syntax, could not parse data.", Toast.LENGTH_SHORT).show();
 			} else if (res2.equals(Common.NOPE)) {
-				Toast.makeText(getApplicationContext(), "Server is not activated!", 4).show();
+				Toast.makeText(getApplicationContext(), "Server is not activated!", Toast.LENGTH_SHORT).show();
 			} else if (res2.equals(Common.OK)) {
 				lv("sendBarcode(): All OK");
 			} else {
-				Toast.makeText(this, "Error! - " + Common.errorCodes().get(res2).toString(), 6).show();
+				Toast.makeText(this, "Error! - " + Common.errorCodes().get(res2).toString(), Toast.LENGTH_SHORT).show();
 				lv("client.Validate returned: ", Common.errorCodes().get(res2).toString());
 			}
 		} else {
-			Toast.makeText(this, "Error! - " + Common.errorCodes().get(res).toString(), 6).show();
+			Toast.makeText(this, "Error! - " + Common.errorCodes().get(res).toString(), Toast.LENGTH_SHORT).show();
 			lv("client.Validate returned: ", Common.errorCodes().get(res).toString());
 		}
 	}
@@ -330,20 +330,20 @@ public class BoIPActivity extends ListActivity {
 			try {
 				addr = InetAddress.getByName(s);
 			} catch (UnknownHostException e) {
-			Toast.makeText(this, "Invalid Hostname/IP Address! (-1)", 10).show();
+			Toast.makeText(this, "Invalid Hostname/IP Address! (-1)", Toast.LENGTH_LONG).show();
 				return null;
 			}
 			if(addr.isLoopbackAddress() || addr.isLinkLocalAddress() || addr.isAnyLocalAddress()) {
-				Toast.makeText(this, "Invalid IP Address! IP must point to a physical, reachable computer!  (-2)", 10).show();
+				Toast.makeText(this, "Invalid IP Address! IP must point to a physical, reachable computer!  (-2)", Toast.LENGTH_LONG).show();
 				return null;
 			}
 			try {
 				if(!addr.isReachable(2500)) {
-				Toast.makeText(this, "Address/Hosst is unreachable! (2500ms Timeout) (-3)", 10).show();
+				Toast.makeText(this, "Address/Hosst is unreachable! (2500ms Timeout) (-3)", Toast.LENGTH_LONG).show();
 					return null;
 				}
 			} catch (IOException e1) {
-				Toast.makeText(this, "Address/Host is unreachable! (Error Connecting) (-4)", 10).show();
+				Toast.makeText(this, "Address/Host is unreachable! (Error Connecting) (-4)", Toast.LENGTH_LONG).show();
 				return null;
 			}
 			
@@ -460,10 +460,10 @@ public class BoIPActivity extends ListActivity {
 				if (resultCode == RESULT_OK) {
 					String barcode = result.getContents().toString();
 					this.SendBarcode(CurServer, barcode);
-					Toast.makeText(this, "Barcode successfully sent to server!", 5).show();					
+					Toast.makeText(this, "Barcode successfully sent to server!", Toast.LENGTH_SHORT).show();					
 				}
 			} catch(NullPointerException ne) {
-				Toast.makeText(this, "Hmm that did't work.. Try again. (1)", 10).show();
+				Toast.makeText(this, "Hmm that did't work.. Try again. (1)", Toast.LENGTH_LONG).show();
 				Log.e(TAG, ne.toString());
 			}
 		}

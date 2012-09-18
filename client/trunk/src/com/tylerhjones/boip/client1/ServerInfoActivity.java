@@ -220,7 +220,7 @@ public class ServerInfoActivity extends Activity {
 			}
 		}
 		catch (NumberFormatException e) {
-			Log.e(TAG, "Save(): Invalid port! Using default port: 41788");
+			Log.w(TAG, "Save(): Invalid port! Using default port: 41788");
 			Server.setPort(Common.DEFAULT_PORT);
 		}
 
@@ -237,18 +237,24 @@ public class ServerInfoActivity extends Activity {
 				String.valueOf(Server.getPort()), Server.getPass());
 				Server = DB.getAllServers().get(SIdx);
 				Log.i(TAG, "Save(): editServerInfo returned: '" + Long.toString(res) + "'!");
-				Toast.makeText(this, getText(R.string.settings_saved), 4).show();
+				Toast.makeText(this, getText(R.string.settings_saved), Toast.LENGTH_SHORT).show();
 			} else {
-				Toast.makeText(this, getText(R.string.settings_not_saved), 4).show();
+				Toast.makeText(this, getText(R.string.settings_not_saved), Toast.LENGTH_SHORT).show();
 			}
 		} else {
-			long res2 = DB.addServer(Server);
+			if(txtPort.getText().equals("") || txtPort.getText().equals(null)) {
+				txtPort.setText(String.valueOf(Common.DEFAULT_PORT));
+			}
 			Server.setName(txtName.getText().toString().trim());
 			Server.setHost(txtHost.getText().toString().trim());
+			Server.setPort(Integer.valueOf(txtPort.getText().toString().trim()));
+			Server.setPass(txtPass.getText().toString().trim());
+			long res2 = DB.addServer(Server);
+
 			if (res2 == -4) {
-				Toast.makeText(this, getText(R.string.settings_not_saved), 4).show();
+				Toast.makeText(this, getText(R.string.settings_not_saved), Toast.LENGTH_SHORT).show();
 			} else {
-				Toast.makeText(this, getText(R.string.settings_saved), 4).show();
+				Toast.makeText(this, getText(R.string.settings_saved), Toast.LENGTH_SHORT).show();
 			}
 			Log.i(TAG, "Save(): Server added to list! DB.addServer returned: '" + Long.toString(res2) + "'!");
 		}
@@ -287,6 +293,10 @@ public class ServerInfoActivity extends Activity {
 				return false;
 			}
 			++i;
+		}
+		
+		if(txtPort.getText().equals("") || txtPort.getText().equals(null)) {
+			txtPort.setText(String.valueOf(Common.DEFAULT_PORT));
 		}
 		
 		try {

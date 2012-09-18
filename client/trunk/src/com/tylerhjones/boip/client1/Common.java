@@ -76,7 +76,7 @@ public class Common {
 	/** Default value constants *********************************************************** */
 	public static final int DEFAULT_PORT = 41788;
 	public static final String DEFAULT_HOST = "0.0.0.0";
-	public static final String DEFAULT_PASS = "none";
+	public static final String DEFAULT_PASS = "NONE";
 	public static final String DEFAULT_NAME = "Untitled";
 
 	public static final int BUFFER_LEN = 1024;
