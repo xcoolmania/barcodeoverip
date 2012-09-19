@@ -76,13 +76,13 @@ public class ServerInfoActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
-	    Log.i(TAG, "onCreate called!");
+		Log.d(TAG, "onCreate called!"); // DEBUG
 	    
 		setContentView(R.layout.serverinfo); // Setup the window form layout
 		lblTitle = (TextView)this.findViewById(R.id.lblTitle);
 		
 		int action = this.getIntent().getIntExtra("com.tylerhjones.boip.client1.Action", Common.ADD_SREQ);
-		Log.d(TAG, "*** Intent passed 'Action' to ServerInfoActivity with value: '" + String.valueOf(action) + "'");
+		Log.d(TAG, "*** Intent passed 'Action' to ServerInfoActivity with value: '" + String.valueOf(action) + "'"); // DEBUG
 		thisAction = action;
 
 	    /** Setup TextEdits ********************************************** */
@@ -160,9 +160,9 @@ public class ServerInfoActivity extends Activity {
 		});
 		
 		if (action == Common.EDIT_SREQ) {
-			lblTitle.setText("Edit Server Settings");
+			lblTitle.setText(getText(R.string.server_settings));
 			SIdx = getIntent().getIntExtra("com.tylerhjones.boip.client1.ServerIndex", -1);
-			Log.d(TAG, "*** Intent passed 'ServerIndex' to ServerInfoActivity with value: '" + String.valueOf(SIdx) + "'");
+			Log.d(TAG, "*** Intent passed 'ServerIndex' to ServerInfoActivity with value: '" + String.valueOf(SIdx) + "'"); // DEBUG
 			if (SIdx >= 0) {
 				DB.open();
 				Server = DB.getAllServers().get(SIdx);
@@ -177,13 +177,12 @@ public class ServerInfoActivity extends Activity {
 				txtPort.setText(String.valueOf(Server.getPort()));
 				isModified = false;
 			} else {
-				Log.wtf(TAG, "SIdx gave null or -1 value!");
+				Log.wtf(TAG, "!!--> SIdx gave null or -1 value! <--!!");
 				return;
 			}
 		} else {
-			lblTitle.setText("Add New Server");
+			lblTitle.setText(getText(R.string.add_server_title));
 		}
-
 	}
 	
 	@Override
@@ -197,6 +196,9 @@ public class ServerInfoActivity extends Activity {
 	 
 	private int Save() {
 		
+		// if (txtPort.getText().equals("") || txtPort.getText().equals(null)) {
+		// txtPort.setText(String.valueOf(Common.DEFAULT_PORT));
+		// }
 		
 		if (!ValidateSettings()) {
 			Log.i(TAG, "Save(): Settings validation FAILED!");
@@ -224,12 +226,6 @@ public class ServerInfoActivity extends Activity {
 			Server.setPort(Common.DEFAULT_PORT);
 		}
 
-		Log.d(TAG, "Save(): Server.setName('" + txtName.getText().toString() + "')");
-		// Server.setName(txtName.getText().toString().trim());
-
-		Log.d(TAG, "Save(): Server.setHost('" + txtHost.getText().toString() + "')");
-		// Server.setHost(txtHost.getText().toString().trim());
-
 		DB.open();
 		if (thisAction == Common.EDIT_SREQ) {
 			if (isModified) {
@@ -238,25 +234,31 @@ public class ServerInfoActivity extends Activity {
 				Server = DB.getAllServers().get(SIdx);
 				Log.i(TAG, "Save(): editServerInfo returned: '" + Long.toString(res) + "'!");
 				Toast.makeText(this, getText(R.string.settings_saved), Toast.LENGTH_SHORT).show();
-			} else {
-				Toast.makeText(this, getText(R.string.settings_not_saved), Toast.LENGTH_SHORT).show();
 			}
 		} else {
 			if(txtPort.getText().equals("") || txtPort.getText().equals(null)) {
 				txtPort.setText(String.valueOf(Common.DEFAULT_PORT));
 			}
+			Log.d(TAG, "Save(): Server.setName('" + txtName.getText().toString() + "')"); // DEBUG
 			Server.setName(txtName.getText().toString().trim());
+			Log.d(TAG, "Save(): Server.setHost('" + txtHost.getText().toString() + "')"); // DEBUG
 			Server.setHost(txtHost.getText().toString().trim());
+			Log.d(TAG, "Save(): Server.setPort('" + txtHost.getText().toString() + "')"); // DEBUG
 			Server.setPort(Integer.valueOf(txtPort.getText().toString().trim()));
+			Log.d(TAG, "Save(): Server.setPass('" + txtHost.getText().toString() + "')"); // DEBUG
 			Server.setPass(txtPass.getText().toString().trim());
+			Log.d(TAG, "Save(): DB.addServer('" + txtHost.getText().toString() + "')"); // DEBUG
 			long res2 = DB.addServer(Server);
 
+			// DEBUG:
 			if (res2 == -4) {
 				Toast.makeText(this, getText(R.string.settings_not_saved), Toast.LENGTH_SHORT).show();
 			} else {
 				Toast.makeText(this, getText(R.string.settings_saved), Toast.LENGTH_SHORT).show();
 			}
-			Log.i(TAG, "Save(): Server added to list! DB.addServer returned: '" + Long.toString(res2) + "'!");
+			// /DEBUG>
+
+			Log.i(TAG, "Save(): Server added to list! DB.addServer returned: '" + Long.toString(res2) + "'!"); // DEBUG
 		}
 		DB.close();
 		Log.i(TAG, "Save(): Settings Saved!");
@@ -266,12 +268,12 @@ public class ServerInfoActivity extends Activity {
 	private boolean ValidateSettings() {
 
 		if (txtHost.getText().toString().trim().equals("") || txtHost.getText().toString().equals(null)) {
-			this.MsgBox("No hostname or IP given; it is required!");
+			this.MsgBox(getString(R.string.no_hostname_given));
 			txtHost.requestFocus();
 			return false;
 		} 
 		if (txtName.getText().toString().trim().equals("") || txtName.getText().toString().equals(null)) {
-			this.MsgBox("No server nickname given; it is required!");
+			this.MsgBox(getString(R.string.no_nickname_given));
 			txtName.requestFocus();
 			return false;
 		} 
@@ -295,10 +297,6 @@ public class ServerInfoActivity extends Activity {
 			++i;
 		}
 		
-		if(txtPort.getText().equals("") || txtPort.getText().equals(null)) {
-			txtPort.setText(String.valueOf(Common.DEFAULT_PORT));
-		}
-		
 		try {
 			if (!Common.isValidPort(txtPort.getText().toString().trim())) {
 				MsgBox(getText(R.string.invalidport_msg_title).toString(), getText(R.string.invalidportrange_msg_body).toString());
@@ -316,7 +314,7 @@ public class ServerInfoActivity extends Activity {
 	}
 
 	private void MsgBox(String msg) {
-		this.MsgBox("Server Settings", msg);
+		this.MsgBox(getText(R.string.server_settings).toString(), msg);
 	}
 	
 	private void MsgBox(String title, String msg) {

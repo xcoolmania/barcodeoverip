@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
-
 import android.util.Log;
 
 public class BoIPClient {
@@ -135,13 +134,13 @@ public class BoIPClient {
 		String result;
         try {
     		this.connect();
-			Log.v(TAG, "***** sendBarcode() - passhash: " + this.pass);
+			Log.v(TAG, "***** sendBarcode() - passhash: " + this.pass); // DEBUG
 			String servermsg = this.pass + Common.DSEP + barcode + Common.SMC;
-        	Log.v(TAG, "***** sendBarcode() - servermsg: " + servermsg);
+			Log.v(TAG, "***** sendBarcode() - servermsg: " + servermsg); // DEBUG
         	this.output.println(servermsg);
         	
 			while ((result = input.readLine().trim()) != null) {
-				Log.i(TAG, "Common.sendBarcode() - Server: " + result);
+				Log.i(TAG, "Common.sendBarcode() - Server: " + result); // DEBUG
 				this.close();
 			    if (result.indexOf(Common.THANKS) > -1) {
 					return Common.OK;
@@ -152,7 +151,7 @@ public class BoIPClient {
 					return Common.NOPE;
 			    }
 			}
-	    	Log.v(TAG, "*** Unknown Result ***  " + result);
+			Log.v(TAG, "*** Unknown Result ***  " + result); // DEBUG
 			return "ERR8";
 		} catch (IOException e) {
 			this.close();

@@ -26,8 +26,18 @@
 	<string name="serverinfo_save">Save</string>
 	<string name="close">Close</string>
     <string name="list_title">BarcodeOverIP - Saved Servers List</string>
-	
-	<!-- Message box and alert dialog strings -->
+    <string name="add_server_title">Add New Server</string>
+    <string name="server_settings_title">Server Settings</string>
+
+	<!-- Menus text and info -->
+	<string name="mnuMainFindServers_title">Find Servers</string>
+	<string name="mnuMainAddServer_title">Add Server</string>
+	<string name="mnuMainAbout_title">About</string>
+	<string name="mnuMainDonate_title">Donate</string>
+	<string name="mnuESDelete_title">Delete</string>
+	<string name="mnuESEdit_title">Edit</string>
+
+	<!-- Messages (Toasts/Msgboxes) text -->
 	<string name="about_msg_title">About BarcodeOverIP</string>
 	<string name="about_msg_body"><b>BarcodeOverIP Client 1.0.1-Beta1</b>\n&#169;2012 - Tyler H. Jones\nProject Website: http://boip.tylerjones.me\n\nWelcome to BarcodeOverIP for Android!\nTo get started you must add a server by pressing \'Menu\' > \'Add Server\'. 
 	    Once you have added one or more servers, to scan a barcode,
@@ -39,16 +49,6 @@
 	</string>	
 	<string name="editservers_msg_title">Edit Servers</string>
 	<string name="editservers_msg_body">Edit servers activity is not done yet! Try again later!</string>
-
-	<!-- Menus text and info -->
-	<string name="mnuMainFindServers_title">Find Servers</string>
-	<string name="mnuMainAddServer_title">Add Server</string>
-	<string name="mnuMainAbout_title">About</string>
-	<string name="mnuMainDonate_title">Donate</string>
-	<string name="mnuESDelete_title">Delete</string>
-	<string name="mnuESEdit_title">Edit</string>
-
-	<!-- Messages (Toasts/Msgboxes) text -->
 	<string name="addserver_msg_body">Enter the new server\'s details and click \'Save Server\' or press the back button to continue.</string>
 	<string name="addserver_msg_title">Add New Server</string>
 	<string name="editserver_msg_body">Change the desired values then click \'Save Server\' or press the back button to continue.</string>
@@ -60,13 +60,24 @@
 	<string name="hostexists_msg_body">The given hostname/IP already exists in the defined servers list!\nDuplicate hostname/IP values are not allowed in the defined servers list\n\nWould you like to fix this conflict? If so, press \'Yes\', otherwise pressing \'No\' will cancel the server configuration and leave all settings untouched.</string>
 	<string name="hostexists_msg_title">Duplicate Hostname/IP!</string>
 	<string name="invalidport_msg_title">Invalid Port Number Given!</string>
-	<string name="invalidportrange_msg_body">The given port does not fall within the range of valid port numbers\nValid Range: Between 1 - 65535</string>
+	<string name="invalidportrange_msg_body">The given port does not fall within the range of valid port numbers\nValid Range: Between 1 &#8211; 65535</string>
 	<string name="invalidportvar_msg_body">The given port is not a valid integer data type!</string>
 	<string name="settings_save_error">Server Settings Save ERROR! (Error -4)</string>	
 	<string name="settings_not_saved">No Server Settings Modified!</string>	
 	<string name="settings_saved">Server Settings Saved!</string>
 	<string name="server_deleted">Server Deleted!</string>
 	<string name="server_not_deleted">Server Delete ERROR!</string>
+	<string name="no_hostname_given">No hostname or IP given; it is required!</string>
+    <string name="no_nickname_given">No nickname given; it is required!</string>
+	<string name="server_settings">Edit Server Settings</string>
+	<string name="barcode_sent_ok">Barcode successfully sent to server!</string>
+	<string name="hmm_try_again">Hmm, that was strange#8230; Try again. (1)</string>
+	<!-- BarcodeScannerActivity Error Messages w/Codes -->
+	<string name="invalid_host_ip_neg1">Invalid Host/IP Address! (-1)</string>
+	<string name="unreachable_ip_neg2">Invalid IP Address! IP must point to a physical, reachable computer!  (-2)</string>
+	<string name="conn_timeout_neg3">Address/Hosst is unreachable! (2500ms Timeout) (-3)</string>
+	<string name="conn_err_neg4">Address/Host is unreachable! (Error Connecting) (-4)</string>
+	
 	
 	<!-- DiscoverServersActivity items -->
 	<string name="DSA_title">Find Active BoIP Servers</string>
