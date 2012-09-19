@@ -117,17 +117,17 @@ public class BarcodeScannerActivity extends Activity {
 			Common.showMsgBox(c, "Wrong Password!",
 				"The password you gave does not match the on on the server. Please change it on your app and press 'Apply Server Settings' and then try again.'");
 		} else if (res.equals("ERR1")) {
-			Toast.makeText(c, "Invalid data and/or request syntax!", 4).show();
+			Toast.makeText(c, "Invalid data and/or request syntax!", Toast.LENGTH_SHORT).show();
 		} else if (res.equals("ERR2")) {
-			Toast.makeText(c, "Server received a blank request.", 4).show();
+			Toast.makeText(c, "Server received a blank request.", Toast.LENGTH_SHORT).show();
 		} else if (res.equals("ERR3")) {
-			Toast.makeText(c, "Invalid data/syntax, could not parse data.", 4).show();
+			Toast.makeText(c, "Invalid data/syntax, could not parse data.", Toast.LENGTH_SHORT).show();
 		} else if (res.equals(Common.NOPE)) {
-			Toast.makeText(c, "Server is not activated!", 4).show();
+			Toast.makeText(c, "Server is not activated!", Toast.LENGTH_SHORT).show();
 		} else if (res.equals(Common.OK)) {
 			return true;
 		} else {
-			Toast.makeText(c, "Error! - " + Common.errorCodes().get(res).toString(), 6).show();
+			Toast.makeText(c, "Error! - " + Common.errorCodes().get(res).toString(), Toast.LENGTH_SHORT).show();
 			Log.v(TAG, "client.Validate returned: " + Common.errorCodes().get(res).toString());
 		}
 		return false;
@@ -146,34 +146,34 @@ public class BarcodeScannerActivity extends Activity {
 			Common.showMsgBox(this, "Wrong Password!",
 				"The password you gave does not match the on on the server. Please change it on your app and press 'Apply Server Settings' and then try again.'");
 		} else if (res.equals("ERR1")) {
-			Toast.makeText(getApplicationContext(), "Invalid data and/or request syntax!", 4).show();
+			Toast.makeText(getApplicationContext(), "Invalid data and/or request syntax!", Toast.LENGTH_SHORT).show();
 		} else if (res.equals("ERR2")) {
-			Toast.makeText(getApplicationContext(), "Invalid data, possible missing data separator.", 4).show();
+			Toast.makeText(getApplicationContext(), "Invalid data, possible missing data separator.", Toast.LENGTH_SHORT).show();
 		} else if (res.equals("ERR3")) {
-			Toast.makeText(getApplicationContext(), "Invalid data/syntax, could not parse data.", 4).show();
+			Toast.makeText(getApplicationContext(), "Invalid data/syntax, could not parse data.", Toast.LENGTH_SHORT).show();
 		} else if (res.equals(Common.NOPE)) {
-			Toast.makeText(getApplicationContext(), "Server is not activated!", 4).show();
+			Toast.makeText(getApplicationContext(), "Server is not activated!", Toast.LENGTH_SHORT).show();
 		} else if (res.equals(Common.OK)) {
 			String res2 = client.sendBarcode(code);
 			if (res2.equals("ERR9")) {
 				Common.showMsgBox(this, "Wrong Password!",
 					"The password you gave does not match the on on the server. Please change it on your app and press 'Apply Server Settings' and then try again.'");
 			} else if (res2.equals("ERR1")) {
-				Toast.makeText(getApplicationContext(), "Invalid data and/or request syntax!", 4).show();
+				Toast.makeText(getApplicationContext(), "Invalid data and/or request syntax!", Toast.LENGTH_SHORT).show();
 			} else if (res2.equals("ERR2")) {
-				Toast.makeText(getApplicationContext(), "Invalid data, possible missing data separator.", 4).show();
+				Toast.makeText(getApplicationContext(), "Invalid data, possible missing data separator.", Toast.LENGTH_SHORT).show();
 			} else if (res.equals("ERR3")) {
-				Toast.makeText(getApplicationContext(), "Invalid data/syntax, could not parse data.", 4).show();
+				Toast.makeText(getApplicationContext(), "Invalid data/syntax, could not parse data.", Toast.LENGTH_SHORT).show();
 			} else if (res2.equals(Common.NOPE)) {
-				Toast.makeText(getApplicationContext(), "Server is not activated!", 4).show();
+				Toast.makeText(getApplicationContext(), "Server is not activated!", Toast.LENGTH_SHORT).show();
 			} else if (res2.equals(Common.OK)) {
 				lv("sendBarcode(): OK");
 			} else {
-				Toast.makeText(this, "Error! - " + Common.errorCodes().get(res2).toString(), 6).show();
+				Toast.makeText(this, "Error! - " + Common.errorCodes().get(res2).toString(), Toast.LENGTH_SHORT).show();
 				lv("client.Validate returned: ", Common.errorCodes().get(res2).toString());
 			}
 		} else {
-			Toast.makeText(this, "Error! - " + Common.errorCodes().get(res).toString(), 6).show();
+			Toast.makeText(this, "Error! - " + Common.errorCodes().get(res).toString(), Toast.LENGTH_SHORT).show();
 			lv("client.Validate returned: ", Common.errorCodes().get(res).toString());
 		}
 	}
@@ -212,21 +212,21 @@ public class BarcodeScannerActivity extends Activity {
 			addr = InetAddress.getByName(s);
 		}
 		catch (UnknownHostException e) {
-			Toast.makeText(c, "Invalid Host/IP Address! (-1)", 10).show();
+			Toast.makeText(c, c.getText(R.string.invalid_host_ip_neg1).toString(), Toast.LENGTH_LONG).show();
 			return null;
 		}
 		if (addr.isLoopbackAddress() || addr.isLinkLocalAddress() || addr.isAnyLocalAddress()) {
-			Toast.makeText(c, "Invalid IP Address! IP must point to a physical, reachable computer!  (-2)", 10).show();
+			Toast.makeText(c, c.getText(R.string.unreachable_ip_neg2).toString(), Toast.LENGTH_LONG).show();
 			return null;
 		}
 		try {
 			if (!addr.isReachable(2500)) {
-				Toast.makeText(c, "Address/Hosst is unreachable! (2500ms Timeout) (-3)", 10).show();
+				Toast.makeText(c, c.getText(R.string.conn_timeout_neg3).toString(), Toast.LENGTH_LONG).show();
 				return null;
 			}
 		}
 		catch (IOException e1) {
-			Toast.makeText(c, "Address/Host is unreachable! (Error Connecting) (-4)", 10).show();
+			Toast.makeText(c, c.getText(R.string.conn_err_neg4).toString(), Toast.LENGTH_LONG).show();
 			return null;
 		}
 		
@@ -241,7 +241,7 @@ public class BarcodeScannerActivity extends Activity {
 			addr = InetAddress.getByName(str);
 		}
 		catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
+			// TODO: Auto-generated catch block
 			e.printStackTrace();
 			return false;
 		}
@@ -292,12 +292,12 @@ public class BarcodeScannerActivity extends Activity {
 				if (resultCode == RESULT_OK) {
 					String barcode = result.getContents().toString();
 					this.SendBarcode(CurServer, barcode);
-					Toast.makeText(this, "Barcode successfully sent to server!", 5).show();
+					Toast.makeText(this, getString(R.string.barcode_sent_ok), Toast.LENGTH_SHORT).show();
 					finish();
 				}
 			}
 			catch (NullPointerException ne) {
-				Toast.makeText(this, "Hmm that did't work.. Try again. (1)", 10).show();
+				Toast.makeText(this, getString(R.string.hmm_try_again), Toast.LENGTH_LONG).show();
 				Log.e(TAG, ne.toString());
 				finish();
 			}

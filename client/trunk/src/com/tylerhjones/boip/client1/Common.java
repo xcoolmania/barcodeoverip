@@ -178,6 +178,8 @@ public class Common {
 	}
 
 	public static boolean isValidPort(String port) {
+		// If the port is left blank/empty we assume the default value was intended
+		if (port.equals(null) || port.trim().equals("")) { return true; }
 		try {
 			int p = Integer.parseInt(port);
 			if(p < 1 || p > 65535 ) { throw new NumberFormatException(); }
