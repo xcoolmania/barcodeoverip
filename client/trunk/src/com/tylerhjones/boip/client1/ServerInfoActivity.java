@@ -196,38 +196,13 @@ public class ServerInfoActivity extends Activity {
 	 
 	private int Save() {
 		
-		// if (txtPort.getText().equals("") || txtPort.getText().equals(null)) {
-		// txtPort.setText(String.valueOf(Common.DEFAULT_PORT));
-		// }
-		
 		if (!ValidateSettings()) {
 			Log.i(TAG, "Save(): Settings validation FAILED!");
 			return 0;
 		}
 
-		if (txtPass.getText().toString().trim().equals("") || txtPass.getText().toString() == null) {
-			Server.setPass(Common.DEFAULT_PASS);
-		} else {
-			Server.setPass(txtPass.getText().toString().trim());
-		}
-		try {
-			if(Common.isValidPort(txtPort.getText().toString().trim())) {
-				int p = Integer.valueOf(txtPort.getText().toString().trim());
-				Server.setPort(p);
-				Log.d(TAG, "Save(): Port set to: " + p);
-			} else {
-				int p = Integer.valueOf(txtPort.getText().toString().trim());
-				Log.d(TAG, "Save(): Port is an integer but in the wrong range: " + p);
-				Server.setPort(Common.DEFAULT_PORT);
-			}
-		}
-		catch (NumberFormatException e) {
-			Log.w(TAG, "Save(): Invalid port! Using default port: 41788");
-			Server.setPort(Common.DEFAULT_PORT);
-		}
-
 		DB.open();
-		if (thisAction == Common.EDIT_SREQ) {
+		if (thisAction == Common.EDIT_SREQ) { // If editing a server, just update the DB
 			if (isModified) {
 				long res = DB.editServerInfo(Server.getName(), txtName.getText().toString().trim(), txtHost.getText().toString().trim(),
 				String.valueOf(Server.getPort()), Server.getPass());
@@ -235,20 +210,18 @@ public class ServerInfoActivity extends Activity {
 				Log.i(TAG, "Save(): editServerInfo returned: '" + Long.toString(res) + "'!");
 				Toast.makeText(this, getText(R.string.settings_saved), Toast.LENGTH_SHORT).show();
 			}
-		} else {
-			if(txtPort.getText().equals("") || txtPort.getText().equals(null)) {
-				txtPort.setText(String.valueOf(Common.DEFAULT_PORT));
-			}
+		} else { // Otherwise if adding a new server we append each value separately.
 			Log.d(TAG, "Save(): Server.setName('" + txtName.getText().toString() + "')"); // DEBUG
 			Server.setName(txtName.getText().toString().trim());
 			Log.d(TAG, "Save(): Server.setHost('" + txtHost.getText().toString() + "')"); // DEBUG
 			Server.setHost(txtHost.getText().toString().trim());
-			Log.d(TAG, "Save(): Server.setPort('" + txtHost.getText().toString() + "')"); // DEBUG
-			Server.setPort(Integer.valueOf(txtPort.getText().toString().trim()));
-			Log.d(TAG, "Save(): Server.setPass('" + txtHost.getText().toString() + "')"); // DEBUG
+			Log.d(TAG, "Save(): Server.setPort('" + txtPort.getText().toString() + "')"); // DEBUG
+			Server.setPort(txtPort.getText().toString().trim());
+			Log.d(TAG, "Save(): Server.setPass('" + txtPass.getText().toString() + "')"); // DEBUG
 			Server.setPass(txtPass.getText().toString().trim());
-			Log.d(TAG, "Save(): DB.addServer('" + txtHost.getText().toString() + "')"); // DEBUG
+			Log.d(TAG, "Save(): DB.addServer(Server)"); // DEBUG
 			long res2 = DB.addServer(Server);
+			Log.v(TAG, "Save(): The new server was added to the DB successfully!");
 
 			// DEBUG:
 			if (res2 == -4) {
