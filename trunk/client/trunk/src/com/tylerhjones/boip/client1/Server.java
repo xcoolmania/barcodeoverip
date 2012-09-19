@@ -29,6 +29,8 @@ import android.util.Log;
 
 public class Server {
 	
+	private static final String TAG = "Server Class";
+
 	// Private class property variables
 	private String Name = Common.DEFAULT_NAME;
 	private String Host = Common.DEFAULT_HOST;
@@ -78,16 +80,31 @@ public class Server {
 	}
 	
 	public void setPort(int Port) {
-		Log.d("Server Class", "setPort(): Port is attempting to set to: " + String.valueOf(Port));
+		Log.d(TAG, "setPort(Integer): Port is attempting to set to: " + String.valueOf(Port)); // DEBUG
 		if (Port < 1 || Port > 65535) {
 			this.Port = Common.DEFAULT_PORT;
 		} else {
 			this.Port = Port;
 		}
-		Log.d("Server Class", "setPort(): Port was ACTUALLY set to: " + String.valueOf(this.Port));
-		return;
+		Log.d(TAG, "setPort(Integer): Port was ACTUALLY set to: " + String.valueOf(this.Port)); // DEBUG
 	}
 	
+	public void setPort(String sPort) {
+		Log.d(TAG, "setPort(String): Port is attempting to set to: " + sPort); // DEBUG
+		// if (sPort.trim().equals("") || sPort == null) {
+		// this.Port = Common.DEFAULT_PORT;
+		// } else {
+		try {
+			this.Port = Integer.valueOf(sPort.trim());
+		}
+		catch (NumberFormatException e) {
+			Log.w(TAG, "setPort(String): The value given is not a number, reverting to default port value.");
+			this.Port = Common.DEFAULT_PORT;
+		}
+		// }
+		Log.d(TAG, "setPort(String): Port was ACTUALLY set to: " + String.valueOf(this.Port)); // DEBUG
+	}
+
 	/** Server index properties ************************************ */
 	public int getIndex() {
 		return this.Index;
@@ -129,7 +146,7 @@ public class Server {
 
 	public String getPassHash() { // Get the SHA1 hash of the server password
 		try {
-			if (this.Pass.trim().toUpperCase().equals("NONE") || this.Pass.trim().equals("")) {
+			if (this.Pass.trim().toUpperCase().equals(Common.DEFAULT_PASS) || this.Pass.trim().equals("")) {
 				return Common.DEFAULT_PASS;
 			} else {
 				return Common.SHA1(this.Pass);
