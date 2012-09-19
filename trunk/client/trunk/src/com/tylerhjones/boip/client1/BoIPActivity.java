@@ -32,13 +32,16 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -63,6 +66,7 @@ public class BoIPActivity extends ListActivity {
 	private ServerAdapter theAdapter;
 	private Database DB = new Database(this);
 	private Server CurServer = new Server();
+	private BoIPService Svc;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -116,8 +120,31 @@ public class BoIPActivity extends ListActivity {
 				Common.showMsgBox(this, "No Wifi Connection", "No active Wifi connection was found! Configuring BoIP is difficult when the target server is behind a router/NAT or on a separate network.\n\nIn other words, to make things MUCH easier it is STRONGLY reccomended that you connect to the same network the server is on using Wifi.");
 			}
 		}
+		doBindService();
 	}
 	
+	private ServiceConnection mConnection = new ServiceConnection() {
+		
+		public void onServiceConnected(ComponentName className, IBinder binder) {
+			Svc = ((BoIPService.MyBinder) binder).getService();
+			Toast.makeText(BoIPActivity.this, "Connected", Toast.LENGTH_SHORT).show();
+		}
+		
+		public void onServiceDisconnected(ComponentName className) {
+			Svc = null;
+		}
+	};
+	
+	void doBindService() {
+		bindService(new Intent(this, BoIPService.class), mConnection, Context.BIND_AUTO_CREATE);
+	}
+	
+	public void showServiceData(View view) {
+		if (Svc != null) {
+			
+		}
+	}
+
 	/*******************************************************************************************************/
 	/** Event handler functions ************************************************************************** */
 
