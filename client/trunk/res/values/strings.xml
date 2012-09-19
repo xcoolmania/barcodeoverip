@@ -18,6 +18,7 @@
 	<string name="developer_site">http://tylerjones.me</string>
 	<string name="author">Tyler H. Jones</string>
 	<string name="author_email">me@tylerjones.me</string>
+	<string name="service_name">BoIP Service</string>
 	
 	<!-- ServerInfoActiviy items -->
 	<string name="server_info">Add/Modify Server</string>
