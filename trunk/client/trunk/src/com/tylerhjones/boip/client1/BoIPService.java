@@ -37,18 +37,21 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import android.app.Service;
+import android.app.Activity;
+import android.app.IntentService;
 import android.content.Intent;
-import android.os.Binder;
-import android.os.IBinder;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Message;
+import android.os.Messenger;
 import android.util.Log;
 
 
-public class BoIPService extends Service {
+public class BoIPService extends IntentService {
 	
 	private static final String TAG = "BoIPService";	// Tag name for logging (function name usually)
-	
-	private final IBinder mBinder = new MyBinder();
+	private int result = Activity.RESULT_CANCELED;
+
 	// -----------------------------------------------------------------------------------------
 	// --- Settings and general variables declarations -----------------------------------------
 	
@@ -65,28 +68,39 @@ public class BoIPService extends Service {
 	// This stores the result of connection attempt and tells us if me need to re-auth with the server
 	public boolean CanConnect = false;
 	
-	public BoIPService(Server s) {
-		this.port = s.getPort();
-		this.host = s.getHost();
-		this.pass = s.getPassHash();
+
+	public BoIPService() {
+		super("BoIPService");
 	}
 	
 	@Override
-	public int onStartCommand(Intent intent, int flags, int startId) {
-		return Service.START_NOT_STICKY;
-	}
-	
-	@Override
-	public IBinder onBind(Intent arg0) {
-		return mBinder;
-	}
-	
-	public class MyBinder extends Binder {
+	protected void onHandleIntent(Intent intent) {
+		Uri data = intent.getData();
+	    String hostname = intent.getStringExtra("hostname");
+	    String port = intent.getStringExtra("port");
+	    String passwd = intent.getStringExtra("passwd");
+		String action = intent.getStringExtra("action");
+		String datastr = intent.getStringExtra("data");
+		String netresult = "";
 		
-		BoIPService getService() {
-			return BoIPService.this;
+		Bundle extras = intent.getExtras();
+		if (extras != null) {
+			Messenger messenger = (Messenger) extras.get("MESSENGER");
+			Message msg = Message.obtain();
+			
+			msg.setData(netresult);
+			msg.
+			try {
+				messenger.send(msg);
+				messenger.obj()
+			}
+			catch (android.os.RemoteException e1) {
+				Log.w(getClass().getName(), "Exception sending message", e1);
+			}
+			
 		}
 	}
+
 
 	// Connect to a server given the host/IP and port number.
 	public String connect() {
@@ -191,6 +205,5 @@ public class BoIPService extends Service {
 			return "ERR99";
 		}
 	}
-
 }
 

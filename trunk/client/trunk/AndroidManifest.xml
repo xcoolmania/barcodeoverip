@@ -72,11 +72,7 @@
         android:normalScreens="true"
         android:smallScreens="true" />
         
-        <service
-  			android:name="BoIPService"
-  			android:process=":boip_process" 
-  			android:icon="@drawable/ic_launcher"
-  			android:label="@string/service_name" >
+        <service android:name="BoIPService" >
 		</service> 
 		
     </application>     
