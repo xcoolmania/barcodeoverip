@@ -114,7 +114,7 @@ public class BoIPWidgetProvider extends AppWidgetProvider {
 					} else {
 						Intent scanner = new Intent();
 						scanner.setClassName("com.tylerhjones.boip.client1", "com.tylerhjones.boip.client1.BarcodeScannerActivity");
-						scanner.putExtra(BarcodeScannerActivity.SERVER_ID, SvrID);
+						// scanner.putExtra(BarcodeScannerActivity.SERVER_ID, SvrID);
 						c.startActivity(scanner);
 					}
 				}
