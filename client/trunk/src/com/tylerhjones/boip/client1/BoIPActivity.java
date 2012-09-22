@@ -30,18 +30,19 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ListActivity;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.IBinder;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Messenger;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -66,7 +67,8 @@ public class BoIPActivity extends ListActivity {
 	private ServerAdapter theAdapter;
 	private Database DB = new Database(this);
 	private Server CurServer = new Server();
-	private BoIPService Svc;
+	private final int ACTION_VALIDATE = 1;
+	private final int ACTION_SEND = 2;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -96,10 +98,7 @@ public class BoIPActivity extends ListActivity {
 				sEdit = sVal.edit();
 				sEdit.putInt(Common.PREF_CURSRV, CurServer.getIndex());
 				sEdit.commit();
-				IntentIntegrator integrator = new IntentIntegrator(BoIPActivity.this);
-				if (ValidateServer(Servers.get(position))) {
-					integrator.initiateScan(IntentIntegrator.ONE_D_CODE_TYPES);
-				}
+				ValidateServer();
 			}
 		});
 		
@@ -110,7 +109,6 @@ public class BoIPActivity extends ListActivity {
 		//InputStream is = new BufferedInputStream(new FileInputStream();
 		// Drawable.createFromResourceStream(R.drawable.ic_add, this.getResources().get,this.getResources().openRawResource(R.drawable.ic_add)));
 
-
 		if (!Common.isNetworked(this)) {
 			Common.showMsgBox(this, "No Network",
 				"No active network connection was found! You must be connected to a network to use BarcodeOverIP!\n\nPress 'OK' to quit BarcodeOverIP Client...");
@@ -120,34 +118,46 @@ public class BoIPActivity extends ListActivity {
 				Common.showMsgBox(this, "No Wifi Connection", "No active Wifi connection was found! Configuring BoIP is difficult when the target server is behind a router/NAT or on a separate network.\n\nIn other words, to make things MUCH easier it is STRONGLY reccomended that you connect to the same network the server is on using Wifi.");
 			}
 		}
-		doBindService();
 	}
 	
-	private ServiceConnection mConnection = new ServiceConnection() {
-		
-		public void onServiceConnected(ComponentName className, IBinder binder) {
-			Svc = ((BoIPService.MyBinder) binder).getService();
-			Toast.makeText(BoIPActivity.this, "Connected", Toast.LENGTH_SHORT).show();
-		}
-		
-		public void onServiceDisconnected(ComponentName className) {
-			Svc = null;
-		}
-	};
-	
-	void doBindService() {
-		bindService(new Intent(this, BoIPService.class), mConnection, Context.BIND_AUTO_CREATE);
-	}
-	
-	public void showServiceData(View view) {
-		if (Svc != null) {
-			
-		}
-	}
-
 	/*******************************************************************************************************/
 	/** Event handler functions ************************************************************************** */
 
+	private Handler ServiceHandler = new Handler() {
+		
+		@SuppressLint("HandlerLeak")
+		public void handleMessage(Message message) {
+			Bundle result = message.getData();
+
+			if (result.getString("RESULT").equals("NONE")) {
+				Log.e(TAG, "Service gave result: NONE");
+				return;
+			} else if (result.getString("RESULT").equals("ERR_Intent")) {
+				Log.e(TAG, "Service returned an intent error.");
+				return;
+			} else if (result.getString("RESULT").equals("ERR_Index")) {
+				Log.e(TAG, "Service returned an index error.");
+				return;
+			}
+			
+			if (message.arg1 == RESULT_OK) { 
+				if(result.getInt("ACTION", -1) == ACTION_VALIDATE) {
+					if (ValidateResult(result.getString("RESULT"))) {
+						IntentIntegrator integrator = new IntentIntegrator(BoIPActivity.this);
+						integrator.initiateScan(IntentIntegrator.ONE_D_CODE_TYPES);
+					}
+				} else if(result.getInt("ACTION", -1) == ACTION_SEND) {
+					SendBarcodeResult(result.getString("RESULT"));
+				} else {
+					Log.e(TAG, "ServiceHandler: Service intent didn't return valid action: " + String.valueOf(result.getInt("ACTION", -1)));
+				}
+			} else {
+				Log.e(TAG, "ServiceHandler: Service intent didn't return RESULT_OK: " + String.valueOf(message.arg1));
+			}
+
+		};
+	};
+	
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		if (v.getId() == getListView().getId()) {
@@ -265,21 +275,30 @@ public class BoIPActivity extends ListActivity {
 	/******************************************************************************************/
 	/** Send Barcode to Server ****************************************************************/
 
-	public boolean ValidateServer(Server s) {
-		String ipaddr = CheckInetAddress(s.getHost());
-		if(ipaddr == null) { return false; }
-		Server ns = new Server(s.getName(), ipaddr, s.getPass(), s.getPort(), s.getIndex());
+	public void ValidateServer() {
+		Log.v(TAG, "ValidateServer(Server s) called!");
+	    Intent intent = new Intent(this, BoIPService.class);
+	    Messenger messenger = new Messenger(ServiceHandler);
 		
-		Log.v(TAG, "ValidateServer called!");
-		final BoIPClient client = new BoIPClient(ns);
-		String res = client.Validate();
+		String ipaddr = CheckInetAddress(CurServer.getHost());
+		if (ipaddr == null) { return; }
+		Log.v(TAG, "ValidateServer(Server s): Starting BoIPService...");
+	    intent.putExtra("MESSENGER", messenger);
+		intent.putExtra("ACTION", ACTION_VALIDATE);
+		intent.putExtra("INDEX", CurServer.getIndex());
+		startService(intent);
+	}
+	
+	public boolean ValidateResult(String res) {
+		Log.v(TAG, "ValidateResult(String res) called!");
+		
 		if (res.equals("ERR9")) {
 			Common.showMsgBox(this, "Wrong Password!",
 				"The password you gave does not match the password set on the server. Verify that the passwords match on the server and client then try again.'");
 		} else if (res.equals("ERR1")) {
 			Toast.makeText(this, "Invalid data and/or request syntax!", Toast.LENGTH_SHORT).show();
 		} else if (res.equals("ERR2")) {
-			Toast.makeText(this, "Server received a blank request.", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, "Invalid data, possible missing data separator.", Toast.LENGTH_SHORT).show();
 		} else if (res.equals("ERR3")) {
 			Toast.makeText(this, "Invalid data/syntax, could not parse data.", Toast.LENGTH_SHORT).show();
 		} else if (res.equals(Common.NOPE)) {
@@ -293,22 +312,27 @@ public class BoIPActivity extends ListActivity {
 		return false;
 	}
 
-	public void SendBarcode(Server s, final String code) {
-		String ipaddr = CheckInetAddress(s.getHost());
-		if(ipaddr == null) { return; }
-		Server ns = new Server(s.getName(), ipaddr, s.getPass(), s.getPort(), s.getIndex());
-		
-		lv("SendBarcode called! Barcode: '" + code + "'");
-		lv(s.getName());
-		final BoIPClient client = new BoIPClient(ns);
-		String res = client.Validate();
+	public void SendBarcode(final String code) {
+		Log.v(TAG, "SendBarcode(Server s, String code) called!");
+		Intent intent = new Intent(this, BoIPService.class);
+		Messenger messenger = new Messenger(ServiceHandler);
+
+		String ipaddr = CheckInetAddress(CurServer.getHost());
+		if (ipaddr == null) { return; }
+		Log.v(TAG, "SendBarcode(Server s, String code): Starting BoIPService...");
+		intent.putExtra("MESSENGER", messenger);
+		intent.putExtra("ACTION", ACTION_SEND);
+		intent.putExtra("INDEX", CurServer.getIndex());
+		startService(intent);
+	}
+	
+	public void SendBarcodeResult(String res) {
+		lv("SendBarcodeResult(String res) called!");
 		if (res.equals("ERR9")) {
-			Common.showMsgBox(
-				this,
-				"Wrong Password!",
+			Common.showMsgBox(this, "Wrong Password!",
 				"The password you gave does not match the on on the server. Please change it on your app and press 'Apply Server Settings' and then try again.'");
 		} else if (res.equals("ERR1")) {
-			Toast.makeText(getApplicationContext(), "Invalid data and/or request syntax!", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, "Invalid data and/or request syntax!", Toast.LENGTH_SHORT).show();
 		} else if (res.equals("ERR2")) {
 			Toast.makeText(getApplicationContext(), "Invalid data, possible missing data separator.", Toast.LENGTH_SHORT).show();
 		} else if (res.equals("ERR3")) {
@@ -316,32 +340,13 @@ public class BoIPActivity extends ListActivity {
 		} else if (res.equals(Common.NOPE)) {
 			Toast.makeText(getApplicationContext(), "Server is not activated!", Toast.LENGTH_SHORT).show();
 		} else if (res.equals(Common.OK)) {
-			String res2 = client.sendBarcode(code);
-			if (res2.equals("ERR9")) {
-				Common.showMsgBox(
-					this,
-					"Wrong Password!",
-					"The password you gave does not match the on on the server. Please change it on your app and press 'Apply Server Settings' and then try again.'");
-			} else if (res2.equals("ERR1")) {
-				Toast.makeText(getApplicationContext(), "Invalid data and/or request syntax!", Toast.LENGTH_SHORT).show();
-			} else if (res2.equals("ERR2")) {
-				Toast.makeText(getApplicationContext(), "Invalid data, possible missing data separator.", Toast.LENGTH_SHORT).show();
-			} else if (res.equals("ERR3")) {
-				Toast.makeText(getApplicationContext(), "Invalid data/syntax, could not parse data.", Toast.LENGTH_SHORT).show();
-			} else if (res2.equals(Common.NOPE)) {
-				Toast.makeText(getApplicationContext(), "Server is not activated!", Toast.LENGTH_SHORT).show();
-			} else if (res2.equals(Common.OK)) {
-				lv("sendBarcode(): All OK");
-			} else {
-				Toast.makeText(this, "Error! - " + Common.errorCodes().get(res2).toString(), Toast.LENGTH_SHORT).show();
-				lv("client.Validate returned: ", Common.errorCodes().get(res2).toString());
-			}
+			lv("SendBarcodeResult(String res): All OK");
 		} else {
 			Toast.makeText(this, "Error! - " + Common.errorCodes().get(res).toString(), Toast.LENGTH_SHORT).show();
 			lv("client.Validate returned: ", Common.errorCodes().get(res).toString());
 		}
 	}
-	
+
 	/******************************************************************************************/
 	/** Validate IPs/Hostnames ****************************************************************/
 	
@@ -486,7 +491,7 @@ public class BoIPActivity extends ListActivity {
 			try {
 				if (resultCode == RESULT_OK) {
 					String barcode = result.getContents().toString();
-					this.SendBarcode(CurServer, barcode);
+					this.SendBarcode(barcode);
 					Toast.makeText(this, "Barcode successfully sent to server!", Toast.LENGTH_SHORT).show();					
 				}
 			} catch(NullPointerException ne) {

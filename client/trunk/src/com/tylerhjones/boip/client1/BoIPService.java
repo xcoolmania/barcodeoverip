@@ -40,7 +40,6 @@ import java.net.UnknownHostException;
 import android.app.Activity;
 import android.app.IntentService;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
@@ -50,15 +49,16 @@ import android.util.Log;
 public class BoIPService extends IntentService {
 	
 	private static final String TAG = "BoIPService";	// Tag name for logging (function name usually)
-	private int result = Activity.RESULT_CANCELED;
 
 	// -----------------------------------------------------------------------------------------
 	// --- Settings and general variables declarations -----------------------------------------
 	
 	// Settings variables
-	private int port = Common.DEFAULT_PORT;
-	private String host = Common.DEFAULT_HOST;
-	private String pass = Common.DEFAULT_PASS;
+	private Database DB = new Database(this);
+	private Server CurServer = new Server();
+	private final int VALIDATE = 1;
+	private final int SEND = 2;
+	private int intResult = Activity.RESULT_CANCELED;
 	
 	// Socket and socket data variables.
 	private Socket sock; // Network Socket object
@@ -75,49 +75,80 @@ public class BoIPService extends IntentService {
 	
 	@Override
 	protected void onHandleIntent(Intent intent) {
-		Uri data = intent.getData();
-	    String hostname = intent.getStringExtra("hostname");
-	    String port = intent.getStringExtra("port");
-	    String passwd = intent.getStringExtra("passwd");
-		String action = intent.getStringExtra("action");
-		String datastr = intent.getStringExtra("data");
-		String netresult = "";
+		int sindex = intent.getIntExtra("INDEX", -1);
+		int action = intent.getIntExtra("ACTION", -1);
+		String result = "NONE";
 		
+		this.CurServer = this.getServer(sindex);
+
+		if (action == VALIDATE && sindex >= 0) {
+			result = this.Validate();
+			this.intResult = Activity.RESULT_OK;
+		} else if (action == SEND && sindex >= 0) {
+			result = this.sendBarcode(intent.getStringExtra("BARCODE").toString());
+			this.intResult = Activity.RESULT_OK;
+		} else {
+			if (sindex < 0) {
+				Log.e(TAG, "Negative index value!");
+				result = "ERR_Index";
+			} else {
+				Log.e(TAG, "Invalid intent action! Given: " + action);
+				result = "ERR_Intent";
+			}
+		}
+		
+		// Send the results of the service action back to the parent activity via a messenger object
 		Bundle extras = intent.getExtras();
 		if (extras != null) {
 			Messenger messenger = (Messenger) extras.get("MESSENGER");
 			Message msg = Message.obtain();
-			
-			msg.setData(netresult);
-			msg.
+			Bundle bundle = new Bundle();
+			bundle.putInt("INDEX", sindex);
+			bundle.putString("RESULT", result);
+			bundle.putInt("ACTION", action);
+			msg.arg1 = this.intResult;
+			msg.setData(bundle);
 			try {
 				messenger.send(msg);
-				messenger.obj()
 			}
 			catch (android.os.RemoteException e1) {
-				Log.w(getClass().getName(), "Exception sending message", e1);
+				Log.w(getClass().getName(), "Exception sending message object", e1);
 			}
-			
 		}
 	}
-
+	
+	// Get the target server object from the DB given the server index
+	private Server getServer(int i) {
+		Server s = new Server();
+		DB.open();
+		try {
+			s = DB.getAllServers().get(i);
+		}
+		catch (Exception e) {
+			DB.close();
+			Log.e(TAG, "getServer(int): Exception getting server object using index.");
+			return null;
+		}
+		DB.close();
+		return s;
+	}
 
 	// Connect to a server given the host/IP and port number.
 	public String connect() {
 		Log.i(TAG, "connect() - Attempting to connect to the server...");
 		try {
-			sock = new Socket(host, port);
+			sock = new Socket(CurServer.getHost(), CurServer.getPort());
 			Log.i(TAG, "connect() - Connection with server is established");
 			input = new DataInputStream(sock.getInputStream());
 			output = new PrintStream(sock.getOutputStream());
 			return Common.OK;
 		}
 		catch (UnknownHostException e) {
-			Log.e(TAG, "connect() - Hostname not found(or unknown): " + host + ": " + e);
+			Log.e(TAG, "connect() - Hostname not found(or unknown): " + CurServer.getHost() + ": " + e);
 			return "ERR100";
 		}
 		catch (IOException e) {
-			Log.e(TAG, "connect() - Cannot connect to " + host + " on port " + port + " ---- " + e);
+			Log.e(TAG, "connect() - Cannot connect to " + CurServer.getHost() + " on port " + CurServer.getPort() + " ---- " + e);
 			return "ERR101";
 		}
 	}
@@ -142,7 +173,7 @@ public class BoIPService extends IntentService {
 		try {
 			String res = this.connect();
 			if (!res.equals(Common.OK)) { return res; }
-			this.output.println(Common.CHECK + Common.DSEP + this.pass + Common.SMC); // Send a Common.DCHECK command to the server
+			this.output.println(Common.CHECK + Common.DSEP + this.CurServer.getPassHash() + Common.SMC); // Send a Common.DCHECK command to the server
 			
 			String result;
 			while ((result = input.readLine().trim()) != null) {
@@ -179,8 +210,8 @@ public class BoIPService extends IntentService {
 		String result;
 		try {
 			this.connect();
-			Log.v(TAG, "***** sendBarcode() - passhash: " + this.pass); // DEBUG
-			String servermsg = this.pass + Common.DSEP + barcode + Common.SMC;
+			Log.v(TAG, "***** sendBarcode() - passhash: " + this.CurServer.getPassHash()); // DEBUG
+			String servermsg = this.CurServer.getPassHash() + Common.DSEP + barcode + Common.SMC;
 			Log.v(TAG, "***** sendBarcode() - servermsg: " + servermsg); // DEBUG
 			this.output.println(servermsg);
 			
