@@ -35,6 +35,7 @@ package com.tylerhjones.boip.client1;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import android.app.Activity;
@@ -44,6 +45,7 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.util.Log;
+import android.widget.Toast;
 
 
 public class BoIPService extends IntentService {
@@ -170,6 +172,9 @@ public class BoIPService extends IntentService {
 	// Common.DCHECK if server is up and if we are authorized and if you password is correct.
 	public String Validate() {
 		Log.i(TAG, "Common.Validate() - Test the server settings...");
+		
+		String ipaddr = CheckInetAddress(CurServer.getHost());
+		if (ipaddr == null) { return "ERR_InvalidIP"; }
 		try {
 			String res = this.connect();
 			if (!res.equals(Common.OK)) { return res; }
@@ -235,6 +240,57 @@ public class BoIPService extends IntentService {
 			e.printStackTrace();
 			return "ERR99";
 		}
+	}
+	
+	/******************************************************************************************/
+	/** Validate IPs/Hostnames ****************************************************************/
+	
+	// This function will do the following:
+	// -Get the IP address from a hostname
+	// -Check if an IP/Host is reachable
+	// -Check if an IP/host is a loopback
+	// -Check if an IP is a valid IP address
+	
+	public String CheckInetAddress(String s) {
+		InetAddress addr;
+		
+		try {
+			addr = InetAddress.getByName(s);
+		}
+		catch (UnknownHostException e) {
+			Toast.makeText(this, "Invalid Hostname/IP Address! (-1)", Toast.LENGTH_LONG).show();
+			return null;
+		}
+		if (addr.isLoopbackAddress() || addr.isLinkLocalAddress() || addr.isAnyLocalAddress()) {
+			Toast.makeText(this, "Invalid IP Address! IP must point to a physical, reachable computer!  (-2)", Toast.LENGTH_LONG).show();
+			return null;
+		}
+		try {
+			if (!addr.isReachable(2500)) {
+				Toast.makeText(this, "Address/Hosst is unreachable! (2500ms Timeout) (-3)", Toast.LENGTH_LONG).show();
+				return null;
+			}
+		}
+		catch (IOException e1) {
+			Toast.makeText(this, "Address/Host is unreachable! (Error Connecting) (-4)", Toast.LENGTH_LONG).show();
+			return null;
+		}
+		
+		return addr.getHostAddress();
+	}
+	
+	public boolean IsSiteLocalIP(String s) {
+		String str = CheckInetAddress(s);
+		if (str == null) { return false; }
+		InetAddress addr = null;
+		try {
+			addr = InetAddress.getByName(str);
+		}
+		catch (UnknownHostException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return addr.isSiteLocalAddress();
 	}
 }
 

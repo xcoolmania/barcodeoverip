@@ -23,29 +23,13 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".DiscoverServersActivity">
-            android:label="@string/findservers_title"
+            android:name=".ServerInfoActivity"       
+            android:label="@string/server_info">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ServerInfoActivity">        
-            android:label="@string/server_info"
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-        <activity 
-            android:name=".BarcodeScannerActivity"
-            android:label="@string/scanner_activity">
-    		<intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-		</activity>
         <activity 
             android:name=".BoIPWidgetConfigure"
     		android:label="@string/widget_config_title">

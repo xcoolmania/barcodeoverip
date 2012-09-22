@@ -26,9 +26,6 @@
 
 package com.tylerhjones.boip.client1;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -69,6 +66,47 @@ public class BoIPActivity extends ListActivity {
 	private Server CurServer = new Server();
 	private final int ACTION_VALIDATE = 1;
 	private final int ACTION_SEND = 2;
+
+	/*******************************************************************************************************/
+	/** Event handler functions ************************************************************************** */
+	
+	private Handler ServiceHandler = new Handler() {
+		
+		@SuppressLint("HandlerLeak")
+		public void handleMessage(Message message) {
+			Bundle result = message.getData();
+			
+			if (result.getString("RESULT").equals("NONE")) {
+				Log.e(TAG, "Service gave result: NONE");
+				return;
+			} else if (result.getString("RESULT").equals("ERR_Intent")) {
+				Log.e(TAG, "Service returned an intent error.");
+				return;
+			} else if (result.getString("RESULT").equals("ERR_Index")) {
+				Log.e(TAG, "Service returned an index error.");
+				return;
+			} else if (result.getString("RESULT").equals("ERR_InvalidIP")) {
+				Log.e(TAG, "Service returned an invalid IP error.");
+				return;
+			}
+			
+			if (message.arg1 == RESULT_OK) {
+				if (result.getInt("ACTION", -1) == ACTION_VALIDATE) {
+					if (ValidateResult(result.getString("RESULT"))) {
+						IntentIntegrator integrator = new IntentIntegrator(BoIPActivity.this);
+						integrator.initiateScan(IntentIntegrator.ONE_D_CODE_TYPES);
+					}
+				} else if (result.getInt("ACTION", -1) == ACTION_SEND) {
+					SendBarcodeResult(result.getString("RESULT"));
+				} else {
+					Log.e(TAG, "ServiceHandler: Service intent didn't return valid action: " + String.valueOf(result.getInt("ACTION", -1)));
+				}
+			} else {
+				Log.e(TAG, "ServiceHandler: Service intent didn't return RESULT_OK: " + String.valueOf(message.arg1));
+			}
+			
+		};
+	};
 
 	/** Called when the activity is first created. */
 	@Override
@@ -119,44 +157,6 @@ public class BoIPActivity extends ListActivity {
 			}
 		}
 	}
-	
-	/*******************************************************************************************************/
-	/** Event handler functions ************************************************************************** */
-
-	private Handler ServiceHandler = new Handler() {
-		
-		@SuppressLint("HandlerLeak")
-		public void handleMessage(Message message) {
-			Bundle result = message.getData();
-
-			if (result.getString("RESULT").equals("NONE")) {
-				Log.e(TAG, "Service gave result: NONE");
-				return;
-			} else if (result.getString("RESULT").equals("ERR_Intent")) {
-				Log.e(TAG, "Service returned an intent error.");
-				return;
-			} else if (result.getString("RESULT").equals("ERR_Index")) {
-				Log.e(TAG, "Service returned an index error.");
-				return;
-			}
-			
-			if (message.arg1 == RESULT_OK) { 
-				if(result.getInt("ACTION", -1) == ACTION_VALIDATE) {
-					if (ValidateResult(result.getString("RESULT"))) {
-						IntentIntegrator integrator = new IntentIntegrator(BoIPActivity.this);
-						integrator.initiateScan(IntentIntegrator.ONE_D_CODE_TYPES);
-					}
-				} else if(result.getInt("ACTION", -1) == ACTION_SEND) {
-					SendBarcodeResult(result.getString("RESULT"));
-				} else {
-					Log.e(TAG, "ServiceHandler: Service intent didn't return valid action: " + String.valueOf(result.getInt("ACTION", -1)));
-				}
-			} else {
-				Log.e(TAG, "ServiceHandler: Service intent didn't return RESULT_OK: " + String.valueOf(message.arg1));
-			}
-
-		};
-	};
 	
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
@@ -280,8 +280,6 @@ public class BoIPActivity extends ListActivity {
 	    Intent intent = new Intent(this, BoIPService.class);
 	    Messenger messenger = new Messenger(ServiceHandler);
 		
-		String ipaddr = CheckInetAddress(CurServer.getHost());
-		if (ipaddr == null) { return; }
 		Log.v(TAG, "ValidateServer(Server s): Starting BoIPService...");
 	    intent.putExtra("MESSENGER", messenger);
 		intent.putExtra("ACTION", ACTION_VALIDATE);
@@ -296,13 +294,13 @@ public class BoIPActivity extends ListActivity {
 			Common.showMsgBox(this, "Wrong Password!",
 				"The password you gave does not match the password set on the server. Verify that the passwords match on the server and client then try again.'");
 		} else if (res.equals("ERR1")) {
-			Toast.makeText(this, "Invalid data and/or request syntax!", Toast.LENGTH_SHORT).show();
+			Toast.makeText(getApplicationContext(), "Invalid data and/or request syntax!", Toast.LENGTH_SHORT).show();
 		} else if (res.equals("ERR2")) {
-			Toast.makeText(this, "Invalid data, possible missing data separator.", Toast.LENGTH_SHORT).show();
-		} else if (res.equals("ERR3")) {
-			Toast.makeText(this, "Invalid data/syntax, could not parse data.", Toast.LENGTH_SHORT).show();
+			Toast.makeText(getApplicationContext(), "Invalid data, possible missing data separator.", Toast.LENGTH_SHORT).show();
+		} else if (res.equals("E")) {
+			Toast.makeText(getApplicationContext(), "Invalid data/syntax, could not parse data.", Toast.LENGTH_SHORT).show();
 		} else if (res.equals(Common.NOPE)) {
-			Toast.makeText(this, "Server is not activated!", Toast.LENGTH_SHORT).show();
+			Toast.makeText(getApplicationContext(), "Server is not activated!", Toast.LENGTH_SHORT).show();
 		} else if (res.equals(Common.OK)) {
 			return true;
 		} else {
@@ -317,12 +315,11 @@ public class BoIPActivity extends ListActivity {
 		Intent intent = new Intent(this, BoIPService.class);
 		Messenger messenger = new Messenger(ServiceHandler);
 
-		String ipaddr = CheckInetAddress(CurServer.getHost());
-		if (ipaddr == null) { return; }
 		Log.v(TAG, "SendBarcode(Server s, String code): Starting BoIPService...");
 		intent.putExtra("MESSENGER", messenger);
 		intent.putExtra("ACTION", ACTION_SEND);
 		intent.putExtra("INDEX", CurServer.getIndex());
+		intent.putExtra("BARCODE", code);
 		startService(intent);
 	}
 	
@@ -332,7 +329,7 @@ public class BoIPActivity extends ListActivity {
 			Common.showMsgBox(this, "Wrong Password!",
 				"The password you gave does not match the on on the server. Please change it on your app and press 'Apply Server Settings' and then try again.'");
 		} else if (res.equals("ERR1")) {
-			Toast.makeText(this, "Invalid data and/or request syntax!", Toast.LENGTH_SHORT).show();
+			Toast.makeText(getApplicationContext(), "Invalid data and/or request syntax!", Toast.LENGTH_SHORT).show();
 		} else if (res.equals("ERR2")) {
 			Toast.makeText(getApplicationContext(), "Invalid data, possible missing data separator.", Toast.LENGTH_SHORT).show();
 		} else if (res.equals("ERR3")) {
@@ -347,54 +344,6 @@ public class BoIPActivity extends ListActivity {
 		}
 	}
 
-	/******************************************************************************************/
-	/** Validate IPs/Hostnames ****************************************************************/
-	
-	// This function will do the following:
-		// -Get the IP address from a hostname
-		// -Check if an IP/Host is reachable
-		// -Check if an IP/host is a loopback
-		// -Check if an IP is a valid IP address
-		
-	public String CheckInetAddress(String s) {
-			InetAddress addr;
-
-			try {
-				addr = InetAddress.getByName(s);
-			} catch (UnknownHostException e) {
-			Toast.makeText(this, "Invalid Hostname/IP Address! (-1)", Toast.LENGTH_LONG).show();
-				return null;
-			}
-			if(addr.isLoopbackAddress() || addr.isLinkLocalAddress() || addr.isAnyLocalAddress()) {
-				Toast.makeText(this, "Invalid IP Address! IP must point to a physical, reachable computer!  (-2)", Toast.LENGTH_LONG).show();
-				return null;
-			}
-			try {
-				if(!addr.isReachable(2500)) {
-				Toast.makeText(this, "Address/Hosst is unreachable! (2500ms Timeout) (-3)", Toast.LENGTH_LONG).show();
-					return null;
-				}
-			} catch (IOException e1) {
-				Toast.makeText(this, "Address/Host is unreachable! (Error Connecting) (-4)", Toast.LENGTH_LONG).show();
-				return null;
-			}
-			
-			return addr.getHostAddress();
-		}
-		
-		public boolean IsSiteLocalIP(String s) {
-			String str = CheckInetAddress(s);
-			if(str == null) { return false; }
-			InetAddress addr = null;
-			try {
-				addr = InetAddress.getByName(str);
-			} catch (UnknownHostException e) {
-				e.printStackTrace();
-				return false;
-			}
-			return addr.isSiteLocalAddress();
-		}
-				
 		public boolean IsValidIPv4(String ip) {
 			try {
 				String[] octets = ip.trim().split("\\.");
