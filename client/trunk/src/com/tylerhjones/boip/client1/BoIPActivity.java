@@ -27,7 +27,6 @@
 package com.tylerhjones.boip.client1;
 
 import java.util.ArrayList;
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.Context;
@@ -37,9 +36,6 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.os.Messenger;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -53,9 +49,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
-import com.google.zxing.integration.android.IntentIntegrator;
-import com.google.zxing.integration.android.IntentResult;
 
 public class BoIPActivity extends ListActivity {
 	
@@ -64,49 +57,53 @@ public class BoIPActivity extends ListActivity {
 	private ServerAdapter theAdapter;
 	private Database DB = new Database(this);
 	private Server CurServer = new Server();
-	private final int ACTION_VALIDATE = 1;
-	private final int ACTION_SEND = 2;
+	
+	// private final int ACTION_VALIDATE = 1;
+	// private final int ACTION_SEND = 2;
 
 	/*******************************************************************************************************/
+	/** Service result handler function ****************************************************************** */
+	/*
+	 * private Handler ServiceHandler = new Handler() {
+	 * 
+	 * @SuppressLint("HandlerLeak")
+	 * public void handleMessage(Message message) {
+	 * Bundle result = message.getData();
+	 * 
+	 * if (result.getString("RESULT").equals("NONE")) {
+	 * Log.e(TAG, "Service gave result: NONE");
+	 * return;
+	 * } else if (result.getString("RESULT").equals("ERR_Intent")) {
+	 * Log.e(TAG, "Service returned an intent error.");
+	 * return;
+	 * } else if (result.getString("RESULT").equals("ERR_Index")) {
+	 * Log.e(TAG, "Service returned an index error.");
+	 * return;
+	 * } else if (result.getString("RESULT").equals("ERR_InvalidIP")) {
+	 * Log.e(TAG, "Service returned an invalid IP error.");
+	 * return;
+	 * }
+	 * 
+	 * if (message.arg1 == RESULT_OK) {
+	 * if (result.getInt("ACTION", -1) == ACTION_VALIDATE) {
+	 * if (ValidateResult(result.getString("RESULT"))) {
+	 * IntentIntegrator integrator = new IntentIntegrator(BoIPActivity.this);
+	 * integrator.initiateScan(IntentIntegrator.ONE_D_CODE_TYPES);
+	 * }
+	 * } else if (result.getInt("ACTION", -1) == ACTION_SEND) {
+	 * SendBarcodeResult(result.getString("RESULT"));
+	 * } else {
+	 * Log.e(TAG, "ServiceHandler: Service intent didn't return valid action: " + String.valueOf(result.getInt("ACTION", -1)));
+	 * }
+	 * } else {
+	 * Log.e(TAG, "ServiceHandler: Service intent didn't return RESULT_OK: " + String.valueOf(message.arg1));
+	 * }
+	 * 
+	 * };
+	 * };
+	 */
+	/*******************************************************************************************************/
 	/** Event handler functions ************************************************************************** */
-	
-	private Handler ServiceHandler = new Handler() {
-		
-		@SuppressLint("HandlerLeak")
-		public void handleMessage(Message message) {
-			Bundle result = message.getData();
-			
-			if (result.getString("RESULT").equals("NONE")) {
-				Log.e(TAG, "Service gave result: NONE");
-				return;
-			} else if (result.getString("RESULT").equals("ERR_Intent")) {
-				Log.e(TAG, "Service returned an intent error.");
-				return;
-			} else if (result.getString("RESULT").equals("ERR_Index")) {
-				Log.e(TAG, "Service returned an index error.");
-				return;
-			} else if (result.getString("RESULT").equals("ERR_InvalidIP")) {
-				Log.e(TAG, "Service returned an invalid IP error.");
-				return;
-			}
-			
-			if (message.arg1 == RESULT_OK) {
-				if (result.getInt("ACTION", -1) == ACTION_VALIDATE) {
-					if (ValidateResult(result.getString("RESULT"))) {
-						IntentIntegrator integrator = new IntentIntegrator(BoIPActivity.this);
-						integrator.initiateScan(IntentIntegrator.ONE_D_CODE_TYPES);
-					}
-				} else if (result.getInt("ACTION", -1) == ACTION_SEND) {
-					SendBarcodeResult(result.getString("RESULT"));
-				} else {
-					Log.e(TAG, "ServiceHandler: Service intent didn't return valid action: " + String.valueOf(result.getInt("ACTION", -1)));
-				}
-			} else {
-				Log.e(TAG, "ServiceHandler: Service intent didn't return RESULT_OK: " + String.valueOf(message.arg1));
-			}
-			
-		};
-	};
 
 	/** Called when the activity is first created. */
 	@Override
@@ -136,7 +133,11 @@ public class BoIPActivity extends ListActivity {
 				sEdit = sVal.edit();
 				sEdit.putInt(Common.PREF_CURSRV, CurServer.getIndex());
 				sEdit.commit();
-				ValidateServer();
+				// ValidateServer();
+				Intent scanner = new Intent();
+				scanner.setClassName("com.tylerhjones.boip.client1", "com.tylerhjones.boip.client1.BarcodeScannerActivity");
+				scanner.putExtra(BarcodeScannerActivity.SERVER_ID, CurServer.getIndex());
+				startActivity(scanner);
 			}
 		});
 		
@@ -157,7 +158,7 @@ public class BoIPActivity extends ListActivity {
 			}
 		}
 	}
-	
+
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		if (v.getId() == getListView().getId()) {
@@ -274,7 +275,7 @@ public class BoIPActivity extends ListActivity {
 
 	/******************************************************************************************/
 	/** Send Barcode to Server ****************************************************************/
-
+/*
 	public void ValidateServer() {
 		Log.v(TAG, "ValidateServer(Server s) called!");
 	    Intent intent = new Intent(this, BoIPService.class);
@@ -366,7 +367,7 @@ public class BoIPActivity extends ListActivity {
 			}
 			return true;
 		}
-
+*/
 	/******************************************************************************************/
 	/** Setup Menus ***************************************************************************/
 	
@@ -382,10 +383,10 @@ public class BoIPActivity extends ListActivity {
 		// Handle item selection
 		switch (item.getItemId()) {
 			case R.id.mnuMainFindServers:
-				Intent intent = new Intent();
-				intent.setClassName("com.tylerhjones.boip.client1", "com.tylerhjones.boip.client1.DiscoverServersActivity");
-				intent.putExtra("com.tylerhjones.boip.client1.Action", Common.ADD_SREQ);
-				startActivityForResult(intent, Common.ADD_SREQ);
+				//Intent intent = new Intent();
+				//intent.setClassName("com.tylerhjones.boip.client1", "com.tylerhjones.boip.client1.DiscoverServersActivity");
+				//intent.putExtra("com.tylerhjones.boip.client1.Action", Common.ADD_SREQ);
+				//startActivityForResult(intent, Common.ADD_SREQ);
 				return true;
 			case R.id.mnuMainAbout:
 				Common.showAbout(this);
@@ -419,37 +420,40 @@ public class BoIPActivity extends ListActivity {
 		intent.putExtra("com.tylerhjones.boip.client1.Action", Common.ADD_SREQ);
 		startActivityForResult(intent, Common.ADD_SREQ);
 	}
-
-	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-		SharedPreferences sVal = getSharedPreferences(Common.PREFS, 0);
-		try {
-			this.UpdateList();
-		} catch(Exception e) {
-			Log.e(TAG, "onActivityResult(): Exception occured while trying to update the server list.", e);
-		}
-		try {
-			CurServer = Servers.get(sVal.getInt(Common.PREF_CURSRV, 0));
-		} catch(IndexOutOfBoundsException e) {
-			Log.wtf(TAG, "A barcode was scanned but no servers are defined! - " + e.toString()); 
-			return;
-		}
-		lv("*** AFTER SCAN : CurServer ***  Index: " + String.valueOf(CurServer.getIndex()) + " -- Name: " + CurServer.getName());
-		lv("Activity result (result, request) -- ", String.valueOf(requestCode), String.valueOf(resultCode));
-		IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
-		if(result != null) {
-			try {
-				if (resultCode == RESULT_OK) {
-					String barcode = result.getContents().toString();
-					this.SendBarcode(barcode);
-					Toast.makeText(this, "Barcode successfully sent to server!", Toast.LENGTH_SHORT).show();					
-				}
-			} catch(NullPointerException ne) {
-				Toast.makeText(this, "Hmm that did't work.. Try again. (1)", Toast.LENGTH_LONG).show();
-				Log.e(TAG, ne.toString());
-			}
-		}
-	}
 	
+/*
+ * public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+ * 
+ * SharedPreferences sVal = getSharedPreferences(Common.PREFS, 0);
+ * try {
+ * this.UpdateList();
+ * } catch(Exception e) {
+ * Log.e(TAG, "onActivityResult(): Exception occured while trying to update the server list.", e);
+ * }
+ * try {
+ * CurServer = Servers.get(sVal.getInt(Common.PREF_CURSRV, 0));
+ * } catch(IndexOutOfBoundsException e) {
+ * Log.wtf(TAG, "A barcode was scanned but no servers are defined! - " + e.toString());
+ * return;
+ * }
+ * lv("*** AFTER SCAN : CurServer ***  Index: " + String.valueOf(CurServer.getIndex()) + " -- Name: " + CurServer.getName());
+ * lv("Activity result (result, request) -- ", String.valueOf(requestCode), String.valueOf(resultCode));
+ * IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
+ * if(result != null) {
+ * try {
+ * if (resultCode == RESULT_OK) {
+ * String barcode = result.getContents().toString();
+ * this.SendBarcode(barcode);
+ * Toast.makeText(this, "Barcode successfully sent to server!", Toast.LENGTH_SHORT).show();
+ * }
+ * } catch(NullPointerException ne) {
+ * Toast.makeText(this, "Hmm that did't work.. Try again. (1)", Toast.LENGTH_LONG).show();
+ * Log.e(TAG, ne.toString());
+ * }
+ * }
+ * 
+ * }
+ */
 	/** Logging shortcut functions **************************************************** */
 	
 	public void ld(String msg) { // Debug message
