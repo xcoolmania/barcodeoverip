@@ -94,7 +94,7 @@ public class BoIPWidgetProvider extends AppWidgetProvider {
 			try {
 				AppWidgetManager awm = AppWidgetManager.getInstance(c);
 				awm.updateAppWidget(awm.getAppWidgetIds(new ComponentName(c, BoIPWidgetProvider.class)), views);
-				Toast.makeText(c, "You tapped a widget!", 6).show();
+				Toast.makeText(c, "You tapped a widget!", Toast.LENGTH_LONG).show();
 				
 				Bundle extras = in.getExtras();
 				// if (extras != null) {

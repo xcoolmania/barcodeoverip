@@ -149,9 +149,18 @@ public class BoIPActivity extends ListActivity {
 		// Drawable.createFromResourceStream(R.drawable.ic_add, this.getResources().get,this.getResources().openRawResource(R.drawable.ic_add)));
 
 		if (!Common.isNetworked(this)) {
-			Common.showMsgBox(this, "No Network",
-				"No active network connection was found! You must be connected to a network to use BarcodeOverIP!\n\nPress 'OK' to quit BarcodeOverIP Client...");
-			this.finish();
+			AlertDialog ad = new AlertDialog.Builder(this).create();
+			ad.setCancelable(false); // This blocks the 'BACK' button
+			ad.setMessage("No active network connection was found! You must be connected to a network to use BarcodeOverIP!\n\nPress 'OK' to quit BarcodeOverIP Client...");
+			ad.setTitle("No Network");
+				ad.setButton(Common.OK, new DialogInterface.OnClickListener() {
+					
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+					finish();
+					}
+				});
+			ad.show();
 		} else {
 			if (!Common.isWifiActive(this)) {
 				Common.showMsgBox(this, "No Wifi Connection", "No active Wifi connection was found! Configuring BoIP is difficult when the target server is behind a router/NAT or on a separate network.\n\nIn other words, to make things MUCH easier it is STRONGLY reccomended that you connect to the same network the server is on using Wifi.");
@@ -485,15 +494,15 @@ public class BoIPActivity extends ListActivity {
 	}
 	
 	public void lv(String msg, int val) { // Verbose message with one integer value passed
-		Log.v(TAG, msg + String.valueOf(val));
+		Log.i(TAG, msg + String.valueOf(val));
 	}
 	
 	public void li(String msg) { // Info message
-		Log.v(TAG, msg);
+		Log.i(TAG, msg);
 	}
 	
 	public void li(String msg, String val) { // Info message with one string value passed
-		Log.v(TAG, msg + val);
+		Log.i(TAG, msg + val);
 	}
 	
 	public void lw(String msg) { // Warning message
