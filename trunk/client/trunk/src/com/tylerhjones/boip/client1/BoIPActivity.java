@@ -58,9 +58,6 @@ public class BoIPActivity extends ListActivity {
 	private Database DB = new Database(this);
 	private Server CurServer = new Server();
 	
-	// private final int ACTION_VALIDATE = 1;
-	// private final int ACTION_SEND = 2;
-
 	/*******************************************************************************************************/
 	/** Service result handler function ****************************************************************** */
 	/*
@@ -133,7 +130,6 @@ public class BoIPActivity extends ListActivity {
 				sEdit = sVal.edit();
 				sEdit.putInt(Common.PREF_CURSRV, CurServer.getIndex());
 				sEdit.commit();
-				// ValidateServer();
 				Intent scanner = new Intent();
 				scanner.setClassName("com.tylerhjones.boip.client1", "com.tylerhjones.boip.client1.BarcodeScannerActivity");
 				scanner.putExtra(BarcodeScannerActivity.SERVER_ID, CurServer.getIndex());
@@ -430,39 +426,15 @@ public class BoIPActivity extends ListActivity {
 		startActivityForResult(intent, Common.ADD_SREQ);
 	}
 	
-/*
- * public void onActivityResult(int requestCode, int resultCode, Intent intent) {
- * 
- * SharedPreferences sVal = getSharedPreferences(Common.PREFS, 0);
- * try {
- * this.UpdateList();
- * } catch(Exception e) {
- * Log.e(TAG, "onActivityResult(): Exception occured while trying to update the server list.", e);
- * }
- * try {
- * CurServer = Servers.get(sVal.getInt(Common.PREF_CURSRV, 0));
- * } catch(IndexOutOfBoundsException e) {
- * Log.wtf(TAG, "A barcode was scanned but no servers are defined! - " + e.toString());
- * return;
- * }
- * lv("*** AFTER SCAN : CurServer ***  Index: " + String.valueOf(CurServer.getIndex()) + " -- Name: " + CurServer.getName());
- * lv("Activity result (result, request) -- ", String.valueOf(requestCode), String.valueOf(resultCode));
- * IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
- * if(result != null) {
- * try {
- * if (resultCode == RESULT_OK) {
- * String barcode = result.getContents().toString();
- * this.SendBarcode(barcode);
- * Toast.makeText(this, "Barcode successfully sent to server!", Toast.LENGTH_SHORT).show();
- * }
- * } catch(NullPointerException ne) {
- * Toast.makeText(this, "Hmm that did't work.. Try again. (1)", Toast.LENGTH_LONG).show();
- * Log.e(TAG, ne.toString());
- * }
- * }
- * 
- * }
- */
+	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+		try {
+			this.UpdateList();
+		}
+		catch (Exception e) {
+			Log.e(TAG, "onActivityResult(): Exception occured while trying to update the server list.", e);
+		}
+	}
+
 	/** Logging shortcut functions **************************************************** */
 	
 	public void ld(String msg) { // Debug message

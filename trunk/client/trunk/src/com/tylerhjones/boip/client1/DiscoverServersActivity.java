@@ -27,7 +27,9 @@ package com.tylerhjones.boip.client1;
 
 import java.util.Vector;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.os.Handler;
@@ -72,9 +74,18 @@ public class DiscoverServersActivity extends Activity {
 		});
 
 		if (!Common.isNetworked(this)) {
-			Common.showMsgBox(this, "No Network",
-				"No active network connection was found! You must be connected to a network to use BarcodeOverIP!\n\nPress 'OK' to quit BarcodeOverIP Client...");
-			this.finish();
+			AlertDialog ad = new AlertDialog.Builder(this).create();
+			ad.setCancelable(false); // This blocks the 'BACK' button
+			ad.setMessage("No active network connection was found! You must be connected to a network to use BarcodeOverIP!\n\nPress 'OK' to quit BarcodeOverIP Client...");
+			ad.setTitle("No Network");
+			ad.setButton(Common.OK, new DialogInterface.OnClickListener() {
+				
+				public void onClick(DialogInterface dialog, int which) {
+					dialog.dismiss();
+					finish();
+				}
+			});
+			ad.show();
 		} else {
 			if (!Common.isWifiActive(this)) {
 				Common.showMsgBox(this, "No Wifi Connection",
