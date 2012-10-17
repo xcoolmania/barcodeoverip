@@ -31,6 +31,7 @@
             </intent-filter>
         </activity> -->
         <activity
+            android:exported="false"
             android:name=".ServerInfoActivity"       
             android:label="@string/server_info">
             <intent-filter>
@@ -39,6 +40,7 @@
             </intent-filter>
         </activity>
         <activity 
+            android:exported="false"
             android:name=".BarcodeScannerActivity"
             android:label="@string/scanner_activity">
     		<intent-filter>
@@ -47,6 +49,7 @@
             </intent-filter>
 		</activity>
         <activity 
+            android:exported="false"
             android:name=".BoIPWidgetConfigure"
     		android:label="@string/widget_config_title">
     		<intent-filter>
@@ -54,7 +57,8 @@
     		</intent-filter>
 		</activity>
         
-        <receiver android:name="BoIPWidgetProvider">
+        <receiver android:name="BoIPWidgetProvider"
+            android:exported="false">
     		<intent-filter>
     	    	<action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
     	    	<action android:name="com.tylerhjones.boip.client1.BoIPWidgetProvider.ACTION_CLICK" />
