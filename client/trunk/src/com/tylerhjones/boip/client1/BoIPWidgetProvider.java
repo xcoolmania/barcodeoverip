@@ -47,39 +47,49 @@ public class BoIPWidgetProvider extends AppWidgetProvider {
 	
 	@Override
 	public void onUpdate(Context c, AppWidgetManager appWidgetManager, int[] WidgetIDs) {
+		String ServerName; // , ServerIPPort;
+		final int N = WidgetIDs.length;
+		SharedPreferences sVal = c.getSharedPreferences(Common.WIDGET_PREFS, 0);
+
+
 		// Database and server settings variables
-		String ServerName, ServerIPPort;
-		ComponentName thisWidget = new ComponentName(c, BoIPWidgetProvider.class);
-		int[] allWidgetIds = appWidgetManager.getAppWidgetIds(thisWidget);
-		for (int i = 0; i < allWidgetIds.length; ++i) {
-			Log.v(TAG, "||| onUpdate - For Loop, WidgetID: " + String.valueOf(allWidgetIds[i]) + " |||");
+		for (int i = 0; i < N; i++) {
+			int WidgetID = WidgetIDs[i];
+			Log.v(TAG, "||| onUpdate - For Loop, WidgetID: " + String.valueOf(WidgetID) + " |||");
 			ServerName = "[Not Configured]";
-			ServerIPPort = "0.0.0.0:41788";
-			SharedPreferences sVal = c.getSharedPreferences(Common.WIDGET_PREFS, 0);
-			int ServerIdx = sVal.getInt(String.valueOf(allWidgetIds[i]), -1);
+			// ServerIPPort = "0.0.0.0:41788";
+			
+			// Find the server index that corresponds to the WidgetID
+			int ServerIdx = sVal.getInt(String.valueOf(WidgetID), -1);
 			if (ServerIdx >= 0) {
 				Server found = GetServer(c, ServerIdx);
 				if (found != null) {
 					ServerName = found.getName();
-					ServerIPPort = found.getHost() + ":" + String.valueOf(found.getPort());
+					// ServerIPPort = found.getHost() + ":" + String.valueOf(found.getPort());
 				}
+			} else {
+				// If the server has been deleted from the database
+				ServerName = "Server Not Found!";
 			}
+			// Create an intent to launch BarcodeScannerActivity
+			Intent intent = new Intent(c, BarcodeScannerActivity.class);
+			PendingIntent pendingIntent = PendingIntent.getActivity(c, 0, intent, 0);
+			intent.setAction(ACTION_CLICK);
+			intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, WidgetID);
+			
+			// Get the layout for the App Widget and attach an on-click listener to the widget
 			RemoteViews views = new RemoteViews(c.getPackageName(), R.layout.boip_widget);
-
-			Intent in = new Intent(c, BoIPWidgetProvider.class);
-			in.setAction(ACTION_CLICK);
-			in.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, allWidgetIds[i]);
-			Log.v(TAG, "*** onUpdate WidgetID: " + String.valueOf(allWidgetIds[i]) + " ***");
-
-			PendingIntent pendingIntent = PendingIntent.getBroadcast(c, 0, in, 0);
+			// views.setOnClickPendingIntent(R.id.button, pendingIntent);
 			views.setTextViewText(R.id.w_server, ServerName);
-			views.setTextViewText(R.id.w_server_ipport, ServerIPPort);
+			// views.setTextViewText(R.id.w_server_ipport, ServerIPPort);
 			// views.setOnClickPendingIntent(R.id.widget_layout, pendingIntent);
 			views.setOnClickPendingIntent(R.id.w_server, pendingIntent);
-			views.setOnClickPendingIntent(R.id.w_server_ipport, pendingIntent);
-			views.setOnClickPendingIntent(R.id.widget_icon, pendingIntent);
+			// views.setOnClickPendingIntent(R.id.w_server_ipport, pendingIntent);
+			// views.setOnClickPendingIntent(R.id.widget_icon, pendingIntent);
 			//views.setOnClickPendingIntent(R.id.w_server_title, pendingIntent);
-			appWidgetManager.updateAppWidget(allWidgetIds[i], views);
+			
+			// Tell the AppWidgetManager to perform an update on the current app widget
+			appWidgetManager.updateAppWidget(WidgetID, views);
 		}
         
     }
