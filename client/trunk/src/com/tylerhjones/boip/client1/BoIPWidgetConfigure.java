@@ -62,6 +62,7 @@ public class BoIPWidgetConfigure extends ListActivity {
 	}
 	
 	@Override
+
 	public void onCreate(Bundle wprefs) {
 		super.onCreate(wprefs);
 		setContentView(R.layout.widget_config);
