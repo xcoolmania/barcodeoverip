@@ -107,7 +107,7 @@ public class BarcodeScannerActivity extends Activity {
 		
 		DB.open();
 		ArrayList<Server> Servers = DB.getAllServers();
-		Log.d(TAG, "onCreate(Bundle si): Get total number of servers in the DB: '" + String.valueOf(DB.getRecordCount()) + "'");
+		Log.d(TAG, "onCreate(Bundle si): Get all " + String.valueOf(DB.getRecordCount()) + " from the DB.");
 		DB.close();
 		
 		if (si == null) {
@@ -132,7 +132,7 @@ public class BarcodeScannerActivity extends Activity {
 		Editor sEdit;
 		CurServer = Servers.get(ServerID);
 		sEdit = sVal.edit();
-		sEdit.putInt(Common.PREF_CURSRV, CurServer.getIndex());
+		sEdit.putInt(Common.PREF_CURSRV, ServerID);
 		sEdit.commit();
 		
 		ValidateServer(Servers.get(ServerID));
@@ -248,11 +248,22 @@ public class BarcodeScannerActivity extends Activity {
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
 		SharedPreferences sVal = getSharedPreferences(Common.PREFS, 0);
 		
+		DB.open();
+		Servers = DB.getAllServers();
+		Log.d(TAG, "onActivityResult(int requestCode, int resultCode, Intent intent): Get all "
+			+ String.valueOf(DB.getRecordCount()) + " from the DB.");
+		DB.close();
+
 		try {
-			CurServer = Servers.get(sVal.getInt(Common.PREF_CURSRV, 0));
+			CurServer = Servers.get(sVal.getInt(Common.PREF_CURSRV, -1));
 		}
 		catch (IndexOutOfBoundsException e) {
 			Log.e(TAG, "INDEX OUT OF BOUNDS!! - " + e.toString());
+			if (sVal.getInt(Common.PREF_CURSRV, -1) < 0) {
+				Log.e(TAG,
+					"It appears the CurServer index was not stored properly... (Index Found: "
+						+ String.valueOf(sVal.getInt(Common.PREF_CURSRV, -1)) + ")");
+			}
 			this.finish();
 		}
 		Log.v(TAG, "*** AFTER SCAN : CurServer ***  Index: " + String.valueOf(CurServer.getIndex()) + " -- Name: " + CurServer.getName());
