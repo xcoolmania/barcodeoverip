@@ -99,7 +99,7 @@ public class BoIPWidgetConfigure extends ListActivity {
 				
 				final Context context = BoIPWidgetConfigure.this;
 				AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-				RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.boip_widget);
+				RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
 				appWidgetManager.updateAppWidget(WidgetID, views);
 				
 				// Make sure we pass back the original appWidgetId
