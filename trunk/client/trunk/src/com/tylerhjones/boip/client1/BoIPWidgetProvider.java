@@ -42,25 +42,25 @@ import android.widget.Toast;
 
 public class BoIPWidgetProvider extends AppWidgetProvider {
 
-	public static final String ACTION_CLICK = "com.tylerhjones.boip.client1.BoIPWidgetProvider.ACTION_CLICK";
+	public static final String ACTION_CLICK = "ACTION_CLICK";
 	public static final String TAG = "BoIPWidgetProvider";
 	
 	@Override
 	public void onUpdate(Context c, AppWidgetManager appWidgetManager, int[] WidgetIDs) {
-		String ServerName, ServerIPPort;
+		String ServerName;
 		final int N = WidgetIDs.length;
 		SharedPreferences sVal = c.getSharedPreferences(Common.WIDGET_PREFS, 0);
 
-
 		// Database and server settings variables
-		for (int i = 0; i < N; i++) {
-			int WidgetID = WidgetIDs[i];
-			Log.v(TAG, "||| onUpdate - For Loop, WidgetID: " + String.valueOf(WidgetID) + " |||");
+		// Get all ids
+		ComponentName thisWidget = new ComponentName(c, BoIPWidgetProvider.class);
+		int[] allWidgetIds = appWidgetManager.getAppWidgetIds(thisWidget);
+		for (int WidgetId : allWidgetIds) {
+			Log.v(TAG, "||| onUpdate - For Loop, WidgetID: " + String.valueOf(WidgetId) + " |||");
 			ServerName = "[Not Configured]";
-			ServerIPPort = "0.0.0.0:41788";
 			
 			// Find the server index that corresponds to the WidgetID
-			int ServerIdx = sVal.getInt(String.valueOf(WidgetID), -1);
+			int ServerIdx = sVal.getInt(String.valueOf(WidgetId), -1);
 			if (ServerIdx >= 0) {
 				Server found = GetServer(c, ServerIdx);
 				if (found != null) {
@@ -73,22 +73,20 @@ public class BoIPWidgetProvider extends AppWidgetProvider {
 			}
 			// Create an intent to launch BarcodeScannerActivity
 			Intent intent = new Intent(c, BarcodeScannerActivity.class);
-			PendingIntent pendingIntent = PendingIntent.getActivity(c, 0, intent, 0);
-			intent.setAction(ACTION_CLICK);
-			intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, WidgetID);
+			intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+			intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, WidgetIDs);
 			
 			// Get the layout for the App Widget and attach an on-click listener to the widget
-			RemoteViews views = new RemoteViews(c.getPackageName(), R.layout.boip_widget);
+			PendingIntent pendingIntent = PendingIntent.getBroadcast(c, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+			RemoteViews views = new RemoteViews(c.getPackageName(), R.layout.widget_layout);
 			views.setTextViewText(R.id.w_server, ServerName);
-			views.setTextViewText(R.id.w_server_ipport, ServerIPPort);
 			views.setOnClickPendingIntent(R.id.widget_layout, pendingIntent);
 			views.setOnClickPendingIntent(R.id.w_server, pendingIntent);
-			views.setOnClickPendingIntent(R.id.w_server_ipport, pendingIntent);
 			views.setOnClickPendingIntent(R.id.widget_icon, pendingIntent);
 			views.setOnClickPendingIntent(R.id.w_server_title, pendingIntent);
 			
 			// Tell the AppWidgetManager to perform an update on the current app widget
-			appWidgetManager.updateAppWidget(WidgetID, views);
+			appWidgetManager.updateAppWidget(WidgetId, views);
 		}
         
     }
@@ -99,7 +97,7 @@ public class BoIPWidgetProvider extends AppWidgetProvider {
 		int WidgetID = AppWidgetManager.INVALID_APPWIDGET_ID;
 		
 		if (in.getAction().equals(ACTION_CLICK)) {
-			RemoteViews views = new RemoteViews(c.getPackageName(), R.layout.boip_widget);
+			RemoteViews views = new RemoteViews(c.getPackageName(), R.layout.widget_layout);
 			try {
 				AppWidgetManager awm = AppWidgetManager.getInstance(c);
 				awm.updateAppWidget(awm.getAppWidgetIds(new ComponentName(c, BoIPWidgetProvider.class)), views);
@@ -138,9 +136,8 @@ public class BoIPWidgetProvider extends AppWidgetProvider {
 		// Database and server settings variables
 		Server CurServer = GetServer(c, idx);
 		
-		RemoteViews views = new RemoteViews(c.getPackageName(), R.layout.boip_widget);
+		RemoteViews views = new RemoteViews(c.getPackageName(), R.layout.widget_layout);
 		views.setTextViewText(R.id.w_server, CurServer.getName());
-		views.setTextViewText(R.id.w_server_ipport, CurServer.getHost() + ":" + String.valueOf(CurServer.getPort()));
 		appWidgetManager.updateAppWidget(mAppWidgetId, views);
 	}
 	
