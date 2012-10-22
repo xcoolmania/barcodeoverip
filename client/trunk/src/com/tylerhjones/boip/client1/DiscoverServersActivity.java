@@ -61,7 +61,7 @@ public class DiscoverServersActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		setContentView(R.layout.findservers);
+		setContentView(R.layout.findservers_layout);
 
 		this.handler = new Handler();
 		
@@ -196,7 +196,7 @@ public class DiscoverServersActivity extends Activity {
 		private View inflateView(View cell) {
 			if (cell == null) {
 				LayoutInflater inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				cell = inflater.inflate(R.layout.fs_list_item, null);
+				cell = inflater.inflate(R.layout.findservers_list_item, null);
 			}
 			return cell;
 		}

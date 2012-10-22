@@ -65,7 +65,7 @@ public class BoIPWidgetConfigure extends ListActivity {
 
 	public void onCreate(Bundle wprefs) {
 		super.onCreate(wprefs);
-		setContentView(R.layout.widget_config);
+		setContentView(R.layout.configure_widget);
 		lv("onCreate() called!");
 		
 		setResult(RESULT_CANCELED);

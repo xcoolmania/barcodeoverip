@@ -9,39 +9,40 @@
     	android:background="@drawable/widget_shape" >
     	
         <ImageView
-            android:contentDescription="@string/widget_icon_desc"
-            android:id="@+id/widget_icon"
+            android:id="@+id/widget_picIcon"
             android:layout_width="wrap_content"
             android:layout_height="48dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignTop="@+id/widget_lblMain"
             android:layout_gravity="center"
             android:layout_margin="4dp"
+            android:contentDescription="@string/widget_icon_desc"
             android:src="@drawable/ic_launcher" >
 
     	</ImageView>
     	   	
 	    <TextView
-	        android:id="@+id/w_server_title"
+	        android:id="@+id/widget_lblMain"
 	        style="@android:style/TextAppearance.Small"
 	        android:layout_width="match_parent"
 	        android:layout_height="match_parent"
 	        android:layout_alignParentRight="true"
-	        android:layout_toRightOf="@+id/widget_icon"
+	        android:layout_toRightOf="@+id/widget_picIcon"
 			android:layout_margin="4dp"  		        
 	        android:gravity="left"
-	        android:text="@string/widget_server_title" >
+	        android:text="@string/widget_lblMain" >
 
 	    </TextView>
 
 	    <TextView
-	        android:id="@+id/w_server"
+	        android:id="@+id/widget_lblServer"
 	        style="@android:style/TextAppearance.Medium"
 	        android:layout_width="match_parent"
 	        android:layout_height="match_parent"
-	        android:layout_alignBottom="@+id/widget_icon"
 	        android:layout_alignParentRight="true"
-	        android:layout_toRightOf="@+id/widget_icon"
+	        android:layout_toRightOf="@+id/widget_picIcon"
 	        android:layout_margin="4dp"  		        
 	        android:gravity="center|bottom"
-	        android:text="@string/widget_server_default" />
+	        android:text="@string/widget_lblServer" />
     
     </RelativeLayout>        
