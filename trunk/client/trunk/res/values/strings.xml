@@ -109,10 +109,12 @@
 		<item>Choose Server</item>
 	</string-array>
 	
-	<string name="widget_server_default">[Target Server]</string>
-	<string name="widget_server_ipport">[Target IP:Port]</string>
-	<string name="widget_server_title">Tap here to scan a barcode.</string>
+	<string name="widget_lblServer">[Target Server]</string>
+	<string name="widget_lblMain">Tap widget to scan and send a barcode to the followinf server:</string>
 	<string name="scanner_activity">Scan Barcode w/ZXing</string>
-	<string name="widget_icon_desc">BarcodeOverIP application icon.</string>
+	<string name="widget_picIcon">BarcodeOverIP application icon.</string>
 	<string name="widget_config_title">Pick a target for the widget to use.</string>
+	<string name="widget_label">BarcodeOverIP Scan Barcode</string>
+	<string name="widget_icon_desc">[Not Configured]</string>
+	<string name="widget_server_default">[Not Configured]</string>
 </resources>
