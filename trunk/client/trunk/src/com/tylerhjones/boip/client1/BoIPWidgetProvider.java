@@ -42,23 +42,24 @@ import android.widget.Toast;
 
 public class BoIPWidgetProvider extends AppWidgetProvider {
 
-	public static final int ACTION_CLICK = 1;
+	public static final String ACTION_CLICK = "ACTION_CLICK";
 	public static final String TAG = "BoIPWidgetProvider";
 	
 	@Override
-	public void onUpdate(Context c, AppWidgetManager appWidgetManager, int[] AllWidgetIDs) {
+	public void onUpdate(Context c, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
 		String ServerName = "[Not Configured]";
-		SharedPreferences sVal = c.getSharedPreferences(Common.WIDGET_PREFS, 0);
+		// SharedPreferences sVal = c.getSharedPreferences(Common.WIDGET_PREFS, 0);
+		int ServerIdx = 0;
 
 		// Database and server settings variables
 		// Get all ids
-		ComponentName thisWidget = new ComponentName(c, BoIPWidgetProvider.class);
-		int[] allAllWidgetIDs = appWidgetManager.getAppWidgetIds(thisWidget);
-		for (int WidgetID : allAllWidgetIDs) {
+		// ComponentName thisWidget = new ComponentName(c, BoIPWidgetProvider.class);
+		// int[] allAllWidgetIDs = appWidgetManager.getAppWidgetIds(thisWidget);
+		for (int i = 0; i < appWidgetIds.length; i++) {
+			int WidgetID = appWidgetIds[i];
 			Log.v(TAG, "||| onUpdate - For Loop, WidgetID: " + String.valueOf(WidgetID) + " |||");
-			
 			// Find the server index that corresponds to the WidgetID
-			int ServerIdx = sVal.getInt(String.valueOf(WidgetID), -1);
+			// ServerIdx = sVal.getInt(String.valueOf(WidgetID), -1);
 			if (ServerIdx < 0) {
 				Log.w(TAG, "onUpdate(c, appWidgetManager, AllWidgetIDs): Saved app pref result less than 0!");
 			} else {
@@ -70,18 +71,18 @@ public class BoIPWidgetProvider extends AppWidgetProvider {
 			}
 			// Create an intent to launch BarcodeScannerActivity
 			Intent intent = new Intent(c, BarcodeScannerActivity.class);
-			intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-			intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, AllWidgetIDs);
+			//intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, AllWidgetIDs);
 			
 			// Get the layout for the App Widget and attach an on-click listener to the widget
-			// PendingIntent pendingUpdateIntent = PendingIntent.getBroadcast(c, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-			PendingIntent pendingClickintent = PendingIntent.getBroadcast(c, 0, intent, BoIPWidgetProvider.ACTION_CLICK);
+			PendingIntent pendingIntent = PendingIntent.getActivity(c, 0, intent, 0);
+			// Log.i(TAG, "onUpdate(): Setting onClick events for views");
+			// pendingIntent pendingIntent = PendingIntent.getBroadcast(c, 0, intent, BoIPWidgetProvider.ACTION_CLICK);
 			RemoteViews views = new RemoteViews(c.getPackageName(), R.layout.widget_layout);
 			views.setTextViewText(R.id.widget_lblServer, ServerName);
-			// views.setOnClickPendingIntent(R.id.widget_layout, pendingIntent);
-			views.setOnClickPendingIntent(R.id.widget_lblServer, pendingClickintent);
-			views.setOnClickPendingIntent(R.id.widget_picIcon, pendingClickintent);
-			views.setOnClickPendingIntent(R.id.widget_lblMain, pendingClickintent);
+			views.setOnClickPendingIntent(R.id.widget_layout, pendingIntent);
+			views.setOnClickPendingIntent(R.id.widget_lblServer, pendingIntent);
+			views.setOnClickPendingIntent(R.id.widget_picIcon, pendingIntent);
+			views.setOnClickPendingIntent(R.id.widget_lblMain, pendingIntent);
 			
 			// Tell the AppWidgetManager to perform an update on the current app widget
 			appWidgetManager.updateAppWidget(WidgetID, views);
@@ -110,8 +111,9 @@ public class BoIPWidgetProvider extends AppWidgetProvider {
 					Log.e(TAG, "onReceive(context, intent) Invalid AppWidgetID received!");
 					return;
 				} else {
+					int SvrID = 0;
 					SharedPreferences sVal = c.getSharedPreferences(Common.WIDGET_PREFS, 0);
-					int SvrID = sVal.getInt(String.valueOf(WidgetID), -1);
+					// SvrID = sVal.getInt(String.valueOf(WidgetID), -1);
 					Server Svr = GetServer(c, SvrID);
 					if (Svr == null) {
 						Log.w(TAG, "onReceive(context, intent) Requested server ID '" + String.valueOf(SvrID) + "' could not be found in the DB!");
@@ -126,15 +128,17 @@ public class BoIPWidgetProvider extends AppWidgetProvider {
 			}
 			catch (Exception ignore) {
 				// Nothing
+				Log.i(TAG, "onReceive(): Ignored Exception");
 			}
 		}
 	}
 	
 	public static void updateAppWidget(Context c, AppWidgetManager appWidgetManager, int mAppWidgetID) {
 		// Database and server settings variables
+		int ServerIdx = 0;
 		SharedPreferences sVal = c.getSharedPreferences(Common.WIDGET_PREFS, 0);
-		String ServerName = "[Not Configures]";
-		int ServerIdx = sVal.getInt(String.valueOf(mAppWidgetID), -1);
+		String ServerName = "[Not Configured]";
+		// ServerIdx = sVal.getInt(String.valueOf(mAppWidgetID), -1);
 		if (ServerIdx < 0) {
 			Log.w(TAG, "updateAppWidget(c, appWidgetManager, mAppWidgetID): Saved app pref result less than 0!");
 		} else {
@@ -147,6 +151,7 @@ public class BoIPWidgetProvider extends AppWidgetProvider {
 		RemoteViews views = new RemoteViews(c.getPackageName(), R.layout.widget_layout);
 		views.setTextViewText(R.id.widget_lblServer, ServerName);
 		appWidgetManager.updateAppWidget(mAppWidgetID, views);
+		Log.i(TAG, "*** updateAppWidget() CALLED!");
 	}
 	
 	// This function returns a server object from the DB when given the LIST ITEM INDEX of said server.

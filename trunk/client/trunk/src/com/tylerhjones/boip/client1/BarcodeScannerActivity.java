@@ -53,6 +53,7 @@ public class BarcodeScannerActivity extends Activity {
 	private static int ServerID = -1;
 	private final int ACTION_VALIDATE = 1;
 	private final int ACTION_SEND = 2;
+	// private final int ACTION_CLICK = 3;
 	public static String SERVER_ID = "server_id";
 	public static int INVALID_SERVER_ID = -1;
 	
@@ -124,7 +125,7 @@ public class BarcodeScannerActivity extends Activity {
 			}
 			
 		} else {
-			Log.w(TAG, "onCreate() si != null, skipping retrival of intent extras");
+			Log.w(TAG, "onCreate() is != null, skipping retrival of intent extras");
 			ServerID = Integer.valueOf(si.getSerializable(SERVER_ID).toString());
 		}
 		
@@ -172,7 +173,7 @@ public class BarcodeScannerActivity extends Activity {
 			Toast.makeText(getApplicationContext(), "Invalid data and/or request syntax!", Toast.LENGTH_SHORT).show();
 		} else if (res.equals("ERR2")) {
 			Toast.makeText(getApplicationContext(), "Invalid data, possible missing data separator.", Toast.LENGTH_SHORT).show();
-		} else if (res.equals("E")) {
+		} else if (res.equals("ERR3")) {
 			Toast.makeText(getApplicationContext(), "Invalid data/syntax, could not parse data.", Toast.LENGTH_SHORT).show();
 		} else if (res.equals(Common.NOPE)) {
 			Toast.makeText(getApplicationContext(), "Server is not activated!", Toast.LENGTH_SHORT).show();
