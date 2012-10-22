@@ -88,7 +88,7 @@ public class BarcodeScannerActivity extends Activity {
 				if (result.getInt("ACTION", -1) == ACTION_VALIDATE) {
 					if (ValidateResult(result.getString("RESULT"))) {
 						IntentIntegrator integrator = new IntentIntegrator(BarcodeScannerActivity.this);
-						integrator.initiateScan(IntentIntegrator.ONE_D_CODE_TYPES);
+						integrator.initiateScan(IntentIntegrator.ALL_CODE_TYPES);
 					}
 				} else if (result.getInt("ACTION", -1) == ACTION_SEND) {
 					SendBarcodeResult(result.getString("RESULT"));
