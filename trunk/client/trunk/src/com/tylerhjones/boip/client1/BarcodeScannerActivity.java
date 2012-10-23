@@ -53,7 +53,6 @@ public class BarcodeScannerActivity extends Activity {
 	private static int ServerID = -1;
 	private final int ACTION_VALIDATE = 1;
 	private final int ACTION_SEND = 2;
-	// private final int ACTION_CLICK = 3;
 	public static String SERVER_ID = "server_id";
 	public static int INVALID_SERVER_ID = -1;
 	
@@ -248,7 +247,7 @@ public class BarcodeScannerActivity extends Activity {
 	
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
 		SharedPreferences sVal = getSharedPreferences(Common.PREFS, 0);
-		
+
 		DB.open();
 		Servers = DB.getAllServers();
 		Log.d(TAG, "onActivityResult(int requestCode, int resultCode, Intent intent): Get all "
@@ -258,6 +257,7 @@ public class BarcodeScannerActivity extends Activity {
 		try {
 			CurServer = Servers.get(sVal.getInt(Common.PREF_CURSRV, -1));
 		}
+		
 		catch (IndexOutOfBoundsException e) {
 			Log.e(TAG, "INDEX OUT OF BOUNDS!! - " + e.toString());
 			if (sVal.getInt(Common.PREF_CURSRV, -1) < 0) {
@@ -267,21 +267,19 @@ public class BarcodeScannerActivity extends Activity {
 			}
 			this.finish();
 		}
-		Log.v(TAG, "*** AFTER SCAN : CurServer ***  Index: " + String.valueOf(CurServer.getIndex()) + " -- Name: " + CurServer.getName());
-		Log.v(TAG, "Activity result (result, request) -- (" + String.valueOf(requestCode) + ", " + String.valueOf(resultCode) + ")");
+		
 		IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
 		if (result != null) {
 			try {
-				if (resultCode == RESULT_OK) {
-					String barcode = result.getContents().toString();
-					this.SendBarcode(barcode);
-					Toast.makeText(this, getString(R.string.barcode_sent_ok), Toast.LENGTH_SHORT).show();
-					finish();
-				}
+				String barcode = result.getContents().toString();
+				Log.d(TAG, "*** Received barcode from ZXing: " + barcode);
+				this.SendBarcode(barcode);
+				Toast.makeText(this, getString(R.string.barcode_sent_ok), Toast.LENGTH_SHORT).show();
+				finish();
 			}
 			catch (NullPointerException ne) {
 				Toast.makeText(this, getString(R.string.hmm_try_again), Toast.LENGTH_LONG).show();
-				Log.e(TAG, ne.toString());
+				Log.e(TAG, "onActivityResult(): " + ne.toString());
 				finish();
 			}
 		}

@@ -60,7 +60,6 @@ public class BoIPService extends IntentService {
 	private Server CurServer = new Server();
 	private final int VALIDATE = 1;
 	private final int SEND = 2;
-	private final int CLICK = 3;
 	private int intResult = Activity.RESULT_CANCELED;
 	
 	// Socket and socket data variables.

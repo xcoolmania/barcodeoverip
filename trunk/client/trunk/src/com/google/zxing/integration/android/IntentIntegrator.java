@@ -355,11 +355,7 @@ public class IntentIntegrator {
         int intentOrientation = intent.getIntExtra("SCAN_RESULT_ORIENTATION", Integer.MIN_VALUE);
         Integer orientation = intentOrientation == Integer.MIN_VALUE ? null : intentOrientation;
         String errorCorrectionLevel = intent.getStringExtra("SCAN_RESULT_ERROR_CORRECTION_LEVEL");
-        return new IntentResult(contents,
-                                formatName,
-                                rawBytes,
-                                orientation,
-                                errorCorrectionLevel);
+        return new IntentResult(contents, formatName, rawBytes, orientation, errorCorrectionLevel);
       }
       return new IntentResult();
     }
@@ -387,7 +383,7 @@ public class IntentIntegrator {
     Intent intent = new Intent();
     intent.addCategory(Intent.CATEGORY_DEFAULT);
     intent.setAction(BS_PACKAGE + ".ENCODE");
-		intent.putExtra("ENCODE_TYPE", type);
+    intent.putExtra("ENCODE_TYPE", type);
     intent.putExtra("ENCODE_DATA", text);
     String targetAppPackage = findTargetAppPackage(intent);
     if (targetAppPackage == null) {
