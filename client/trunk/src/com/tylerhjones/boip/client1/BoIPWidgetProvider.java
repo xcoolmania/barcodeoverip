@@ -31,14 +31,11 @@ import java.util.ArrayList;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.util.Log;
 import android.widget.RemoteViews;
-import android.widget.Toast;
 
 public class BoIPWidgetProvider extends AppWidgetProvider {
 
@@ -52,6 +49,7 @@ public class BoIPWidgetProvider extends AppWidgetProvider {
 		int ServerIdx = 0;
 
 		// Database and server settings variables
+
 		// Get all ids
 		// ComponentName thisWidget = new ComponentName(c, BoIPWidgetProvider.class);
 		// int[] allAllWidgetIDs = appWidgetManager.getAppWidgetIds(thisWidget);
@@ -70,19 +68,21 @@ public class BoIPWidgetProvider extends AppWidgetProvider {
 				}
 			}
 			// Create an intent to launch BarcodeScannerActivity
-			Intent intent = new Intent(c, BarcodeScannerActivity.class);
+			Intent scanner = new Intent();
+			scanner.setClassName("com.tylerhjones.boip.client1", "com.tylerhjones.boip.client1.BarcodeScannerActivity");
+			scanner.putExtra(BarcodeScannerActivity.SERVER_ID, ServerIdx);
 			//intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, AllWidgetIDs);
 			
 			// Get the layout for the App Widget and attach an on-click listener to the widget
-			PendingIntent pendingIntent = PendingIntent.getActivity(c, 0, intent, 0);
+			PendingIntent pendingScanner = PendingIntent.getActivity(c, 0, scanner, 0);
 			// Log.i(TAG, "onUpdate(): Setting onClick events for views");
 			// pendingIntent pendingIntent = PendingIntent.getBroadcast(c, 0, intent, BoIPWidgetProvider.ACTION_CLICK);
 			RemoteViews views = new RemoteViews(c.getPackageName(), R.layout.widget_layout);
 			views.setTextViewText(R.id.widget_lblServer, ServerName);
-			views.setOnClickPendingIntent(R.id.widget_layout, pendingIntent);
-			views.setOnClickPendingIntent(R.id.widget_lblServer, pendingIntent);
-			views.setOnClickPendingIntent(R.id.widget_picIcon, pendingIntent);
-			views.setOnClickPendingIntent(R.id.widget_lblMain, pendingIntent);
+			views.setOnClickPendingIntent(R.id.widget_layout, pendingScanner);
+			// views.setOnClickPendingIntent(R.id.widget_lblServer, pendingIntent);
+			// views.setOnClickPendingIntent(R.id.widget_picIcon, pendingIntent);
+			// views.setOnClickPendingIntent(R.id.widget_lblMain, pendingIntent);
 			
 			// Tell the AppWidgetManager to perform an update on the current app widget
 			appWidgetManager.updateAppWidget(WidgetID, views);
@@ -90,48 +90,50 @@ public class BoIPWidgetProvider extends AppWidgetProvider {
         
     }
 	
-	@Override
-	public void onReceive(Context c, Intent in) {
-		super.onReceive(c, in);
-		int WidgetID = AppWidgetManager.INVALID_APPWIDGET_ID;
-		
-		if (in.getAction().equals(ACTION_CLICK)) {
-			RemoteViews views = new RemoteViews(c.getPackageName(), R.layout.widget_layout);
-			try {
-				AppWidgetManager awm = AppWidgetManager.getInstance(c);
-				awm.updateAppWidget(awm.getAppWidgetIds(new ComponentName(c, BoIPWidgetProvider.class)), views);
-				Toast.makeText(c, "You tapped a widget!", Toast.LENGTH_LONG).show();
-				
-				Bundle extras = in.getExtras();
-				// if (extras != null) {
-				WidgetID = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
-				Log.v(TAG, "*** onReceive WidgetID: " + String.valueOf(WidgetID) + " ***");
-				// }
-				if (WidgetID == AppWidgetManager.INVALID_APPWIDGET_ID) {
-					Log.e(TAG, "onReceive(context, intent) Invalid AppWidgetID received!");
-					return;
-				} else {
-					int SvrID = 0;
-					SharedPreferences sVal = c.getSharedPreferences(Common.WIDGET_PREFS, 0);
-					// SvrID = sVal.getInt(String.valueOf(WidgetID), -1);
-					Server Svr = GetServer(c, SvrID);
-					if (Svr == null) {
-						Log.w(TAG, "onReceive(context, intent) Requested server ID '" + String.valueOf(SvrID) + "' could not be found in the DB!");
-						return;
-					} else {
-						Intent scanner = new Intent();
-						scanner.setClassName("com.tylerhjones.boip.client1", "com.tylerhjones.boip.client1.BarcodeScannerActivity");
-						scanner.putExtra(BarcodeScannerActivity.SERVER_ID, SvrID);
-						c.startActivity(scanner);
-					}
-				}
-			}
-			catch (Exception ignore) {
-				// Nothing
-				Log.i(TAG, "onReceive(): Ignored Exception");
-			}
-		}
-	}
+	/*
+	 * @Override
+	 * public void onReceive(Context c, Intent in) {
+	 * super.onReceive(c, in);
+	 * int WidgetID = AppWidgetManager.INVALID_APPWIDGET_ID;
+	 * 
+	 * if (in.getAction().equals(ACTION_CLICK)) {
+	 * RemoteViews views = new RemoteViews(c.getPackageName(), R.layout.widget_layout);
+	 * try {
+	 * AppWidgetManager awm = AppWidgetManager.getInstance(c);
+	 * awm.updateAppWidget(awm.getAppWidgetIds(new ComponentName(c, BoIPWidgetProvider.class)), views);
+	 * Toast.makeText(c, "You tapped a widget!", Toast.LENGTH_LONG).show();
+	 * 
+	 * Bundle extras = in.getExtras();
+	 * // if (extras != null) {
+	 * WidgetID = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
+	 * Log.v(TAG, "*** onReceive WidgetID: " + String.valueOf(WidgetID) + " ***");
+	 * // }
+	 * if (WidgetID == AppWidgetManager.INVALID_APPWIDGET_ID) {
+	 * Log.e(TAG, "onReceive(context, intent) Invalid AppWidgetID received!");
+	 * return;
+	 * } else {
+	 * int SvrID = 0;
+	 * SharedPreferences sVal = c.getSharedPreferences(Common.WIDGET_PREFS, 0);
+	 * // SvrID = sVal.getInt(String.valueOf(WidgetID), -1);
+	 * Server Svr = GetServer(c, SvrID);
+	 * if (Svr == null) {
+	 * Log.w(TAG, "onReceive(context, intent) Requested server ID '" + String.valueOf(SvrID) + "' could not be found in the DB!");
+	 * return;
+	 * } else {
+	 * Intent scanner = new Intent();
+	 * scanner.setClassName("com.tylerhjones.boip.client1", "com.tylerhjones.boip.client1.BarcodeScannerActivity");
+	 * scanner.putExtra(BarcodeScannerActivity.SERVER_ID, SvrID);
+	 * c.startActivity(scanner);
+	 * }
+	 * }
+	 * }
+	 * catch (Exception ignore) {
+	 * // Nothing
+	 * Log.i(TAG, "onReceive(): Ignored Exception");
+	 * }
+	 * }
+	 * }
+	 */
 	
 	public static void updateAppWidget(Context c, AppWidgetManager appWidgetManager, int mAppWidgetID) {
 		// Database and server settings variables
