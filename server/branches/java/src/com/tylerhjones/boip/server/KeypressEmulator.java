@@ -29,14 +29,22 @@ package com.tylerhjones.boip.server;
 
 import java.awt.AWTException;
 import java.awt.Robot;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
-
+import java.awt.*;
+import java.util.*;
+import java.lang.reflect.Field;
+import java.awt.event.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.*;
 
 public class KeypressEmulator {
     private static final String TAG = "KeypressEmulator";
     private static boolean ErrorOccured = false;
     private static Map<String, Integer> KeyCodes = new HashMap<String, Integer>();
+    private Robot robot;
 
     public KeypressEmulator() {
         //--- Letter Characters -------------------------
@@ -87,12 +95,20 @@ public class KeypressEmulator {
     public String typeString(String chars, boolean AppendReturn) {
         // Verify that all the chars intending to be typed are ONLY letters and numbers.
         int i;
-        if(!chars.matches("^[a-zA-Z0-9]+$") || chars.length() < 1) {
-            // HACK: Big ole hack, instead of learning how to fix the regex FTW!
-            if(!chars.equals(".") && !chars.equals(" ")) {
-                return "The data sent to the server contained illegal characters!";
-            }
+        
+       
+        try {
+            robot = new Robot();
+        } catch (AWTException ex) {
+            System.out.println(TAG + "Robot declaration exception! " + ex);
         }
+
+        //if(!chars.matches("^[a-zA-Z0-9]+$") || chars.length() < 1) {
+            // HACK: Big ole hack, instead of learning how to fix the regex FTW!
+            //if(!chars.equals(".") && !chars.equals(" ")) {
+                //return "The data sent to the server contained illegal characters!";
+            //}
+        //}095673175438
 
         try {
             char[] CharArray = chars.toCharArray();
@@ -100,10 +116,11 @@ public class KeypressEmulator {
                 System.out.println(CharArray[i]);
                 String str = String.valueOf(CharArray[i]);
                 System.out.println(TAG + " - Starting emulated keypress...  '" + str + "'");
-                this.keyPress(Integer.valueOf(KeyCodes.get(str).toString()));
-                this.keyRelease(Integer.valueOf(KeyCodes.get(str).toString()));
-                System.out.println(TAG + " - Finished emulated keypress.");
-                System.out.println("KeypressEmulator - Key Sent: '" + str + "', Code: "+ String.valueOf(Integer.valueOf(KeyCodes.get(str).toString())));
+                this.typeCharacter(robot, str);
+                //this.keyPress(Integer.valueOf(KeyCodes.get(str).toString()));
+                //this.keyRelease(Integer.valueOf(KeyCodes.get(str).toString()));
+                //System.out.println(TAG + " - Finished emulated keypress.");
+                //System.out.println("KeypressEmulator - Key Sent: '" + str + "', Code: "+ String.valueOf(Integer.valueOf(KeyCodes.get(str).toString())));
             }         
         } catch (Exception e) {
              return "The data sent to the server contained illegal characters! -- " + e.getMessage();
@@ -141,6 +158,34 @@ public class KeypressEmulator {
             ErrorOccured  = true;
             System.out.println("*ERROR*: Invalid keyRelease code: " + code);
 	}
+    }
+    
+    private void typeCharacter(Robot robot, String letter)
+    {
+        try
+        {
+            boolean upperCase = Character.isUpperCase( letter.charAt(0) );
+            String variableName = "VK_" + letter.toUpperCase();
+
+            Class clazz = KeyEvent.class;
+            Field field = clazz.getField( variableName );
+            int keyCode = field.getInt(null);
+
+            if (upperCase) {
+                robot.keyPress( KeyEvent.VK_SHIFT );
+            }
+
+            robot.keyPress( keyCode );
+            robot.keyRelease( keyCode );
+
+            if (upperCase) {
+                robot.keyRelease( KeyEvent.VK_SHIFT );
+            }
+        }
+        catch(Exception e)
+        {
+            System.out.println(e);
+        }
     }
 
 }
