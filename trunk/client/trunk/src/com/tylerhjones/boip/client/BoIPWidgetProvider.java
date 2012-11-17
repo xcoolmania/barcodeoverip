@@ -1,6 +1,6 @@
 /*
  * 
- * BarcodeOverIP (Android < v4.0.1) Version 1.0.1
+ * BarcodeOverIP (Android < v4.0.4) Version 1.0.1
  * Copyright (C) 2012, Tyler H. Jones (me@tylerjones.me)
  * http://boip.tylerjones.me/
  * 
@@ -36,6 +36,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 import android.widget.RemoteViews;
+import android.widget.Toast;
 
 public class BoIPWidgetProvider extends AppWidgetProvider {
 
@@ -43,49 +44,54 @@ public class BoIPWidgetProvider extends AppWidgetProvider {
 	public static final String TAG = "BoIPWidgetProvider";
 	
 	@Override
+	public void onDeleted(Context context, int[] appWidgetIds) {
+		// TODO Auto-generated method stub
+		// super.onDeleted(context, appWidgetIds);
+		Toast.makeText(context, "BoIPWidgetProvider.onDeleted()", Toast.LENGTH_LONG).show();
+	}
+	
+	@Override
+	public void onDisabled(Context context) {
+		// TODO Auto-generated method stub
+		// super.onDisabled(context);
+		Toast.makeText(context, "BoIPWidgetProvider.onDisabled()", Toast.LENGTH_LONG).show();
+	}
+	
+	@Override
+	public void onEnabled(Context context) {
+		// TODO Auto-generated method stub
+		// super.onEnabled(context);
+		Toast.makeText(context, "BoIPWidgetProvider.onEnabled()", Toast.LENGTH_LONG).show();
+	}
+	
+	
+	@Override
 	public void onUpdate(Context c, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-		String ServerName = "[Not Configured]";
-		// SharedPreferences sVal = c.getSharedPreferences(Common.WIDGET_PREFS, 0);
-		int ServerIdx = 0;
+		SharedPreferences sVal = c.getSharedPreferences(Common.WIDGET_PREFS, 0);
+		int WidgetID = -1;
 
-		// Database and server settings variables
-
-		// Get all ids
-		// ComponentName thisWidget = new ComponentName(c, BoIPWidgetProvider.class);
-		// int[] allAllWidgetIDs = appWidgetManager.getAppWidgetIds(thisWidget);
 		for (int i = 0; i < appWidgetIds.length; i++) {
-			int WidgetID = appWidgetIds[i];
-			Log.v(TAG, "||| onUpdate - For Loop, WidgetID: " + String.valueOf(WidgetID) + " |||");
-			// Find the server index that corresponds to the WidgetID
-			// ServerIdx = sVal.getInt(String.valueOf(WidgetID), -1);
-			if (ServerIdx < 0) {
-				Log.w(TAG, "onUpdate(c, appWidgetManager, AllWidgetIDs): Saved app pref result less than 0!");
-			} else {
-				Server found = GetServer(c, ServerIdx);
-				if (found != null) {
-					ServerName = found.getName();
-					// ServerIPPort = found.getHost() + ":" + String.valueOf(found.getPort());
-				}
-			}
-			// Create an intent to launch BarcodeScannerActivity
-			Intent scanner = new Intent();
-			scanner.setClassName("com.tylerhjones.boip.client", "com.tylerhjones.boip.client.BarcodeScannerActivity");
-			scanner.putExtra(BarcodeScannerActivity.SERVER_ID, ServerIdx);
-			//intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, AllWidgetIDs);
+			WidgetID = appWidgetIds[i];
+			int sIdx = sVal.getInt(Common.int2str(WidgetID), -1);
+			String sName = (sIdx >= 0) ? GetServer(c, sIdx).getName() : "[Not Configured]";
+			Log.v(TAG, "||| BoIPWidgetProvider.onUpdate, For-Loop, WidgetID='" + String.valueOf(WidgetID) + "' |||");
 			
+			Intent scanner = new Intent(); // Create an intent to launch BarcodeScannerActivity
+			scanner.setClassName("com.tylerhjones.boip.client", "com.tylerhjones.boip.client.BarcodeScannerActivity");
+			scanner.putExtra(BarcodeScannerActivity.SERVER_ID, sIdx);
+			//intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, AllWidgetIDs);
 			// Get the layout for the App Widget and attach an on-click listener to the widget
 			PendingIntent pendingScanner = PendingIntent.getActivity(c, 0, scanner, 0);
-			// Log.i(TAG, "onUpdate(): Setting onClick events for views");
 			// pendingIntent pendingIntent = PendingIntent.getBroadcast(c, 0, intent, BoIPWidgetProvider.ACTION_CLICK);
 			RemoteViews views = new RemoteViews(c.getPackageName(), R.layout.widget_layout);
-			views.setTextViewText(R.id.widget_lblServer, ServerName);
+			views.setTextViewText(R.id.widget_lblServer, sName);
 			views.setOnClickPendingIntent(R.id.widget_layout, pendingScanner);
-			// views.setOnClickPendingIntent(R.id.widget_lblServer, pendingIntent);
-			// views.setOnClickPendingIntent(R.id.widget_picIcon, pendingIntent);
-			// views.setOnClickPendingIntent(R.id.widget_lblMain, pendingIntent);
 			
 			// Tell the AppWidgetManager to perform an update on the current app widget
-			appWidgetManager.updateAppWidget(WidgetID, views);
+			updateAppWidget(c, appWidgetManager, WidgetID);
+			
+			// DEBUG
+			Toast.makeText(c, "onUpdate(): " + String.valueOf(i) + " : " + String.valueOf(WidgetID), Toast.LENGTH_LONG).show(); // DEBUG
 		}
         
     }
@@ -134,26 +140,21 @@ public class BoIPWidgetProvider extends AppWidgetProvider {
 	 * }
 	 * }
 	 */
-	
-	public static void updateAppWidget(Context c, AppWidgetManager appWidgetManager, int mAppWidgetID) {
+
+	public static void updateAppWidget(Context c, AppWidgetManager appWidgetManager, int WidgetID) {
 		// Database and server settings variables
-		int ServerIdx = 0;
 		SharedPreferences sVal = c.getSharedPreferences(Common.WIDGET_PREFS, 0);
-		String ServerName = "[Not Configured]";
-		// ServerIdx = sVal.getInt(String.valueOf(mAppWidgetID), -1);
-		if (ServerIdx < 0) {
-			Log.w(TAG, "updateAppWidget(c, appWidgetManager, mAppWidgetID): Saved app pref result less than 0!");
-		} else {
-			Server found = GetServer(c, ServerIdx);
-			if (found != null) {
-				ServerName = found.getName();
-			}
-		}
+		int serveridx = sVal.getInt(String.valueOf(WidgetID), -1);
+		Log.w(TAG, "BoIPWidgetProvider.updateAppWidget(c, appWidgetManager, mAppWidgetID): Saved app pref result less than 0!");
 		
 		RemoteViews views = new RemoteViews(c.getPackageName(), R.layout.widget_layout);
-		views.setTextViewText(R.id.widget_lblServer, ServerName);
-		appWidgetManager.updateAppWidget(mAppWidgetID, views);
-		Log.i(TAG, "*** updateAppWidget() CALLED!");
+		views.setTextViewText(R.id.widget_lblServer, GetServer(c, serveridx).getName());
+		appWidgetManager.updateAppWidget(WidgetID, views);
+		Log.i(TAG, "*** BoIPWidgetProvider.updateAppWidget() CALLED!");
+		
+		Toast.makeText(c,
+			"BoIPWidgetProvider.updateAppWidget(): WidgetID='" + String.valueOf(WidgetID) + "'\nServer='" + GetServer(c, serveridx).getName() + "'",
+			Toast.LENGTH_LONG).show();
 	}
 	
 	// This function returns a server object from the DB when given the LIST ITEM INDEX of said server.
@@ -164,9 +165,9 @@ public class BoIPWidgetProvider extends AppWidgetProvider {
 		DB.open();
 		Servers = DB.getAllServers();
 		DB.close();
-		Log.v(TAG, "UpdateList(): Got servers. Count: " + String.valueOf(Servers.size()));
+		Log.v(TAG, "BoIPWidgetProvider.UpdateList(): Got servers. Count: " + String.valueOf(Servers.size()));
 		if (!Servers.equals(null) && Servers.size() > 0) {
-			Log.v(TAG, "GetServer(): Recieved and returned server data...");
+			Log.v(TAG, "BoIPWidgetProvider.GetServer(): Recieved and returned server data...");
 			if (Servers.size() == 1) {
 				return Servers.get(0);
 			} else {
@@ -175,7 +176,7 @@ public class BoIPWidgetProvider extends AppWidgetProvider {
 				}
 			}
 		}
-		Log.w(TAG, "GetServer(context,index) found no servers!");
+		Log.w(TAG, "BoIPWidgetProvider.GetServer(context,index) found no servers!");
 		return null;
 	}
 }

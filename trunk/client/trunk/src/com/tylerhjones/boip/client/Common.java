@@ -1,6 +1,6 @@
 /*
  * 
- * BarcodeOverIP (Android < v4.0.1) Version 1.0.1
+ * BarcodeOverIP (Android < v4.0.4) Version 1.0.1
  * Copyright (C) 2012, Tyler H. Jones (me@tylerjones.me)
  * http://boip.tylerjones.me/
  * 
@@ -147,6 +147,15 @@ public class Common {
 		}
 	}
 	
+	public static String int2str(int i) {
+		try {
+			return String.valueOf(i);
+		}
+		catch (NumberFormatException e) {
+			return "-1";
+		}
+	}
+
 	public static void showAbout(Context c) {
 		final TextView message = new TextView(c);
 		final SpannableString s = new SpannableString(c.getText(R.string.about_msg_body));
