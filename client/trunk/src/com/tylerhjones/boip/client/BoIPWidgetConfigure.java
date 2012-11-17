@@ -1,6 +1,6 @@
 /*
  * 
- * BarcodeOverIP (Android < v4.0.1) Version 1.0.1
+ * BarcodeOverIP (Android < v4.0.4) Version 1.0.1
  * Copyright (C) 2012, Tyler H. Jones (me@tylerjones.me)
  * http://boip.tylerjones.me/
  * 
@@ -40,9 +40,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class BoIPWidgetConfigure extends ListActivity {
 	
@@ -81,35 +82,39 @@ public class BoIPWidgetConfigure extends ListActivity {
 		this.theAdapter = new ServerAdapter(this, R.layout.serverlist_item, Servers);
 		setListAdapter(theAdapter);
 		UpdateList();
-		getListView().setOnItemClickListener(new OnItemClickListener() {
-			
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				SharedPreferences sVal = getSharedPreferences(Common.WIDGET_PREFS, 0);
-				Editor sEdit;
-				CurServer = Servers.get(position);
-				sEdit = sVal.edit();
-				sEdit.putInt(String.valueOf(WidgetID), CurServer.getIndex());
-				sEdit.commit();
-
-				//
-				// Apply the new widget settings to our new widgets and place it on the home screen then exit this activity
-				//
-				
-				AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
-				// RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
-				// appWidgetManager.updateAppWidget(WidgetID, views);
-				BoIPWidgetProvider.updateAppWidget(getApplicationContext(), appWidgetManager, WidgetID);
-				
-				// Make sure we pass back the original appWidgetId
-				Intent resultValue = new Intent();
-				resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, WidgetID);
-				setResult(RESULT_OK, resultValue);
-				finish();
-			}
-		});
+		getListView().setOnItemClickListener(ListItemOnClickListener);
 		
 	}
+	
+	// Class for ListItemOnClickListener handling
+	private ListView.OnItemClickListener ListItemOnClickListener = new ListView.OnItemClickListener() {
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+			SharedPreferences sVal = getSharedPreferences(Common.WIDGET_PREFS, 0);
+			Editor sEdit;
+			CurServer = Servers.get(position);
+			sEdit = sVal.edit();
+			sEdit.putInt(String.valueOf(WidgetID), CurServer.getIndex());
+			sEdit.commit();
+
+			//
+			// Apply the new widget settings to our new widgets and place it on the home screen then exit this activity
+			//
+			final Context context = BoIPWidgetConfigure.this;
+			AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+			// RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
+			// appWidgetManager.updateAppWidget(WidgetID, views);
+			BoIPWidgetProvider.updateAppWidget(context, appWidgetManager, WidgetID);
+			
+			Toast.makeText(context, "BoIPWidgetConfigure.onClick(): " + String.valueOf(WidgetID), Toast.LENGTH_LONG).show();
+			
+			// Make sure we pass back the original appWidgetId
+			Intent resultValue = new Intent();
+			resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, WidgetID);
+			setResult(RESULT_OK, resultValue);
+			finish();
+		}};
+
 	
 	private void UpdateList() {
 		
