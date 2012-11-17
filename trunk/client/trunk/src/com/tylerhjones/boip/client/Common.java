@@ -24,7 +24,7 @@
  */
 
 
-package com.tylerhjones.boip.client1;
+package com.tylerhjones.boip.client;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

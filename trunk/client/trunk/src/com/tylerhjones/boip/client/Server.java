@@ -23,7 +23,7 @@
  * Description: Storage class for server settings
  */
 
-package com.tylerhjones.boip.client1;
+package com.tylerhjones.boip.client;
 
 import android.util.Log;
 

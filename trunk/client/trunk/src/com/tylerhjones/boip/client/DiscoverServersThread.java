@@ -24,7 +24,7 @@
  * available/running BoIP-Server applications
  */
 
-package com.tylerhjones.boip.client1;
+package com.tylerhjones.boip.client;
 
 
 import java.io.IOException;

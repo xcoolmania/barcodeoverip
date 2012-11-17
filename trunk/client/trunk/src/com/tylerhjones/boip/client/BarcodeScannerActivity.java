@@ -23,7 +23,7 @@
  * Description: Handle the widget's configuration
  */
 
-package com.tylerhjones.boip.client1;
+package com.tylerhjones.boip.client;
 
 
 import java.util.ArrayList;

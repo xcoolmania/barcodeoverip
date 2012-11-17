@@ -24,7 +24,7 @@
  */
 
 
-package com.tylerhjones.boip.client1;
+package com.tylerhjones.boip.client;
 
 import java.util.ArrayList;
 import android.app.AlertDialog;
@@ -131,7 +131,7 @@ public class BoIPActivity extends ListActivity {
 				sEdit.putInt(Common.PREF_CURSRV, CurServer.getIndex());
 				sEdit.commit();
 				Intent scanner = new Intent();
-				scanner.setClassName("com.tylerhjones.boip.client1", "com.tylerhjones.boip.client1.BarcodeScannerActivity");
+				scanner.setClassName("com.tylerhjones.boip.client", "com.tylerhjones.boip.client.BarcodeScannerActivity");
 				scanner.putExtra(BarcodeScannerActivity.SERVER_ID, CurServer.getIndex());
 				startActivity(scanner);
 			}
@@ -389,8 +389,8 @@ public class BoIPActivity extends ListActivity {
 		switch (item.getItemId()) {
 			case R.id.mnuMainFindServers:
 				//Intent intent = new Intent();
-				//intent.setClassName("com.tylerhjones.boip.client1", "com.tylerhjones.boip.client1.DiscoverServersActivity");
-				//intent.putExtra("com.tylerhjones.boip.client1.Action", Common.ADD_SREQ);
+				//intent.setClassName("com.tylerhjones.boip.client", "com.tylerhjones.boip.client.DiscoverServersActivity");
+				//intent.putExtra("com.tylerhjones.boip.client.Action", Common.ADD_SREQ);
 				//startActivityForResult(intent, Common.ADD_SREQ);
 				return true;
 			case R.id.mnuMainAbout:
@@ -413,16 +413,16 @@ public class BoIPActivity extends ListActivity {
 	
 	private void showServerInfo(Server s) { // Server object given, edit server
 		Intent intent = new Intent();
-		intent.setClassName("com.tylerhjones.boip.client1", "com.tylerhjones.boip.client1.ServerInfoActivity");
-		intent.putExtra("com.tylerhjones.boip.client1.ServerIndex", s.getIndex());
-		intent.putExtra("com.tylerhjones.boip.client1.Action", Common.EDIT_SREQ);
+		intent.setClassName("com.tylerhjones.boip.client", "com.tylerhjones.boip.client.ServerInfoActivity");
+		intent.putExtra("com.tylerhjones.boip.client.ServerIndex", s.getIndex());
+		intent.putExtra("com.tylerhjones.boip.client.Action", Common.EDIT_SREQ);
 		startActivityForResult(intent, Common.EDIT_SREQ);
 	}
 	
 	private void addServer() {
 		Intent intent = new Intent();
-		intent.setClassName("com.tylerhjones.boip.client1", "com.tylerhjones.boip.client1.ServerInfoActivity");
-		intent.putExtra("com.tylerhjones.boip.client1.Action", Common.ADD_SREQ);
+		intent.setClassName("com.tylerhjones.boip.client", "com.tylerhjones.boip.client.ServerInfoActivity");
+		intent.putExtra("com.tylerhjones.boip.client.Action", Common.ADD_SREQ);
 		startActivityForResult(intent, Common.ADD_SREQ);
 	}
 	

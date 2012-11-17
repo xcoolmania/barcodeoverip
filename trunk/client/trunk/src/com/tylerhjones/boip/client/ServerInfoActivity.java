@@ -24,7 +24,7 @@
  */
 
 
-package com.tylerhjones.boip.client1;
+package com.tylerhjones.boip.client;
 
 
 import java.util.ArrayList;
@@ -81,7 +81,7 @@ public class ServerInfoActivity extends Activity {
 		setContentView(R.layout.serverinfo); // Setup the window form layout
 		lblTitle = (TextView)this.findViewById(R.id.lblTitle);
 		
-		int action = this.getIntent().getIntExtra("com.tylerhjones.boip.client1.Action", Common.ADD_SREQ);
+		int action = this.getIntent().getIntExtra("com.tylerhjones.boip.client.Action", Common.ADD_SREQ);
 		Log.d(TAG, "*** Intent passed 'Action' to ServerInfoActivity with value: '" + String.valueOf(action) + "'"); // DEBUG
 		thisAction = action;
 
@@ -161,7 +161,7 @@ public class ServerInfoActivity extends Activity {
 		
 		if (action == Common.EDIT_SREQ) {
 			lblTitle.setText(getText(R.string.server_settings));
-			SIdx = getIntent().getIntExtra("com.tylerhjones.boip.client1.ServerIndex", -1);
+			SIdx = getIntent().getIntExtra("com.tylerhjones.boip.client.ServerIndex", -1);
 			Log.d(TAG, "*** Intent passed 'ServerIndex' to ServerInfoActivity with value: '" + String.valueOf(SIdx) + "'"); // DEBUG
 			if (SIdx >= 0) {
 				DB.open();
