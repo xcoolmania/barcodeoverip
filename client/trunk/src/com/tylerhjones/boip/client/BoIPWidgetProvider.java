@@ -24,7 +24,7 @@
  */
 
 
-package com.tylerhjones.boip.client1;
+package com.tylerhjones.boip.client;
 
 
 import java.util.ArrayList;
@@ -69,7 +69,7 @@ public class BoIPWidgetProvider extends AppWidgetProvider {
 			}
 			// Create an intent to launch BarcodeScannerActivity
 			Intent scanner = new Intent();
-			scanner.setClassName("com.tylerhjones.boip.client1", "com.tylerhjones.boip.client1.BarcodeScannerActivity");
+			scanner.setClassName("com.tylerhjones.boip.client", "com.tylerhjones.boip.client.BarcodeScannerActivity");
 			scanner.putExtra(BarcodeScannerActivity.SERVER_ID, ServerIdx);
 			//intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, AllWidgetIDs);
 			
@@ -121,7 +121,7 @@ public class BoIPWidgetProvider extends AppWidgetProvider {
 	 * return;
 	 * } else {
 	 * Intent scanner = new Intent();
-	 * scanner.setClassName("com.tylerhjones.boip.client1", "com.tylerhjones.boip.client1.BarcodeScannerActivity");
+	 * scanner.setClassName("com.tylerhjones.boip.client", "com.tylerhjones.boip.client.BarcodeScannerActivity");
 	 * scanner.putExtra(BarcodeScannerActivity.SERVER_ID, SvrID);
 	 * c.startActivity(scanner);
 	 * }

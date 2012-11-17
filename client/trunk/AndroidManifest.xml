@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.tylerhjones.boip.client1"
-    android:versionCode="21"
+    package="com.tylerhjones.boip.client"
+    android:versionCode="22"
     android:versionName="1.0.1" >
 
-    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="14"></uses-sdk>
+    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="14" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -13,6 +13,7 @@
     <application
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
+        android:allowBackup="true"
         android:description="@string/app_desc" >
         <activity
             android:name=".BoIPActivity"
@@ -50,7 +51,7 @@
 		</activity>
         <activity 
             android:exported="false"
-            android:name=".BoIPWidgetConfigure"
+            android:name="com.tylerhjones.boip.client.BoIPWidgetConfigure"
     		android:label="@string/widget_config_title">
     		<intent-filter>
         		<action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
@@ -58,7 +59,7 @@
 		</activity>
         
         <receiver 
-            android:name="BoIPWidgetProvider"
+            android:name="com.tylerhjones.boip.client.BoIPWidgetProvider"
             android:label="@string/widget_label"
             android:exported="false">
     		<intent-filter>
@@ -75,7 +76,7 @@
         android:normalScreens="true"
         android:smallScreens="true" />
         
-        <service android:name="BoIPService" >
+        <service android:name="com.tylerhjones.boip.client.BoIPService" >
 		</service> 
 		
     </application>     

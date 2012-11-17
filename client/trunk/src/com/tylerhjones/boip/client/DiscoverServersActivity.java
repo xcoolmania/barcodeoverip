@@ -23,7 +23,7 @@
  * Description: Add and edit servers
  */
 
-package com.tylerhjones.boip.client1;
+package com.tylerhjones.boip.client;
 
 import java.util.Vector;
 import android.app.Activity;
