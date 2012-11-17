@@ -125,7 +125,7 @@ public class BarcodeScannerActivity extends Activity {
 			
 		} else {
 			Log.w(TAG, "onCreate() is != null, skipping retrival of intent extras");
-			ServerID = Integer.valueOf(si.getSerializable(SERVER_ID).toString());
+			ServerID = Integer.valueOf(si.getSerializable(BarcodeScannerActivity.SERVER_ID).toString());
 		}
 		
 		SharedPreferences sVal = getSharedPreferences(Common.PREFS, 0);

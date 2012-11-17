@@ -42,7 +42,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.RemoteViews;
 import android.widget.TextView;
 
 public class BoIPWidgetConfigure extends ListActivity {
@@ -97,10 +96,10 @@ public class BoIPWidgetConfigure extends ListActivity {
 				// Apply the new widget settings to our new widgets and place it on the home screen then exit this activity
 				//
 				
-				final Context context = BoIPWidgetConfigure.this;
-				AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-				RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
-				appWidgetManager.updateAppWidget(WidgetID, views);
+				AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
+				// RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
+				// appWidgetManager.updateAppWidget(WidgetID, views);
+				BoIPWidgetProvider.updateAppWidget(getApplicationContext(), appWidgetManager, WidgetID);
 				
 				// Make sure we pass back the original appWidgetId
 				Intent resultValue = new Intent();
