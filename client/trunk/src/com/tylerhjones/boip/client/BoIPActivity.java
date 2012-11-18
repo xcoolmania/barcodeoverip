@@ -186,26 +186,28 @@ public class BoIPActivity extends ListActivity {
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setMessage(getText(R.string.deleteserver_msg_body)).setTitle(getText(R.string.deleteserver_msg_title)).setCancelable(false)
 									.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-										//Toast.makeText(this, "Server name exists! Save aborted!", 6).show();
-										// return;
-																		@Override
+										
+										@Override
 										public void onClick(DialogInterface dialog, int id) {
 											DB.open();
 											if (!DB.deleteServer(Servers.get(info.position))) {
 												Log.e(TAG, "onContextItemSelected(): Failed to delete server from DB table!");
 											}
-											Servers.clear();
-											theAdapter.clear();
-											if (DB.getRecordCount() > 0) {
-												Servers = DB.getAllServers();
-												DB.close();
-												theAdapter.notifyDataSetChanged();
-												for (Server s : Servers) {
-													theAdapter.add(s);
-												}
-											} else {
-												DB.close();
-											}
+											DB.close();
+											UpdateList();
+											// Servers = DB.getAllServers();
+											// DB.close();
+											// Servers.clear();
+											// theAdapter.clear();
+											// if (DB.getRecordCount() > 0) {
+											// DB.close();
+											// theAdapter.notifyDataSetChanged();
+											// for (Server s : Servers) {
+											// theAdapter.add(s);
+											// }
+											// } else {
+											// DB.close();
+											// }
 										}
 									}).setNegativeButton("No", new DialogInterface.OnClickListener() {
 										
@@ -387,7 +389,8 @@ public class BoIPActivity extends ListActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle item selection
 		switch (item.getItemId()) {
-			case R.id.mnuMainFindServers:
+			case R.id.mnuRefreshServers:
+				UpdateList();
 				//Intent intent = new Intent();
 				//intent.setClassName("com.tylerhjones.boip.client", "com.tylerhjones.boip.client.DiscoverServersActivity");
 				//intent.putExtra("com.tylerhjones.boip.client.Action", Common.ADD_SREQ);
