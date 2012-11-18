@@ -31,7 +31,7 @@
     <string name="server_settings_title">Server Settings</string>
 
 	<!-- Menus text and info -->
-	<string name="mnuMainFindServers_title">Find Servers</string>
+	<string name="mnuRefreshServers_title">Refresh</string>
 	<string name="mnuMainAddServer_title">Add Server</string>
 	<string name="mnuMainAbout_title">About</string>
 	<string name="mnuMainDonate_title">Donate</string>
@@ -44,7 +44,8 @@
 	    Once you have added one or more servers, to scan a barcode,
 	    simply touch the desired server on the list and scan away!\nTo edit/remove a server, press and hold 
 	    the target server in the list and a menu will appear.\n
-	    <b>**NOTE: </b>The server application is available on the project site and the Google Code site as well.\n\n
+	    <b>*NOTE1: </b>The home screen widget that this app provides DOES NOT CURRENTLY WORK!. If you try to use it, it will fail!\n
+	    <b>**NOTE2: </b>The server application is available on the project site and the Google Code site as well.\n\n
 	    http://boip.tylerjones.me\n
 	    http://b.thj.me/donate\n
 	</string>	
@@ -95,7 +96,7 @@
 	</string-array>
 
 	<!-- Widget text and hints -->
-	<string name="txtname_hint">(Unique)</string>
+	<string name="txtname_hint">(Unique Nickname)</string>
 	<string name="txthost_hint">(Unique Hostname/IP)</string>
 	<string name="txtport_hint">41788 (Default)</string> 
 	<string name="txtpass_hint">NONE (Default)</string>

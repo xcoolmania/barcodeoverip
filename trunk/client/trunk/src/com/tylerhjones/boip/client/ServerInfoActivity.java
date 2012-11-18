@@ -27,7 +27,6 @@
 package com.tylerhjones.boip.client;
 
 
-import java.util.ArrayList;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -252,24 +251,18 @@ public class ServerInfoActivity extends Activity {
 		} 
 		
 		DB.open();
-		int i = 0;
-		ArrayList<Server> ServersArray = new ArrayList<Server>();
-		ServersArray = DB.getAllServers();
-		DB.close();
-		for (Server s : ServersArray) {
-			if (s.getHost().toString().trim().equals(txtHost.getText()) && i != SIdx) {
-				this.MsgBox(getText(R.string.hostexists_msg_body).toString(), getText(R.string.hostexists_msg_title).toString());
-				txtHost.requestFocus();
-				return false;
-			}
-			if (s.getName().toString().trim().equals(txtName.getText()) && i != SIdx) {
-				this.MsgBox(getText(R.string.nameexists_msg_body).toString(), getText(R.string.nameexists_msg_title).toString());
-				txtName.requestFocus();
-				return false;
-			}
-			++i;
+		if (DB.getHostExists(txtHost.getText().toString())) {
+			this.MsgBox(getText(R.string.hostexists_msg_body).toString(), getText(R.string.hostexists_msg_title).toString());
+			txtHost.requestFocus();
+			return false;
 		}
-		
+		if (DB.getNameExists(txtName.getText().toString())) {
+			this.MsgBox(getText(R.string.nameexists_msg_body).toString(), getText(R.string.nameexists_msg_title).toString());
+			txtName.requestFocus();
+			return false;
+		}
+		DB.close();
+
 		try {
 			if (!Common.isValidPort(txtPort.getText().toString().trim())) {
 				MsgBox(getText(R.string.invalidport_msg_title).toString(), getText(R.string.invalidportrange_msg_body).toString());
