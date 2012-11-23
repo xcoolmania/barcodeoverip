@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.tylerhjones.boip.client"
-    android:versionCode="24"
-    android:versionName="1.0.2" >
+    android:versionCode="25"
+    android:versionName="1.0.3" >
 
     <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="14" />
 
@@ -32,7 +32,6 @@
             </intent-filter>
         </activity> -->
         <activity
-            android:exported="false"
             android:name=".ServerInfoActivity"       
             android:label="@string/server_info">
             <intent-filter>
@@ -41,7 +40,6 @@
             </intent-filter>
         </activity>
         <activity 
-            android:exported="false"
             android:name=".BarcodeScannerActivity"
             android:label="@string/scanner_activity">
     		<intent-filter>
@@ -50,7 +48,6 @@
             </intent-filter>
 		</activity>
         <activity 
-            android:exported="false"
             android:name=".BoIPWidgetConfigure"
     		android:label="@string/widget_config_title">
     		<intent-filter>
