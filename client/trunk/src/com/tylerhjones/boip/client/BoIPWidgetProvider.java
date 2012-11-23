@@ -49,21 +49,21 @@ public class BoIPWidgetProvider extends AppWidgetProvider {
 	public void onDeleted(Context context, int[] appWidgetIds) {
 		// TODO Auto-generated method stub
 		// super.onDeleted(context, appWidgetIds);
-		Toast.makeText(context, "BoIPWidgetProvider.onDeleted()", Toast.LENGTH_LONG).show();
+		//Toast.makeText(context, "BoIPWidgetProvider.onDeleted()", Toast.LENGTH_LONG).show();
 	}
 	
 	@Override
 	public void onDisabled(Context context) {
 		// TODO Auto-generated method stub
 		// super.onDisabled(context);
-		Toast.makeText(context, "BoIPWidgetProvider.onDisabled()", Toast.LENGTH_LONG).show();
+		//Toast.makeText(context, "BoIPWidgetProvider.onDisabled()", Toast.LENGTH_LONG).show();
 	}
 	
 	@Override
 	public void onEnabled(Context context) {
 		// TODO Auto-generated method stub
 		// super.onEnabled(context);
-		Toast.makeText(context, "BoIPWidgetProvider.onEnabled()", Toast.LENGTH_LONG).show();
+		//Toast.makeText(context, "BoIPWidgetProvider.onEnabled()", Toast.LENGTH_LONG).show();
 	}
 	
 	
@@ -78,21 +78,19 @@ public class BoIPWidgetProvider extends AppWidgetProvider {
 			String sName = (sIdx >= 0) ? GetServer(c, sIdx).getName() : "[Not Configured]";
 			Log.v(TAG, "||| BoIPWidgetProvider.onUpdate, For-Loop, WidgetID='" + String.valueOf(WidgetID) + "' |||");
 			
-			Intent scanner = new Intent(); // Create an intent to launch BarcodeScannerActivity
+			Intent scanner = new Intent();
 			scanner.setClassName("com.tylerhjones.boip.client", "com.tylerhjones.boip.client.BarcodeScannerActivity");
 			scanner.putExtra(BarcodeScannerActivity.SERVER_ID, sIdx);
-			//intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, AllWidgetIDs);
 			// Get the layout for the App Widget and attach an on-click listener to the widget
 			PendingIntent pendingScanner = PendingIntent.getActivity(c, 0, scanner, 0);
 			//PendingIntent pendingIntent = PendingIntent.getBroadcast(c, 0, intent, BoIPWidgetProvider.ACTION_CLICK);
 			RemoteViews views = new RemoteViews(c.getPackageName(), R.layout.widget_layout);
 			views.setTextViewText(R.id.widget_lblServer, sName);
-			views.setOnClickPendingIntent(R.id.widget_picIcon, pendingScanner);
-			views.setOnClickPendingIntent(R.id.widget_lblMain, pendingScanner);
-			views.setOnClickPendingIntent(R.id.widget_lblServer, pendingScanner);
+			views.setOnClickPendingIntent(R.id.btnWidgetScan, pendingScanner);
+
 			
 			// Tell the AppWidgetManager to perform an update on the current app widget
-			updateAppWidget(c, appWidgetManager, WidgetID);
+			appWidgetManager.updateAppWidget(appWidgetIds, views);
 			
 			// DEBUG
 			//Toast.makeText(c, "onUpdate(): " + String.valueOf(i) + " : " + String.valueOf(WidgetID), Toast.LENGTH_LONG).show(); // DEBUG
@@ -142,7 +140,7 @@ public class BoIPWidgetProvider extends AppWidgetProvider {
 //		 }
 //	     }
 //	}
-	 
+	/* 
 	public static void updateAppWidget(Context c, AppWidgetManager appWidgetManager, int WidgetID) {
 		// Database and server settings variables
 		SharedPreferences sVal = c.getSharedPreferences(Common.WIDGET_PREFS, 0);
@@ -154,11 +152,9 @@ public class BoIPWidgetProvider extends AppWidgetProvider {
 		appWidgetManager.updateAppWidget(WidgetID, views);
 		Log.i(TAG, "*** BoIPWidgetProvider.updateAppWidget() CALLED!");
 		
-		Toast.makeText(c,
-			"BoIPWidgetProvider.updateAppWidget(): WidgetID='" + String.valueOf(WidgetID) + "'\nServer='" + GetServer(c, serveridx).getName() + "'",
-			Toast.LENGTH_LONG).show();
+		//Toast.makeText(c, "BoIPWidgetProvider.updateAppWidget(): WidgetID='" + String.valueOf(WidgetID) + "'\nServer='" + GetServer(c, serveridx).getName() + "'", Toast.LENGTH_LONG).show();
 	}
-	
+	*/
 	// This function returns a server object from the DB when given the LIST ITEM INDEX of said server.
 	private static Server GetServer(Context c, int idx) {
 		
@@ -181,4 +177,5 @@ public class BoIPWidgetProvider extends AppWidgetProvider {
 		Log.w(TAG, "BoIPWidgetProvider.GetServer(context,index) found no servers!");
 		return null;
 	}
+	
 }
