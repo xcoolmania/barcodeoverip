@@ -1,6 +1,6 @@
 /*
  * 
- * BarcodeOverIP (Android < v4.0.4) Version 1.0.1
+ * BarcodeOverIP (Android < v4.0.3) Version 1.0.3
  * Copyright (C) 2012, Tyler H. Jones (me@tylerjones.me)
  * http://boip.tylerjones.me/
  * 
