@@ -115,7 +115,7 @@
 	</string-array>
 	
 	<string name="widget_lblServer">[Target Server]</string>
-	<string name="widget_lblMain">Tap widget to scan and send a barcode to the following server:</string>
+	<string name="widget_lblMain">Scan barcode to server:</string>
 	<string name="scanner_activity">Scan Barcode w/ZXing</string>
 	<string name="widget_picIcon">BarcodeOverIP application icon.</string>
 	<string name="widget_config_title">Pick a target for the widget to use.</string>

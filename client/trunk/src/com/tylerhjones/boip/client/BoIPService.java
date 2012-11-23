@@ -77,27 +77,29 @@ public class BoIPService extends IntentService {
 	
 	@Override
 	protected void onHandleIntent(Intent intent) {
-		int sindex = intent.getIntExtra("INDEX", -1);
+		String sname = intent.getStringExtra("SNAME");
 		int action = intent.getIntExtra("ACTION", -1);
 		String result = "NONE";
 		
-		this.CurServer = this.getServer(sindex);
-
-		if (action == VALIDATE && sindex >= 0) {
+		DB.open();
+		this.CurServer = DB.getServerFromName(sname);
+			
+		if (action == VALIDATE && DB.getNameExists(sname)) {
 			result = this.Validate();
 			this.intResult = Activity.RESULT_OK;
-		} else if (action == SEND && sindex >= 0) {
+		} else if (action == SEND && DB.getNameExists(sname)) {
 			result = this.sendBarcode(intent.getStringExtra("BARCODE").toString());
 			this.intResult = Activity.RESULT_OK;
 		} else {
-			if (sindex < 0) {
-				Log.e(TAG, "Negative index value!");
+			if (!DB.getNameExists(sname)) {
+				Log.e(TAG, "Invalid server name!");
 				result = "ERR_Index";
 			} else {
 				Log.e(TAG, "Invalid intent action! Given: " + action);
 				result = "ERR_Intent";
 			}
 		}
+		DB.close();
 		
 		// Send the results of the service action back to the parent activity via a messenger object
 		Bundle extras = intent.getExtras();
@@ -105,7 +107,7 @@ public class BoIPService extends IntentService {
 			Messenger messenger = (Messenger) extras.get("MESSENGER");
 			Message msg = Message.obtain();
 			Bundle bundle = new Bundle();
-			bundle.putInt("INDEX", sindex);
+			bundle.putString("SNAME", sname);
 			bundle.putString("RESULT", result);
 			bundle.putInt("ACTION", action);
 			msg.arg1 = this.intResult;
@@ -119,25 +121,8 @@ public class BoIPService extends IntentService {
 		}
 	}
 	
-	// Get the target server object from the DB given the server index
-	private Server getServer(int i) {
-		Server s = new Server();
-		DB.open();
-		try {
-			s = DB.getAllServers().get(i);
-		}
-		catch (Exception e) {
-			DB.close();
-			Log.e(TAG, "getServer(int): Exception getting server object using index.");
-			return null;
-		}
-		DB.close();
-		return s;
-	}
-
 	// Connect to a server given the host/IP and port number.
 	public String connect() {
-		Log.i(TAG, "connect() - Attempting to connect to the server...");
 		try {
 			sock = new Socket(CurServer.getHost(), CurServer.getPort());
 			Log.i(TAG, "connect() - Connection with server is established");
@@ -157,7 +142,6 @@ public class BoIPService extends IntentService {
 	
 	// Close the server connection and all associated data variable and arrays (saves some RAM)
 	public void close() {
-		Log.i(TAG, "Connection with server was closed with 'BoIPClient.close()'");
 		try {
 			input.close();
 			output.close();
@@ -215,9 +199,7 @@ public class BoIPService extends IntentService {
 		String result;
 		try {
 			this.connect();
-			Log.v(TAG, "***** sendBarcode() - passhash: " + this.CurServer.getPassHash()); // DEBUG
 			String servermsg = this.CurServer.getPassHash() + Common.DSEP + barcode + Common.SMC;
-			Log.v(TAG, "***** sendBarcode() - servermsg: " + servermsg); // DEBUG
 			this.output.println(servermsg);
 			
 			while ((result = input.readLine().trim()) != null) {
@@ -258,21 +240,21 @@ public class BoIPService extends IntentService {
 			addr = InetAddress.getByName(s);
 		}
 		catch (UnknownHostException e) {
-			Toast.makeText(this, "Invalid Hostname/IP Address! (-1)", Toast.LENGTH_LONG).show();
+			Toast.makeText(getApplicationContext(), "Invalid Hostname/IP Address! (-1)", Toast.LENGTH_LONG).show();
 			return null;
 		}
 		if (addr.isLoopbackAddress() || addr.isLinkLocalAddress() || addr.isAnyLocalAddress()) {
-			Toast.makeText(this, "Invalid IP Address! IP must point to a physical, reachable computer!  (-2)", Toast.LENGTH_LONG).show();
+			Toast.makeText(getApplicationContext(), "Invalid IP Address! IP must point to a physical, reachable computer!  (-2)", Toast.LENGTH_LONG).show();
 			return null;
 		}
 		try {
 			if (!addr.isReachable(2500)) {
-				Toast.makeText(this, "Address/Hosst is unreachable! (2500ms Timeout) (-3)", Toast.LENGTH_LONG).show();
+				Toast.makeText(getApplicationContext(), "Address/Hosst is unreachable! (2500ms Timeout) (-3)", Toast.LENGTH_LONG).show();
 				return null;
 			}
 		}
 		catch (IOException e1) {
-			Toast.makeText(this, "Address/Host is unreachable! (Error Connecting) (-4)", Toast.LENGTH_LONG).show();
+			Toast.makeText(getApplicationContext(), "Address/Host is unreachable! (Error Connecting) (-4)", Toast.LENGTH_LONG).show();
 			return null;
 		}
 		
