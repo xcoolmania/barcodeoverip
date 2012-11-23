@@ -110,24 +110,17 @@ public class BarcodeScannerActivity extends Activity {
 		Log.d(TAG, "onCreate(Bundle si): Get all " + String.valueOf(DB.getRecordCount()) + " from the DB.");
 		DB.close();
 		
-		if (si == null) {
-			
-			Intent intent = getIntent();
-			Bundle extras = intent.getExtras();
-			if (extras != null) {
-				ServerID = extras.getInt(BarcodeScannerActivity.SERVER_ID, BarcodeScannerActivity.INVALID_SERVER_ID);
-				Log.v(TAG, "OnCreate() ServerID: " + String.valueOf(ServerID));
-			}
-			if (ServerID == BarcodeScannerActivity.INVALID_SERVER_ID || ServerID >= Servers.size()) {
-				Log.w(TAG, "onCreate() ServerID is >= .size() -OR- the server id is invalid!!");
-				finish();
-			}
-			
-		} else {
-			Log.w(TAG, "onCreate() is != null, skipping retrival of intent extras");
-			ServerID = Integer.valueOf(si.getSerializable(BarcodeScannerActivity.SERVER_ID).toString());
+		Intent intent = getIntent();
+		Bundle extras = intent.getExtras();
+		if (extras != null) {
+			ServerID = extras.getInt(BarcodeScannerActivity.SERVER_ID, BarcodeScannerActivity.INVALID_SERVER_ID);
+			Log.v(TAG, "OnCreate() ServerID: " + String.valueOf(ServerID));
 		}
-		
+		if (ServerID == BarcodeScannerActivity.INVALID_SERVER_ID || ServerID >= Servers.size()) {
+			Log.w(TAG, "onCreate() ServerID is >= .size() -OR- the server id is invalid!!");
+			finish();
+		}
+			
 		SharedPreferences sVal = getSharedPreferences(Common.PREFS, 0);
 		Editor sEdit;
 		CurServer = Servers.get(ServerID);
