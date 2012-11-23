@@ -13,26 +13,13 @@
             android:layout_width="wrap_content"
             android:layout_height="48dp"
             android:layout_alignParentBottom="true"
-            android:layout_alignTop="@+id/widget_lblMain"
+            android:layout_alignTop="@+id/widget_lblServer"
             android:layout_gravity="center"
             android:layout_margin="4dp"
             android:contentDescription="@string/widget_icon_desc"
             android:src="@drawable/ic_launcher" >
 
     	</ImageView>
-    	   	
-	    <TextView
-	        android:id="@+id/widget_lblMain"
-	        style="@android:style/TextAppearance.Small"
-	        android:layout_width="match_parent"
-	        android:layout_height="match_parent"
-	        android:layout_alignParentRight="true"
-	        android:layout_toRightOf="@+id/widget_picIcon"
-			android:layout_margin="4dp"  		        
-	        android:gravity="left"
-	        android:text="@string/widget_lblMain" >
-
-	    </TextView>
 
 	    <TextView
 	        android:id="@+id/widget_lblServer"
@@ -42,7 +29,16 @@
 	        android:layout_alignParentRight="true"
 	        android:layout_toRightOf="@+id/widget_picIcon"
 	        android:layout_margin="4dp"  		        
-	        android:gravity="center|bottom"
+	        android:gravity="center|top"
 	        android:text="@string/widget_lblServer" />
+
+	    <Button
+	        android:id="@+id/btnWidgetScan"
+	      	android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentBottom="true"
+	        android:layout_centerHorizontal="true"
+	       	android:layout_toRightOf="@+id/widget_picIcon"
+	        android:text="@string/btnWidgetScan_label" />
     
     </RelativeLayout>        

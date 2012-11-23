@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
@@ -42,6 +43,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.RemoteViews;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -115,15 +117,26 @@ public class BoIPWidgetConfigure extends Activity {
 	private Button.OnClickListener btnOKOnClickListener = new Button.OnClickListener() {
 	    	@Override
 		public void onClick(View view) {
+	    	    	AppWidgetManager apw = AppWidgetManager.getInstance(getApplicationContext());
 			SharedPreferences sVal = getSharedPreferences(Common.WIDGET_PREFS, 0);
 			Editor sEdit;
 			sEdit = sVal.edit();
 			sEdit.putInt(String.valueOf(WidgetID), CurServer.getIndex());
 			sEdit.commit();
 
-			final Context context = BoIPWidgetConfigure.this;
-			AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-			BoIPWidgetProvider.updateAppWidget(context, appWidgetManager, WidgetID);
+			int sIdx = sVal.getInt(Common.int2str(WidgetID), -1);
+			String sName = (sIdx >= 0) ? GetServer(getApplicationContext(), sIdx).getName() : "[Not Configured]";
+			Log.v(TAG, "||| onUpdate, For-Loop, WidgetID='" + String.valueOf(WidgetID) + "' |||");
+			
+			Intent scanner = new Intent();
+			scanner.setClassName("com.tylerhjones.boip.client", "com.tylerhjones.boip.client.BarcodeScannerActivity");
+			scanner.putExtra(BarcodeScannerActivity.SERVER_ID, CurServer.getIndex());
+			PendingIntent pendingScanner = PendingIntent.getActivity(getApplicationContext(), 0, scanner, 0);
+			RemoteViews views = new RemoteViews(getApplicationContext().getPackageName(), R.layout.widget_layout);
+			views.setTextViewText(R.id.widget_lblServer, sName);
+			views.setOnClickPendingIntent(R.id.btnWidgetScan, pendingScanner);
+			
+			apw.updateAppWidget(WidgetID, views);
 						
 			// Make sure we pass back the original appWidgetId
 			Intent resultValue = new Intent();
@@ -132,6 +145,28 @@ public class BoIPWidgetConfigure extends Activity {
 			finish();
 		}
 	};
+	
+	private static Server GetServer(Context c, int idx) {
+		
+		ArrayList<Server> Servers = new ArrayList<Server>();
+		Database DB = new Database(c);
+		DB.open();
+		Servers = DB.getAllServers();
+		DB.close();
+		Log.v(TAG, "UpdateList(): Got servers. Count: " + String.valueOf(Servers.size()));
+		if (!Servers.equals(null) && Servers.size() > 0) {
+			Log.v(TAG, "GetServer(): Recieved and returned server data...");
+			if (Servers.size() == 1) {
+				return Servers.get(0);
+			} else {
+				for (int i = 0; i < Servers.size(); ++i) {
+					if (Servers.get(i).getIndex() == idx) { return Servers.get(i); }
+				}
+			}
+		}
+		Log.w(TAG, "GetServer(context,index) found no servers!");
+		return null;
+	}
 
 	
 	// Class for ListItemOnClickListener handling
