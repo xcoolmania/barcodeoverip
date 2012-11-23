@@ -50,7 +50,6 @@ public class DiscoverServersActivity extends Activity {
 	private DiscoverServersThread ServerFinder; // DiscoverServersThread class declaration
 	private Handler handler; // FindServer thread handler
 	private Vector<String> Servers; // IP address of server only
-	// private Database DB = new Database(this);
 	
 	private int Port = Common.DEFAULT_PORT + 131;
 

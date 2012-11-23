@@ -59,47 +59,6 @@ public class BoIPActivity extends ListActivity {
 	private Server CurServer = new Server();
 	
 	/*******************************************************************************************************/
-	/** Service result handler function ****************************************************************** */
-	/*
-	 * private Handler ServiceHandler = new Handler() {
-	 * 
-	 * @SuppressLint("HandlerLeak")
-	 * public void handleMessage(Message message) {
-	 * Bundle result = message.getData();
-	 * 
-	 * if (result.getString("RESULT").equals("NONE")) {
-	 * Log.e(TAG, "Service gave result: NONE");
-	 * return;
-	 * } else if (result.getString("RESULT").equals("ERR_Intent")) {
-	 * Log.e(TAG, "Service returned an intent error.");
-	 * return;
-	 * } else if (result.getString("RESULT").equals("ERR_Index")) {
-	 * Log.e(TAG, "Service returned an index error.");
-	 * return;
-	 * } else if (result.getString("RESULT").equals("ERR_InvalidIP")) {
-	 * Log.e(TAG, "Service returned an invalid IP error.");
-	 * return;
-	 * }
-	 * 
-	 * if (message.arg1 == RESULT_OK) {
-	 * if (result.getInt("ACTION", -1) == ACTION_VALIDATE) {
-	 * if (ValidateResult(result.getString("RESULT"))) {
-	 * IntentIntegrator integrator = new IntentIntegrator(BoIPActivity.this);
-	 * integrator.initiateScan(IntentIntegrator.ONE_D_CODE_TYPES);
-	 * }
-	 * } else if (result.getInt("ACTION", -1) == ACTION_SEND) {
-	 * SendBarcodeResult(result.getString("RESULT"));
-	 * } else {
-	 * Log.e(TAG, "ServiceHandler: Service intent didn't return valid action: " + String.valueOf(result.getInt("ACTION", -1)));
-	 * }
-	 * } else {
-	 * Log.e(TAG, "ServiceHandler: Service intent didn't return RESULT_OK: " + String.valueOf(message.arg1));
-	 * }
-	 * 
-	 * };
-	 * };
-	 */
-	/*******************************************************************************************************/
 	/** Event handler functions ************************************************************************** */
 
 	/** Called when the activity is first created. */
@@ -128,22 +87,15 @@ public class BoIPActivity extends ListActivity {
 				Editor sEdit;
 				CurServer = Servers.get(position);
 				sEdit = sVal.edit();
-				sEdit.putInt(Common.PREF_CURSRV, CurServer.getIndex());
+				sEdit.putString(Common.PREF_CURSRV, CurServer.getName().toString());
 				sEdit.commit();
 				Intent scanner = new Intent();
 				scanner.setClassName("com.tylerhjones.boip.client", "com.tylerhjones.boip.client.BarcodeScannerActivity");
-				scanner.putExtra(BarcodeScannerActivity.SERVER_ID, CurServer.getIndex());
+				scanner.putExtra(BarcodeScannerActivity.SERVER_NAME, CurServer.getName().toString());
 				startActivity(scanner);
 			}
 		});
 		
-		// MenuItem mnuAddServer = (MenuItem) this.findViewById(R.id.mnuMainAddServer);
-		// MenuItem mnuFindServers = (MenuItem) this.findViewById(R.id.mnuMainFindServers);
-		// MenuItem mnuAbout = (MenuItem) this.findViewById(R.id.mnuMainAbout);
-		// MenuItem mnuDonate = (MenuItem) this.findViewById(R.id.mnuMainDonate);
-		//InputStream is = new BufferedInputStream(new FileInputStream();
-		// Drawable.createFromResourceStream(R.drawable.ic_add, this.getResources().get,this.getResources().openRawResource(R.drawable.ic_add)));
-
 		if (!Common.isNetworked(this)) {
 			AlertDialog ad = new AlertDialog.Builder(this).create();
 			ad.setCancelable(false); // This blocks the 'BACK' button
@@ -195,19 +147,6 @@ public class BoIPActivity extends ListActivity {
 											}
 											DB.close();
 											UpdateList();
-											// Servers = DB.getAllServers();
-											// DB.close();
-											// Servers.clear();
-											// theAdapter.clear();
-											// if (DB.getRecordCount() > 0) {
-											// DB.close();
-											// theAdapter.notifyDataSetChanged();
-											// for (Server s : Servers) {
-											// theAdapter.add(s);
-											// }
-											// } else {
-											// DB.close();
-											// }
 										}
 									}).setNegativeButton("No", new DialogInterface.OnClickListener() {
 										
@@ -230,7 +169,6 @@ public class BoIPActivity extends ListActivity {
 	private void UpdateList() {
 		Servers.clear();
 		theAdapter.clear();
-		lv("UpdateList(): Starting list/data update function using SQLite DB...");
 		DB.open();
 		if (DB.getRecordCount() < 1) {
 			DB.close();
@@ -279,102 +217,6 @@ public class BoIPActivity extends ListActivity {
 		}
 	}
 	
-
-	/******************************************************************************************/
-	/** Send Barcode to Server ****************************************************************/
-/*
-	public void ValidateServer() {
-		Log.v(TAG, "ValidateServer(Server s) called!");
-	    Intent intent = new Intent(this, BoIPService.class);
-	    Messenger messenger = new Messenger(ServiceHandler);
-		
-		Log.v(TAG, "ValidateServer(Server s): Starting BoIPService...");
-	    intent.putExtra("MESSENGER", messenger);
-		intent.putExtra("ACTION", ACTION_VALIDATE);
-		intent.putExtra("INDEX", CurServer.getIndex());
-		startService(intent);
-	}
-	
-	public boolean ValidateResult(String res) {
-		Log.v(TAG, "ValidateResult(String res) called!");
-		
-		if (res.equals("ERR9")) {
-			Common.showMsgBox(this, "Wrong Password!",
-				"The password you gave does not match the password set on the server. Verify that the passwords match on the server and client then try again.'");
-		} else if (res.equals("ERR1")) {
-			Toast.makeText(getApplicationContext(), "Invalid data and/or request syntax!", Toast.LENGTH_SHORT).show();
-		} else if (res.equals("ERR2")) {
-			Toast.makeText(getApplicationContext(), "Invalid data, possible missing data separator.", Toast.LENGTH_SHORT).show();
-		} else if (res.equals("E")) {
-			Toast.makeText(getApplicationContext(), "Invalid data/syntax, could not parse data.", Toast.LENGTH_SHORT).show();
-		} else if (res.equals(Common.NOPE)) {
-			Toast.makeText(getApplicationContext(), "Server is not activated!", Toast.LENGTH_SHORT).show();
-		} else if (res.equals(Common.OK)) {
-			return true;
-		} else {
-			Toast.makeText(this, "Error! - " + Common.errorCodes().get(res).toString(), Toast.LENGTH_SHORT).show();
-			Log.v(TAG, "client.Validate returned: " + Common.errorCodes().get(res).toString());
-		}
-		return false;
-	}
-
-	public void SendBarcode(final String code) {
-		Log.v(TAG, "SendBarcode(Server s, String code) called!");
-		Intent intent = new Intent(this, BoIPService.class);
-		Messenger messenger = new Messenger(ServiceHandler);
-
-		Log.v(TAG, "SendBarcode(Server s, String code): Starting BoIPService...");
-		intent.putExtra("MESSENGER", messenger);
-		intent.putExtra("ACTION", ACTION_SEND);
-		intent.putExtra("INDEX", CurServer.getIndex());
-		intent.putExtra("BARCODE", code);
-		startService(intent);
-	}
-	
-	public void SendBarcodeResult(String res) {
-		lv("SendBarcodeResult(String res) called!");
-		if (res.equals("ERR9")) {
-			Common.showMsgBox(this, "Wrong Password!",
-				"The password you gave does not match the on on the server. Please change it on your app and press 'Apply Server Settings' and then try again.'");
-		} else if (res.equals("ERR1")) {
-			Toast.makeText(getApplicationContext(), "Invalid data and/or request syntax!", Toast.LENGTH_SHORT).show();
-		} else if (res.equals("ERR2")) {
-			Toast.makeText(getApplicationContext(), "Invalid data, possible missing data separator.", Toast.LENGTH_SHORT).show();
-		} else if (res.equals("ERR3")) {
-			Toast.makeText(getApplicationContext(), "Invalid data/syntax, could not parse data.", Toast.LENGTH_SHORT).show();
-		} else if (res.equals(Common.NOPE)) {
-			Toast.makeText(getApplicationContext(), "Server is not activated!", Toast.LENGTH_SHORT).show();
-		} else if (res.equals(Common.OK)) {
-			lv("SendBarcodeResult(String res): All OK");
-		} else {
-			Toast.makeText(this, "Error! - " + Common.errorCodes().get(res).toString(), Toast.LENGTH_SHORT).show();
-			lv("client.Validate returned: ", Common.errorCodes().get(res).toString());
-		}
-	}
-
-		public boolean IsValidIPv4(String ip) {
-			try {
-				String[] octets = ip.trim().split("\\.");
-				for (String s : octets) {
-					int i = Integer.parseInt(s);
-					if (i > 255 || i < 0) { throw new NumberFormatException(); }
-				}
-			} catch (NumberFormatException e) {
-				return false;
-			}
-			return true;
-		}
-		
-		public boolean isValidPort(String port) {
-			try {
-				int p = Integer.parseInt(port);
-				if(p < 1 || p > 65535 ) { throw new NumberFormatException(); }
-			} catch (NumberFormatException e) {
-				return false;
-			}
-			return true;
-		}
-*/
 	/******************************************************************************************/
 	/** Setup Menus ***************************************************************************/
 	
@@ -391,10 +233,6 @@ public class BoIPActivity extends ListActivity {
 		switch (item.getItemId()) {
 			case R.id.mnuRefreshServers:
 				UpdateList();
-				//Intent intent = new Intent();
-				//intent.setClassName("com.tylerhjones.boip.client", "com.tylerhjones.boip.client.DiscoverServersActivity");
-				//intent.putExtra("com.tylerhjones.boip.client.Action", Common.ADD_SREQ);
-				//startActivityForResult(intent, Common.ADD_SREQ);
 				return true;
 			case R.id.mnuMainAbout:
 				Common.showAbout(this);

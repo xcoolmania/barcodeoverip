@@ -50,10 +50,10 @@ public class BarcodeScannerActivity extends Activity {
 	private static ArrayList<Server> Servers = new ArrayList<Server>();
 	private Database DB = new Database(this);
 	private Server CurServer = new Server();
-	private static int ServerID = -1;
+	private static String ServerName = null;
 	private final int ACTION_VALIDATE = 1;
 	private final int ACTION_SEND = 2;
-	public static String SERVER_ID = "server_id";
+	public static String SERVER_NAME = "servername";
 	public static int INVALID_SERVER_ID = -1;
 	
 	public BarcodeScannerActivity() {
@@ -104,44 +104,33 @@ public class BarcodeScannerActivity extends Activity {
 	@Override
 	public void onCreate(Bundle si) {
 		super.onCreate(si);
-		
-		DB.open();
-		ArrayList<Server> Servers = DB.getAllServers();
-		Log.d(TAG, "onCreate(Bundle si): Get all " + String.valueOf(DB.getRecordCount()) + " from the DB.");
-		DB.close();
-		
-		Intent intent = getIntent();
+				
+		Intent intent = this.getIntent();
 		Bundle extras = intent.getExtras();
 		if (extras != null) {
-			ServerID = extras.getInt(BarcodeScannerActivity.SERVER_ID, BarcodeScannerActivity.INVALID_SERVER_ID);
-			Log.v(TAG, "OnCreate() ServerID: " + String.valueOf(ServerID));
+			ServerName = extras.getString(BarcodeScannerActivity.SERVER_NAME);
+			Log.v(TAG, "OnCreate() ServerName: " + ServerName);
 		}
-		if (ServerID == BarcodeScannerActivity.INVALID_SERVER_ID || ServerID >= Servers.size()) {
-			Log.w(TAG, "onCreate() ServerID is >= .size() -OR- the server id is invalid!!");
+		if (ServerName == null) {
+			Log.w(TAG, "onCreate() ServerName is null!");
 			finish();
 		}
-			
+	
+		DB.open();
+		CurServer = DB.getServerFromName(ServerName);
+		DB.close();
+		
 		SharedPreferences sVal = getSharedPreferences(Common.PREFS, 0);
 		Editor sEdit;
-		CurServer = Servers.get(ServerID);
 		sEdit = sVal.edit();
-		sEdit.putInt(Common.PREF_CURSRV, ServerID);
+		sEdit.putString(Common.PREF_CURSRV, ServerName);
 		sEdit.commit();
 		
-		ValidateServer(Servers.get(ServerID));
+		ValidateServer(CurServer);
 	}
 	
 	/******************************************************************************************/
-	/** Send Barcode to Server ****************************************************************/
-	
-	public boolean DoScanBarcode(Context c, Server s, Activity boip) {
-		if ((Servers.size() - 1) < s.getIndex() || s.getIndex() < 0) {
-			Log.w(TAG, "DoScanBarcode(Server) invalid Server was given (bad index), '" + String.valueOf(s.getIndex()) + "'");
-			return false;
-		}
-		ValidateServer(s);
-		return true;
-	}
+	/** Validate Client with Server ***********************************************************/
 	
 	public void ValidateServer(Server s) {
 		Log.v(TAG, "ValidateServer(Server s, Context c) called!");
@@ -151,13 +140,11 @@ public class BarcodeScannerActivity extends Activity {
 		Log.v(TAG, "ValidateServer(Server s, Context c): Starting BoIPService...");
 		intent.putExtra("MESSENGER", messenger);
 		intent.putExtra("ACTION", ACTION_VALIDATE);
-		intent.putExtra("INDEX", CurServer.getIndex());
+		intent.putExtra("SNAME", this.CurServer.getName());
 		startService(intent);
 	}
 	
 	public boolean ValidateResult(String res) {
-		Log.v(TAG, "ValidateResult(String res) called!");
-		
 		if (res.equals("ERR9")) {
 			Common.showMsgBox(this, "Wrong Password!",
 				"The password you gave does not match the password set on the server. Verify that the passwords match on the server and client then try again.'");
@@ -173,7 +160,6 @@ public class BarcodeScannerActivity extends Activity {
 			return true;
 		} else {
 			Toast.makeText(this, "Error! - " + Common.errorCodes().get(res).toString(), Toast.LENGTH_SHORT).show();
-			Log.v(TAG, "client.Validate returned: " + Common.errorCodes().get(res).toString());
 		}
 		return false;
 	}
@@ -186,13 +172,12 @@ public class BarcodeScannerActivity extends Activity {
 		Log.v(TAG, "SendBarcode(Server s, String code): Starting BoIPService...");
 		intent.putExtra("MESSENGER", messenger);
 		intent.putExtra("ACTION", ACTION_SEND);
-		intent.putExtra("INDEX", CurServer.getIndex());
+		intent.putExtra("SNAME", this.CurServer.getName());
 		intent.putExtra("BARCODE", code);
 		startService(intent);
 	}
-	
+	      
 	public void SendBarcodeResult(String res) {
-		Log.v(TAG, "SendBarcodeResult(String res) called!");
 		if (res.equals("ERR9")) {
 			Common.showMsgBox(this, "Wrong Password!",
 				"The password you gave does not match the on on the server. Please change it on your app and press 'Apply Server Settings' and then try again.'");
@@ -208,7 +193,6 @@ public class BarcodeScannerActivity extends Activity {
 			Log.v(TAG, "SendBarcodeResult(String res): All OK");
 		} else {
 			Toast.makeText(this, "Error! - " + Common.errorCodes().get(res).toString(), Toast.LENGTH_SHORT).show();
-			Log.v(TAG, "client.Validate returned: " + Common.errorCodes().get(res).toString());
 		}
 	}
 	
@@ -243,29 +227,19 @@ public class BarcodeScannerActivity extends Activity {
 
 		DB.open();
 		Servers = DB.getAllServers();
-		Log.d(TAG, "onActivityResult(int requestCode, int resultCode, Intent intent): Get all "
-			+ String.valueOf(DB.getRecordCount()) + " from the DB.");
+		if(DB.getNameExists(sVal.getString(Common.PREF_CURSRV, ""))) {
+		    CurServer = DB.getServerFromName(sVal.getString(Common.PREF_CURSRV, ""));
+		} else {
+		    Log.w(TAG, "DB.getNameExists(name) == FALSE");
+		    DB.close();
+		    this.finish();
+		}
 		DB.close();
-
-		try {
-			CurServer = Servers.get(sVal.getInt(Common.PREF_CURSRV, -1));
-		}
-		
-		catch (IndexOutOfBoundsException e) {
-			Log.e(TAG, "INDEX OUT OF BOUNDS!! - " + e.toString());
-			if (sVal.getInt(Common.PREF_CURSRV, -1) < 0) {
-				Log.e(TAG,
-					"It appears the CurServer index was not stored properly... (Index Found: "
-						+ String.valueOf(sVal.getInt(Common.PREF_CURSRV, -1)) + ")");
-			}
-			this.finish();
-		}
 		
 		IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
 		if (result != null) {
 			try {
 				String barcode = result.getContents().toString();
-				Log.d(TAG, "*** Received barcode from ZXing: " + barcode);
 				this.SendBarcode(barcode);
 				Toast.makeText(this, getString(R.string.barcode_sent_ok), Toast.LENGTH_SHORT).show();
 				finish();
