@@ -87,7 +87,9 @@ public class BoIPWidgetProvider extends AppWidgetProvider {
 			//PendingIntent pendingIntent = PendingIntent.getBroadcast(c, 0, intent, BoIPWidgetProvider.ACTION_CLICK);
 			RemoteViews views = new RemoteViews(c.getPackageName(), R.layout.widget_layout);
 			views.setTextViewText(R.id.widget_lblServer, sName);
-			views.setOnClickPendingIntent(R.id.widget_layout, pendingScanner);
+			views.setOnClickPendingIntent(R.id.widget_picIcon, pendingScanner);
+			views.setOnClickPendingIntent(R.id.widget_lblMain, pendingScanner);
+			views.setOnClickPendingIntent(R.id.widget_lblServer, pendingScanner);
 			
 			// Tell the AppWidgetManager to perform an update on the current app widget
 			updateAppWidget(c, appWidgetManager, WidgetID);
