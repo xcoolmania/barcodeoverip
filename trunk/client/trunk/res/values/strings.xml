@@ -105,6 +105,9 @@
 	<string name="txtport_label">Port:</string>
 	<string name="txtpass_label">Password:</string>
 	<string name="btndone_label">Done</string>
+	<string name="spinnerServers_label">Servers List:</string>
+	<string name="widgetconfig_title">Pick Target Server for Widget</string>
+	<string name="btnwidgetok_label">OK</string>
 	
 	<string-array name="cboServers_array">
 		<item>Choose Server</item>

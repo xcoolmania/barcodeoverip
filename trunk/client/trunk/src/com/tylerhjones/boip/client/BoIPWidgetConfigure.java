@@ -28,7 +28,9 @@ package com.tylerhjones.boip.client;
 
 
 import java.util.ArrayList;
-import android.app.ListActivity;
+import java.util.List;
+
+import android.app.Activity;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
@@ -36,24 +38,23 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.Toast;
 
-public class BoIPWidgetConfigure extends ListActivity {
+public class BoIPWidgetConfigure extends Activity {
 	
 	static final String TAG = "BoIPWidgetConfigure";
 	
 	// Database and server settings variables
 	private ArrayList<Server> Servers = new ArrayList<Server>();
-	private ServerAdapter theAdapter;
+	//private ServerAdapter theAdapter;
 	private Database DB = new Database(this);
 	private Server CurServer = new Server();
+	private Button btnOK;
 
 	int WidgetID = AppWidgetManager.INVALID_APPWIDGET_ID;
 	
@@ -62,11 +63,12 @@ public class BoIPWidgetConfigure extends ListActivity {
 	}
 	
 	@Override
-
 	public void onCreate(Bundle wprefs) {
 		super.onCreate(wprefs);
 		setContentView(R.layout.configure_widget);
-		lv("onCreate() called!");
+		Log.v(TAG, "onCreate() called!");
+		List<String> list = new ArrayList<String>();
+
 		
 		setResult(RESULT_CANCELED);
 
@@ -78,15 +80,62 @@ public class BoIPWidgetConfigure extends ListActivity {
 		if (WidgetID == AppWidgetManager.INVALID_APPWIDGET_ID) {
 			finish();
 		}
-
-		this.theAdapter = new ServerAdapter(this, R.layout.serverlist_item, Servers);
-		setListAdapter(theAdapter);
-		UpdateList();
-		getListView().setOnItemClickListener(ListItemOnClickListener);
 		
+		/** Setup buttons ********************************************** */
+		btnOK = (Button) findViewById(R.id.btnWidgetOK);
+		btnOK.setOnClickListener(btnOKOnClickListener);
+		
+		Spinner spinnerServers = (Spinner) findViewById(R.id.spinnerServers);
+		
+		DB.open();
+		Servers = DB.getAllServers();
+		DB.close();
+		
+		for(int i = 0; i < Servers.size(); ++i) {
+		    list.add(Servers.get(i).getName().toString());
+		}
+		
+		ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, list);
+		dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		spinnerServers.setAdapter(dataAdapter);
+		spinnerServers.setOnItemSelectedListener(SpinnerServersOnClickListener);
 	}
 	
+	private Spinner.OnItemSelectedListener SpinnerServersOnClickListener = new Spinner.OnItemSelectedListener() {
+	    	public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+	    	    	CurServer = Servers.get(pos);
+	    	}
+
+	    	public void onNothingSelected(AdapterView<?> parent) {
+	    	    	// Another interface callback
+	    	}
+	};
+
+	
+	private Button.OnClickListener btnOKOnClickListener = new Button.OnClickListener() {
+	    	@Override
+		public void onClick(View view) {
+			SharedPreferences sVal = getSharedPreferences(Common.WIDGET_PREFS, 0);
+			Editor sEdit;
+			sEdit = sVal.edit();
+			sEdit.putInt(String.valueOf(WidgetID), CurServer.getIndex());
+			sEdit.commit();
+
+			final Context context = BoIPWidgetConfigure.this;
+			AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+			BoIPWidgetProvider.updateAppWidget(context, appWidgetManager, WidgetID);
+						
+			// Make sure we pass back the original appWidgetId
+			Intent resultValue = new Intent();
+			resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, WidgetID);
+			setResult(RESULT_OK, resultValue);
+			finish();
+		}
+	};
+
+	
 	// Class for ListItemOnClickListener handling
+	/*
 	private ListView.OnItemClickListener ListItemOnClickListener = new ListView.OnItemClickListener() {
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -122,10 +171,10 @@ public class BoIPWidgetConfigure extends ListActivity {
 		DB.open();
 		Servers = DB.getAllServers();
 		DB.close();
-		lv("UpdateList(): Got Servers, clearing adapter...");
+		Log.v(TAG, "UpdateList(): Got Servers, clearing adapter...");
 		theAdapter.clear();
 		
-		lv("UpdateList(): Got servers. Count: " + Servers.size());
+		Log.v(TAG, "UpdateList(): Got servers. Count: " + Servers.size());
 		if (Servers != null && Servers.size() > 0) {
 			theAdapter.notifyDataSetChanged();
 			for (int i = 0; i < Servers.size(); i++) {
@@ -164,47 +213,5 @@ public class BoIPWidgetConfigure extends ListActivity {
 			return v;
 		}
 	}
-
-	/** Logging shortcut functions **************************************************** */
-	
-	public void ld(String msg) { // Debug message
-		Log.d(TAG, msg);
-	}
-	
-	public void ld(String msg, String val) { // Debug message with one string value passed
-		Log.d(TAG, msg + val);
-	}
-	
-	public void ld(String msg, String val1, String val2) { // Debug message with two string values passed
-		Log.d(TAG, msg + val1 + " - " + val2);
-	}
-	
-	public void ld(String msg, int val) { // Debug message with one integer value passed
-		Log.d(TAG, msg + String.valueOf(val));
-	}
-	
-	public void lv(String msg) { // Verbose message
-		Log.v(TAG, msg);
-	}
-	
-	public void lv(String msg, String val) { // Verbose message with one string value passed
-		Log.v(TAG, msg + val);
-	}
-	
-	public void lv(String msg, String val1, String val2) { // Verbose message with two string values passed
-		Log.v(TAG, msg + val1 + " - " + val2);
-	}
-	
-	public void lv(String msg, int val) { // Verbose message with one integer value passed
-		Log.v(TAG, msg + String.valueOf(val));
-	}
-	
-	public void li(String msg) { // Info message
-		Log.v(TAG, msg);
-	}
-	
-	public void li(String msg, String val) { // Info message with one string value passed
-		Log.v(TAG, msg + val);
-	}
-
+	*/
 }
