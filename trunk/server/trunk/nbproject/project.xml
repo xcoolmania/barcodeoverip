@@ -4,6 +4,7 @@
     <configuration>
         <data xmlns="http://www.netbeans.org/ns/j2se-project/3">
             <name>BarcodeOverIP-Server</name>
+            <explicit-platform explicit-source-supported="true"/>
             <source-roots>
                 <root id="src.res.dir" name="Resources"/>
                 <root id="src.dir"/>
