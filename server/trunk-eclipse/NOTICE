@@ -1,0 +1,12 @@
+
+	BarcodeOverIP-Server (Java) - http://boip.tylerjones.me
+	Copyright (C) 2012, Tyler H. Jones - me@tylerjones.me
+
+	ZXing QR/Barcode Reader Intent and Classes
+	Barcode4J
+	Copyright 2002-2010 Jeremias Märki
+	Copyright 2005-2006 Dietmar Bürkle
+
+	Portions of this software were contributed under section 5 of the
+	Apache License. Contributors are listed under:
+	http://barcode4j.sourceforge.net/contributors.html
