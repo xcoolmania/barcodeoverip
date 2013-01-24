@@ -81,15 +81,15 @@ public class Settings {
             return "NONE";
         } catch (NoSuchAlgorithmException e) {
             System.err.println(TAG + " -- NoSuchAlgorithmException was caught in ConnectionHandler.run()! -- " + e.toString());
-            return "NONE"; //Kill thread
+            return "NONE"; // Kill thread
         }
     }
 
-    public String getPass() { //The default value for password is ""
+    public String getPass() { // The default value for password is ""
         return prefs.get(S_PASS, "").trim();
     }
 
-    public String getPass(String defval) { //Get the server password, if none set then return defval
+    public String getPass(String defval) { // Get the server password, if none set then return defval
         return prefs.get(S_PASS, defval).trim();
     }
 
@@ -171,7 +171,7 @@ public class Settings {
 
         byte byteData[] = md.digest();
 
-        //convert the byte to hex format method 1
+        // Convert the byte to hex format method 1
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < byteData.length; i++) {
             sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
