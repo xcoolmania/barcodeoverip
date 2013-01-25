@@ -311,22 +311,22 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void btnAboutActionPerformed(java.awt.event.ActionEvent evt) { 
 	//Server.testKeys();
-        JOptionPane.showConfirmDialog(this, "Written by Tyler H. Jones (http://tylerjones.me) -- BarcodeOverIP Project Site: http://boip.tylerjones.me", "About BarcodeOverIP-Server " + SET.VERSION, JOptionPane.PLAIN_MESSAGE);
+        JOptionPane.showMessageDialog(this, "<html><center><b><big>BarcodeOverIP-Server " + SET.VERSION + "</big></b><br><strong>Written by Tyler H. Jones</strong> -- <b>eMail:</b> tylerhuntjones@gmail.com OR me@tylerjones.me<br><b>Blog:</b> https://tylerjones.me | <b>Twitter:</b> twitter.com/tylerhuntjones<br><hr><b>BarcodeOverIP Project Site:</b> boip.tylerjones.me</a><br><b>Application Usage Notes</b></center><br><div style=\"text-align: left;\"><b>a.</b> This application works best when run in OpenJDK-6 or OracleJava-6, v7 works but it is buggy. <br><b>b.</b> I have tested this application on Linux, MacOS X and Windows XP/7/8and can confirm that it works.<br>Windows users might have to disable Windows firewall for XP/7/8 to cooperate.<br><b>c.</b> I have not tested (or even thought about testing it) for use of the Internet, because... why?<br><b>d.</b> I have made a lot of effort in enabling BoIP to be able to scan any kind of barcode in existence.<br>If certain ones aren't working, please file a bug report (see below)<br><b>e.</b> Please report any bugs, typos, crash reports, and comments/tweaks/suggestions by filing a bug report<br>on the BoIP Google Code Project Issues: http://code.google.com/p/barcodeoverip/issues</div></html>", "About BarcodeOverIP-Server " + SET.VERSION, JOptionPane.INFORMATION_MESSAGE);
     }                                        
 
-    private void chkAutoSetActionPerformed(java.awt.event.ActionEvent evt) {                                           
-        SET.setAutoSet(chkAutoSet.isSelected());
-        if(chkAutoSet.isSelected()) {
-            txtHost.setEditable(false);
-            txtPort.setEditable(false);
-            btnApplyIPPort.setEnabled(false);
+    private void chkAutoSetActionPerformed(java.awt.event.ActionEvent evt) {    
+    	if(chkAutoSet.isSelected()) {
             String ip = this.FindSystemIP();
-            if(ip.equals(DEFAULT_IP)) {
-                JOptionPane.showMessageDialog(this.getParent(), "The IP address of the current system could not be determined.\nEither there is no network connection or you need to set the IP manually.", "Can't Determine IP Address", JOptionPane.WARNING_MESSAGE);
+            if(ip.equals(DEFAULT_IP) || ip.startsWith("127") || ip.equals("")) {
+                JOptionPane.showMessageDialog(this.getParent(), "The IP address of your system could not be auto-discovered. Check the network connection and try again or set the IP and port manually.", "Cannot Auto-discover Local IP Address", JOptionPane.WARNING_MESSAGE);
                 chkAutoSet.setSelected(false);
                 SET.setAutoSet(false);
                 txtHost.setEditable(true);
                 txtPort.setEditable(true);
+                txtHost.setFocusable(true);
+                txtHost.requestFocusInWindow();
+                txtHost.selectAll();
+                txtHost.requestFocusInWindow();
                 btnApplyIPPort.setEnabled(true);
             } else {
                 chkAutoSet.setSelected(true);
@@ -337,12 +337,17 @@ public class MainFrame extends javax.swing.JFrame {
                 SET.setHost(ip);
                 SET.setPort(DEFAULT_PORT);
                 txtHost.setText(ip);
-                txtPort.setText("DEFAULT_PORT");
+                txtPort.setText(String.valueOf(DEFAULT_PORT));
                 this.ApplyIPPort();
             }
-        } else {
+    	} else {
+            //txtHost.setText(SET.getHost());
+            //txtPort.setText(String.valueOf(SET.getPort()));
             txtHost.setEditable(true);
             txtPort.setEditable(true);
+            txtHost.setFocusable(true);
+            txtHost.requestFocusInWindow();
+            txtHost.selectAll();
             btnApplyIPPort.setEnabled(true);
         }
     }                                          
@@ -378,7 +383,8 @@ public class MainFrame extends javax.swing.JFrame {
         chkAutoSet.setSelected(Boolean.valueOf(SET.getAutoSet()));
 
         txtPassword.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
+            @Override 
+            
             public void changedUpdate(DocumentEvent e) {
                 warn();
             }
@@ -398,12 +404,15 @@ public class MainFrame extends javax.swing.JFrame {
 
         if(SET.getAutoSet()) {
             String ip = this.FindSystemIP();
-            if(ip.equals(DEFAULT_IP)) {
-                JOptionPane.showMessageDialog(this.getParent(), "The IP address of the current system could not be determined.\nEither there is no network connection or you need to set the IP manually.", "Can't Determine IP Address", JOptionPane.WARNING_MESSAGE);
+            if(ip.equals(DEFAULT_IP) || ip.startsWith("127") || ip.equals("")) {
+                JOptionPane.showMessageDialog(this.getParent(), "The IP address of your system could not be auto-discovered. Check the network connection and try again or set the IP and port manually.", "Cannot Auto-discover Local IP Address", JOptionPane.WARNING_MESSAGE);
                 chkAutoSet.setSelected(false);
                 SET.setAutoSet(false);
                 txtHost.setEditable(true);
                 txtPort.setEditable(true);
+                txtHost.setFocusable(true);
+                txtHost.requestFocusInWindow();
+                txtHost.selectAll();
                 btnApplyIPPort.setEnabled(true);
             } else {
                 chkAutoSet.setSelected(true);
@@ -421,6 +430,9 @@ public class MainFrame extends javax.swing.JFrame {
             txtPort.setText(String.valueOf(SET.getPort()));
             txtHost.setEditable(true);
             txtPort.setEditable(true);
+            txtHost.setFocusable(true);
+            txtHost.requestFocusInWindow();
+            txtHost.selectAll();
             btnApplyIPPort.setEnabled(true);
         }
         //Server.startListener();
@@ -446,6 +458,7 @@ public class MainFrame extends javax.swing.JFrame {
 
     private InetAddress getIPv4InetAddress() throws SocketException, UnknownHostException {
 	    String os = System.getProperty("os.name").toLowerCase();
+	    try {
 	    if(os.indexOf("nix") >= 0 || os.indexOf("nux") >= 0) {   
 	        NetworkInterface ni = NetworkInterface.getByName("eth0");
 	        Enumeration<InetAddress> ias = ni.getInetAddresses();
@@ -454,6 +467,9 @@ public class MainFrame extends javax.swing.JFrame {
 	            iaddress = ias.nextElement();
 	        } while(!(iaddress instanceof Inet4Address));
 	        return iaddress;
+	    }
+	    } catch (NullPointerException e) {
+	    	return InetAddress.getLocalHost(); 
 	    }
 	    return InetAddress.getLocalHost();  
     }
@@ -527,7 +543,7 @@ public class MainFrame extends javax.swing.JFrame {
         if(level == 2) { a = "WARN: "; }
         if(level == 3) { a = "*ERR*: "; }
         if(level == 4) { a = "**FATAL**: "; }
-        Server.pln(a + tag + " -- " + info);
+        System.out.println(TAG + a + "" + info);
     }
 
     public Image getImage(String sImage) {

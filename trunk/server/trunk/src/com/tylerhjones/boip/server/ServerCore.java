@@ -37,13 +37,9 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-/**
- *
- * @author Tyler H. Jones
- */
 public class ServerCore implements Runnable {
     
-    private static final String TAG = "ServerCore";
+    private static final String TAG = "ServerCore -- ";
 
     protected Settings SET = new Settings();
 
@@ -57,24 +53,26 @@ public class ServerCore implements Runnable {
 
     private String input = "";
 
-    //Communication constants for client<-->server communiction
-    private static final String R_DSEP = "\\|"; //Regex format for some string functions/methods
-    private static final String R_SMC = ";$"; //Regex format for some string functions/methods
+    //Communication constants for client<-->server communication
+    private static final String R_DSEP = "\\|\\|"; //Regex format for some string functions/methods
     private static final String DSEP = "||"; //Pipe character (data separator a.k.a. DSEP)
     private static final String SMC = ";"; //Semicolon marks the end of a client's command
-    private static final String CHK = "CHECK"; //CHECK
-    private static final String CHKOK = "CHECK_OK"; //CHECK_OK
-    private static final String NONE = "NONE"; //NONE
-    private static final String VER = "VERSION"; //VERSION
+    private static final String CHK = "CHECK"; 
+    private static final String CHKOK = "CHECK_OK"; 
+    private static final String NONE = "NONE"; 
+    private static final String VER = "VERSION"; 
+    private static final String BCODE = "BARCODE=";
     //Error codes
-    private static final String ER9 = "ERR9"; //Invalid password
-    private static final String ER1 = "ERR1"; //Invalid command/sysntax (no SMC)
-    private static final String ER2 = "ERR2"; //Invalid command/sysntax (no DSEP)
-    private static final String ER3 = "ERR3"; //Invalid command/sysntax (Parse failure)
+    private static final String ERR9 = "Invalid password was passed by the client, double check and try again. (ErrCode=9)";
+    private static final String ERR4 = "Cient passed no discernable data. Possibly null. (ErrCode=4)"; //Invalid command/syntax (no SMC)
+    private static final String ERR2 = "Error while parsing client data: Invalid or missing data separator in client data  (ErrCode=2)"; //Parser.NoDSEP
+    private static final String ERR3 = "Error while parsing client data: Data not formatted properly for the parser. (ErrCode=3)"; //Parser.AIOOBException
+    private static final String ERR101 = "Server encountered an unknown error when attempting to 'type' the barcode. (ErrCode=101)";
+    private static final String ERR8 = "Parsing Failed!! Client passed non-parsable data. No parameters/data-blocks were found, looks like data, really just gibberish. (ErrCode=99)";
     //Server response strings, for telling the client what's up
-    private static final String THX = "THANKS\n"; //THANKS - The server's response to receiveing a barcode
-    private static final String OK = "OK\n"; //OK - The client validation response for positive validation
-    private static final String NOPE = "NOPE\n"; //NOPE - the server's connection refusal response
+    private static final String THX = "THANKS"; //THANKS - The server's response to receiving a barcode
+    private static final String OK = "OK"; //OK - The client validation response for positive validation
+    private static final String NOPE = "NOPE"; //NOPE - the server's connection refusal response
 
     private static String server_hash = "NONE"; //Default password (and hash)
 
@@ -85,7 +83,8 @@ public class ServerCore implements Runnable {
     @Override
     public void run() { //The thread 'thread' starts here
         this.runThread = true;
-        this.startListener();
+        if(!this.startListener()) { this.runThread = false; } else { this.runThread = true; }
+       
         synchronized(this){
             this.thread = Thread.currentThread();
         }
@@ -93,76 +92,78 @@ public class ServerCore implements Runnable {
         while (runThread()) { //Main thread loop
             if(!listener.isClosed()) {
             try {
-                pln(TAG + " -- Waiting for a client ...");
+                System.out.println(TAG + "Waiting for a client ...");
                 socket = listener.accept();
                 openStreams();
                 if(!IsActive) {
-                    pln(TAG + " -- Receiving data from client while deactivated: Responding 'NOPE'");
+                    System.out.println(TAG + "Receiving data from client while deactivated: Responding 'NOPE'");
                     streamOut.println(NOPE);
                 } else {
-                    pln(TAG + " -- Client accepted: " + socket);
+                    System.out.println(TAG + "Client accepted: " + socket);
                     try {
                         input = streamIn.readLine();
-                        pln(TAG + " -- Client sent data: " + input);
+                        System.out.println(TAG + "Client sent data: " + input);
                         if(input != null) {
-                            pln(TAG + " -- Rec'd data from " + this.socket.getInetAddress().toString() + ": '" + input + "'");
+                            System.out.println(TAG + "Rec'd data from " + this.socket.getInetAddress().toString() + ": '" + input + "'");
                             String res = ParseData(input.trim());
-                            if(res.equals(CHKOK)) {
-                                pln(TAG + " -- Parser sent 'OK' to client");
-                                streamOut.println(OK);
+                            if(res.startsWith(VER)) {
+                            	System.out.println(TAG + "Parser sent version info to client.");
+                            	streamOut.println(VER + " -- " + String.valueOf(SET.VERNUM) + " -- " + String.valueOf(SET.REVNUM));
                             } else if(res.startsWith("ERR")) {
-                                pln(TAG + " -- Parser sent data to client: " + res);
-                                streamOut.println(res + "\n"); //Always need to append a '\n' char to the server's response string (it lets the server know when it should stop talking) 
-                            } else if(res.equals(VER)) {
-                                pln(TAG + " -- Parser sent version info to client.");
-                                streamOut.println("BarcodeOverIP-Server " + SET.VERSION + " -- http://boip.tylerjones.me");
-                                streamOut.print("\n*******************************************************************\nBarcodeOverIP-Server " + SET.VERSION + " \nThis server is for use with mobile device applications.\nYou must have the right client to use it!\nPlease visit: http://boip.tylerjones.me/ for more\ninformation on available clients.\n\nWritten by: Tyler H. Jones - me@tylerjones.me, (C) 2012\nGoogle Code Site: http://boip.tylerjones.me/project\n*******************************************************************\n\n");
-                            } else if(res.length() > 0 && res != null){
-                                pln(TAG + " -- Parser returned a barcode for system input: " + res);
-                                pln(TAG + " -- Sending keystrokes to system...");
-                                KP.typeString(res.toCharArray(), SET.getAppendNL());
-                                pln(TAG + " -- Barcode was inputted. Sending 'THANKS' to client.");
-                                streamOut.println(THX);
+                                System.out.println(TAG + "Parser sent data to client: " + res);
+                                streamOut.println(res); 
+                            } else if(res.startsWith(BCODE)) {
+                            	res = res.substring(8);
+                            	System.out.println(TAG + "Parser returned a barcode for system input: " + res);
+                            	System.out.println(TAG + "Sending keystrokes to system...");
+                            	if (KP.typeString(res.toCharArray(), SET.getAppendNL())) {
+                            		System.out.println(TAG + "Barcode was inputted. Sending 'THANKS' to client.");
+                                	streamOut.println(THX);
+                            	} else {
+                            		System.out.println(TAG + "***FATAL ERROR***   " +  ERR101);
+                                	streamOut.println("ERR101");
+                                    closeStreams();
+                            	}
+                            } else if(res.startsWith(CHKOK)) {
+                                System.out.println(TAG + "Server checked password sent from client, PASS: Sent 'OK' back to client");
+                                streamOut.println(OK);
                             } else {
-                                streamOut.println("ERR99\n");
+                                streamOut.println("ERR8");
                                 closeStreams();
-                                perr("\n***FATAL ERROR!!!*** -- this.ParseData returned NULL string that is supposed to be the barcode data."); 
-                                return;
+                                System.out.println(TAG + "***FATAL ERROR***   " + ERR8); 
                             }
                         }
                     } catch (IOException ioe) {
-                        perr(TAG + " -- IOException on socket listen: " + ioe);
+                        System.out.println(TAG + "IOException on socket listen: " + ioe);
                     }
                 }
                 closeStreams();
             } catch(IOException ie) {
-                perr(TAG + " -- Connection Acceptance Error: " + ie);  
+                System.out.println(TAG + "Connection Acceptance Error: " + ie);  
             }
             }
         }
-        this.stopListener();
-        pln(TAG + " -- The thread loop exited, exiting thread.");
-        
+        if(listener!=null) {
+        	if(!listener.isClosed()) {
+        		this.stopListener();
+        	}
+        }
+        System.out.println(TAG + "The thread loop exited, exiting thread.");
     }
-    
-    public void testKeys() {
-	String res = "aAbBcCdDeEzZ-_+=1234567890!@#$%^&*(){}[]\\|;\"':.,?><";
-	System.out.println("Test String: " + res);
-	KP.typeString(res.toCharArray(), false);
-    }
-    
+      
     public boolean startListener() {
         try {
-            pln(TAG + " -- Starting listener...");
-            if(SET.getHost().equals("") || SET.getHost().equals("0.0.0.0")) {
-                listener = new ServerSocket(SET.getPort());
+            System.out.println(TAG + "Starting listener...");
+            if(SET.getHost().equals("") || SET.getHost().equals("0.0.0.0") || SET.getHost().startsWith("127")) {
+                //listener = new ServerSocket(SET.getPort());
+            	return false;
             } else {
                 listener = new ServerSocket(SET.getPort(), 2, InetAddress.getByName(SET.getHost()));
             }
-            pln(TAG + " -- Server started: " + listener);
+            System.out.println(TAG + "Server started: " + listener);
         } catch(IOException ioe) {
-            perr(TAG + " --  IOException was caught! (Starting...) - " + ioe.toString());
-            perr(TAG + " -- startListener failed!");
+            System.err.println(TAG + " IOException was caught! (Starting...) - " + ioe.toString());
+            System.err.println(TAG + "startListener failed!");
             runThread = false;
             return false; //Kill thread
         }
@@ -170,11 +171,12 @@ public class ServerCore implements Runnable {
     }
     
     public boolean stopListener() {
+    	if(listener==null) return true;
         try {
-            pln(TAG + " -- Stopping listener...");
+            System.out.println(TAG + "Stopping listener...");
             listener.close();
         } catch(IOException ioe) {
-            perr(TAG + " --  IOException was caught! (Stopping...) - " + ioe.toString());
+            System.err.println(TAG + " IOException was caught! (Stopping...) - " + ioe.toString());
             return false; //Kill thread
         }
         return true;
@@ -197,8 +199,8 @@ public class ServerCore implements Runnable {
 
     public void deactivate() {
         // Since all the server is doing while it is "deactivated" is sending refusal
-        // messages to the client when a command is recieved from that client, it is 
-        // nessecary to keep the connection open so the client doesn't crash.
+        // messages to the client when a command is received from that client, it is 
+        // necessary to keep the connection open so the client doesn't crash.
         if(thread == null) { thread.start(); }
         IsActive = false;
     }
@@ -217,46 +219,46 @@ public class ServerCore implements Runnable {
     }
 
     private String ParseData(String data) {
-	// $BARCODE||password||data;
-	// Base 64 everything
-	// Get rid of CHECK_OK
-	// Check for SMC at endo fdata first then immediatley remove it from the data string
-	// 
         String begin, end;
-        boolean chkd = false;
         if(data.equals(VER)) { return VER; }
-        if(!data.endsWith(SMC)) {
-            pln(TAG + "ParseData(data) -- Invalid data format and/or syntax! - Command does not end with '" + SMC + "'.");
-            return ER1;
-        } else if(data.indexOf(DSEP) < 2 || ((data.length() - 1) - data.indexOf(DSEP)) < 3) {
-            pln(TAG + "ParseData(data) -- Invalid data format and/or syntax! - Command does not seem contain the '" + DSEP + "' data separator.");
-            return ER2;
-        } else {
-            data = data.split(R_SMC)[0];
-            try {
-                begin = data.split(R_DSEP)[0].trim();
-                end = data.split(R_DSEP)[2].trim();
-                pln(TAG + "ParseData(data) -- Begin: '" + begin + "',  End: '" + end + "'");
-            } catch(ArrayIndexOutOfBoundsException e) {
-                perr(TAG + "ParseData(data) -- Invalid data format and/or syntax! - Command does not seem to be assembled right. It cannot be parsed. - Exception: " + e.getMessage());
-                return ER3;
-            }
-            if(begin.equals(CHK)) { chkd = true; } 
-            if(server_hash.equals(NONE) || (begin.equals(SET.getPassHash()) ^ end.equals(SET.getPassHash()))) {
-                if(chkd) { return CHKOK; }
-                return end;
-            } else {
-                return ER9;
-            }            
+        // This is here for legacy (pre 1.0) support). No longer using ';' as the data suffix. 
+        if(data.endsWith(SMC)) { data = data.substring(0, data.length() -1); } // If there is a ';' remove it and move on
+    	if(!data.contains(DSEP)) { 
+    		System.out.println(TAG + "ParseData(data) -- Invalid data format and/or syntax! - Command does not seem to be assembled right. It cannot be parsed. Type=ParseData.FindDSEP");
+            return "ERR2";
+    	}
+        try {
+            begin = data.split(R_DSEP)[0].trim();
+            end = data.split(R_DSEP)[1].trim();
+            System.out.println(TAG + "ParseData(data) -- Begin: '" + begin + "',  End: '" + end + "'");
+        } catch(ArrayIndexOutOfBoundsException e) {
+            System.out.println(TAG + "ParseData(data) -- Invalid data format and/or syntax! - Command does not seem to be assembled right. It cannot be parsed. - Exception: " + e.getMessage());
+            return "ERR3";
         }
-       
-    }
-    
-    public void pln(String s) {
-        System.out.println(s);
-    }
-    
-    public void perr(String s) {
-        System.err.println(s);
+        if(begin.equals(CHK) || end.equals(CHK)) {      
+            if(SET.getPassHash().equals(NONE) || (begin.equals(SET.getPassHash()) ^ end.equals(SET.getPassHash()))) {
+            	return CHKOK;
+            } else {
+            	return "ERR9";
+            }   
+        }
+        
+        if (begin.startsWith(BCODE)) {
+        	if (end.equals(SET.getPassHash()) || SET.getPassHash().equals(NONE) ) {
+        		return begin;
+        	} else {
+        		return "ERR9";
+        	}
+        } else if (end.startsWith(BCODE)) {
+        	if (begin.equals(SET.getPassHash()) || SET.getPassHash().equals(NONE) ) {
+        		return end;
+        	} else {
+        		return "ERR9";
+        	}
+        } else {
+        	
+        }
+        
+        return "ERR4";
     }
 }
