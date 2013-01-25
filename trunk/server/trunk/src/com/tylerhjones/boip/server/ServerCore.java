@@ -1,7 +1,7 @@
 /*
  *
  *  BarcodeOverIP-Server (Java) Version 1.0.x
- *  Copyright (C) 2012, Tyler H. Jones (me@tylerjones.me)
+ *  Copyright (C) 2013, Tyler H. Jones (me@tylerjones.me)
  *  http://boip.tylerjones.me
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
@@ -39,9 +39,10 @@ import java.net.Socket;
 
 /**
  *
- * @author tyler
+ * @author Tyler H. Jones
  */
 public class ServerCore implements Runnable {
+    
     private static final String TAG = "ServerCore";
 
     protected Settings SET = new Settings();
@@ -79,8 +80,7 @@ public class ServerCore implements Runnable {
 
     KeypressEmulator KP = new KeypressEmulator(); //The keyboard keypress emulation class
 
-    public ServerCore() {
-    }
+    public ServerCore() {  }
     
     @Override
     public void run() { //The thread 'thread' starts here
@@ -120,7 +120,7 @@ public class ServerCore implements Runnable {
                             } else if(res.length() > 0 && res != null){
                                 pln(TAG + " -- Parser returned a barcode for system input: " + res);
                                 pln(TAG + " -- Sending keystrokes to system...");
-                                KP.typeString(res, SET.getAppendNL());
+                                KP.typeString(res.toCharArray(), SET.getAppendNL());
                                 pln(TAG + " -- Barcode was inputted. Sending 'THANKS' to client.");
                                 streamOut.println(THX);
                             } else {
@@ -143,6 +143,12 @@ public class ServerCore implements Runnable {
         this.stopListener();
         pln(TAG + " -- The thread loop exited, exiting thread.");
         
+    }
+    
+    public void testKeys() {
+	String res = "aAbBcCdDeEzZ-_+=1234567890!@#$%^&*(){}[]\\|;\"':.,?><";
+	System.out.println("Test String: " + res);
+	KP.typeString(res.toCharArray(), false);
     }
     
     public boolean startListener() {
@@ -211,9 +217,13 @@ public class ServerCore implements Runnable {
     }
 
     private String ParseData(String data) {
+	// $BARCODE||password||data;
+	// Base 64 everything
+	// Get rid of CHECK_OK
+	// Check for SMC at endo fdata first then immediatley remove it from the data string
+	// 
         String begin, end;
         boolean chkd = false;
-        data = data.toUpperCase();
         if(data.equals(VER)) { return VER; }
         if(!data.endsWith(SMC)) {
             pln(TAG + "ParseData(data) -- Invalid data format and/or syntax! - Command does not end with '" + SMC + "'.");

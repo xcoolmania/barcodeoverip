@@ -1,7 +1,7 @@
 /*
  *
  *  BarcodeOverIP-Server (Java) Version 1.0.x
- *  Copyright (C) 2012, Tyler H. Jones (me@tylerjones.me)
+ *  Copyright (C) 2013, Tyler H. Jones (me@tylerjones.me)
  *  http://boip.tylerjones.me
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,91 +34,45 @@ import java.util.HashMap;
 import java.util.Map;
 import java.awt.event.*;
 
+import com.sun.xml.internal.fastinfoset.util.CharArray;
+
 public class KeypressEmulator {
     private static final String TAG = "KeypressEmulator";
     private static boolean ErrorOccured = false;
-    private static Map<String, Integer> KeyCodes = new HashMap<String, Integer>();
     private Robot robot;
 
-    public KeypressEmulator() {
-        //--- Letter Characters -------------------------
-        KeyCodes.put("a", 65);
-	KeyCodes.put("b", 66);
-	KeyCodes.put("c", 67);
-	KeyCodes.put("d", 68);
-	KeyCodes.put("e", 69);
-	KeyCodes.put("f", 70);
-	KeyCodes.put("g", 71);
-	KeyCodes.put("h", 72);
-	KeyCodes.put("i", 73);
-	KeyCodes.put("j", 74);
-	KeyCodes.put("k", 75);
-	KeyCodes.put("l", 76);
-	KeyCodes.put("m", 77);
-	KeyCodes.put("n", 78);
-	KeyCodes.put("o", 79);
-	KeyCodes.put("p", 80);
-	KeyCodes.put("q", 81);
-	KeyCodes.put("r", 82);
-	KeyCodes.put("s", 83);
-	KeyCodes.put("t", 84);
-	KeyCodes.put("u", 85);
-	KeyCodes.put("v", 86);
-	KeyCodes.put("w", 87);
-	KeyCodes.put("x", 88);
-	KeyCodes.put("y", 89);
-	KeyCodes.put("z", 90);
-        //--- Number Characters --------------------------
-        KeyCodes.put("1", 49);
-	KeyCodes.put("2", 50);
-	KeyCodes.put("3", 51);
-	KeyCodes.put("4", 52);
-	KeyCodes.put("5", 53);
-	KeyCodes.put("6", 54);
-	KeyCodes.put("7", 55);
-	KeyCodes.put("8", 56);
-	KeyCodes.put("9", 57);
-	KeyCodes.put("0", 48);
-        //--- Special Characters -------------------------
-        KeyCodes.put("ENTER", 10);
-	KeyCodes.put("SPC", 32);
-	KeyCodes.put(".", 46);
-    }
 
-
-    public String typeString(String chars, boolean AppendReturn) {
+    public String typeString(char[] chars, boolean AppendReturn) {
         // Verify that all the chars intending to be typed are ONLY letters and numbers.
-        int i;
-        
-       
+        char c;
         try {
             robot = new Robot();
         } catch (AWTException ex) {
-            System.out.println(TAG + "Robot declaration exception! " + ex);
+            System.out.println(TAG + "Robot declaration exception! -- MESSAGE: " + ex);
         }
 
-        //if(!chars.matches("^[a-zA-Z0-9]+$") || chars.length() < 1) {
-            // HACK: Big ole hack, instead of learning how to fix the regex FTW!
-            //if(!chars.equals(".") && !chars.equals(" ")) {
-                //return "The data sent to the server contained illegal characters!";
-            //}
-        //}095673175438
-
         try {
-            char[] CharArray = chars.toCharArray();
-            for(i=0; i < CharArray.length; ++i) {
-                System.out.println(CharArray[i]);
-                String str = String.valueOf(CharArray[i]);
-                System.out.println(TAG + " - Starting emulated keypress...  '" + str + "'");
-                this.typeCharacter(robot, str);
-                //this.keyPress(Integer.valueOf(KeyCodes.get(str).toString()));
-                //this.keyRelease(Integer.valueOf(KeyCodes.get(str).toString()));
-                //System.out.println(TAG + " - Finished emulated keypress.");
-                //System.out.println("KeypressEmulator - Key Sent: '" + str + "', Code: "+ String.valueOf(Integer.valueOf(KeyCodes.get(str).toString())));
+            for(int i=0; i < chars.length; ++i) {
+        	c = chars[i];
+                System.out.println(TAG + " - Keypress:  '" + String.valueOf(c) + "'");
+                
+                int code = (int)c;
+                if(code >= (int)'a' && code <= (int)'z') {
+            	System.out.println("Char: " + String.valueOf(code) + " | " + String.valueOf(c) + " | LOWER-CASE");
+                } else if(code >= (int)'A' && code <= (int)'Z') {
+            	System.out.println("Char: " + String.valueOf(code) + " | " + String.valueOf(c) + " | UPPER-CASE");
+                } else if(code >= (int)'0' && code <= (int)'9') {
+            	System.out.println("Char: " + String.valueOf(code) + " | " + String.valueOf(c) + " | NUMBER");
+                } else {
+            	System.out.println("Char: " + String.valueOf(code) + " | " + String.valueOf(c) + " | SPECIAL");
+                }
+                robot.keyPress( code );
+                robot.keyRelease( code );
             }         
         } catch (Exception e) {
              return "The data sent to the server contained illegal characters! -- " + e.getMessage();
         }
+        
         try {
             if(AppendReturn) {
                 this.keyPress(10);
@@ -152,34 +106,6 @@ public class KeypressEmulator {
             ErrorOccured  = true;
             System.out.println("*ERROR*: Invalid keyRelease code: " + code);
 	}
-    }
-    
-    private void typeCharacter(Robot robot, String letter)
-    {
-        try
-        {
-            boolean upperCase = Character.isUpperCase( letter.charAt(0) );
-            String variableName = "VK_" + letter.toUpperCase();
-
-            Class<KeyEvent> clazz = KeyEvent.class;
-            Field field = clazz.getField( variableName );
-            int keyCode = field.getInt(null);
-
-            if (upperCase) {
-                robot.keyPress( KeyEvent.VK_SHIFT );
-            }
-
-            robot.keyPress( keyCode );
-            robot.keyRelease( keyCode );
-
-            if (upperCase) {
-                robot.keyRelease( KeyEvent.VK_SHIFT );
-            }
-        }
-        catch(Exception e)
-        {
-            System.out.println(e);
-        }
     }
 
 }
