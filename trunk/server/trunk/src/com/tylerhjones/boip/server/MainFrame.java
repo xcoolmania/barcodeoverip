@@ -31,6 +31,7 @@ import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.TrayIcon;
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -48,7 +49,8 @@ public class MainFrame extends javax.swing.JFrame {
 
     private String TAG = "MainFrame";
 
-    private static final String NO = "NO";
+    private static final int DEFAULT_PORT = 41788;
+    private static final String DEFAULT_IP = "0.0.0.0";
     private static final String OK = "OK";
 
     private ServerCore Server = new ServerCore();
@@ -59,8 +61,8 @@ public class MainFrame extends javax.swing.JFrame {
 
     public static JarFile jar;
     public static String basePath = "";
-    public static InetAddress localAddr;
 
+    
     private Toolkit toolkit;
 
     private Thread serverThread = new Thread(Server);
@@ -324,7 +326,7 @@ public class MainFrame extends javax.swing.JFrame {
             txtPort.setEditable(false);
             btnApplyIPPort.setEnabled(false);
             String ip = this.FindSystemIP();
-            if(ip.equals(NO)) {
+            if(ip.equals(DEFAULT_IP)) {
                 JOptionPane.showMessageDialog(this.getParent(), "The IP address of the current system could not be determined.\nEither there is no network connection or you need to set the IP manually.", "Can't Determine IP Address", JOptionPane.WARNING_MESSAGE);
                 chkAutoSet.setSelected(false);
                 SET.setAutoSet(false);
@@ -338,9 +340,9 @@ public class MainFrame extends javax.swing.JFrame {
                 txtPort.setEditable(false);
                 btnApplyIPPort.setEnabled(false);
                 SET.setHost(ip);
-                SET.setPort(41788);
+                SET.setPort(DEFAULT_PORT);
                 txtHost.setText(ip);
-                txtPort.setText("41788");
+                txtPort.setText("DEFAULT_PORT");
                 this.ApplyIPPort();
             }
         } else {
@@ -401,7 +403,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         if(SET.getAutoSet()) {
             String ip = this.FindSystemIP();
-            if(ip.equals(NO)) {
+            if(ip.equals(DEFAULT_IP)) {
                 JOptionPane.showMessageDialog(this.getParent(), "The IP address of the current system could not be determined.\nEither there is no network connection or you need to set the IP manually.", "Can't Determine IP Address", JOptionPane.WARNING_MESSAGE);
                 chkAutoSet.setSelected(false);
                 SET.setAutoSet(false);
@@ -415,9 +417,9 @@ public class MainFrame extends javax.swing.JFrame {
                 txtPort.setEditable(false);
                 btnApplyIPPort.setEnabled(false);
                 SET.setHost(ip);
-                SET.setPort(41788);
+                SET.setPort(DEFAULT_PORT);
                 txtHost.setText(ip);
-                txtPort.setText("41788");
+                txtPort.setText(String.valueOf(DEFAULT_PORT));
             }
         } else {
             txtHost.setText(SET.getHost());
@@ -434,22 +436,56 @@ public class MainFrame extends javax.swing.JFrame {
         this.SysTrayIcon = ico;
         this.SysTrayIcon.setToolTip("BarcodeOverIP " + SET.VERSION + " - Active\n(Right or Left click to show settings window)\nHost:Port - " + SET.getHost() + ":" + String.valueOf(SET.getPort()));
     }
-
+    
     private String FindSystemIP() {
-        String sHost;
+	String ip = DEFAULT_IP;
 	try {
-            localAddr = InetAddress.getLocalHost();
-            if (localAddr.isLoopbackAddress()) {
-                localAddr = getLocalHost_nix();
-            }
-            sHost = localAddr.getHostAddress();
-        } catch (UnknownHostException ex) {
-            Server.pln("Error finding local IP.");
-            return NO;
-        }
-        return sHost;
+	    ip = getIPv4InetAddress().getHostAddress();
+	} catch (SocketException se) {
+	    System.out.println("SocketException when looking up local system IP address! -- MESSAGE: " + se.toString());
+	} catch (UnknownHostException unk) {
+	    System.out.println("UnknownHostException when looking up local system IP address! -- MESSAGE: " + unk.toString());
+	}
+	return ip;
     }
 
+    private InetAddress getIPv4InetAddress() throws SocketException, UnknownHostException {
+
+	    String os = System.getProperty("os.name").toLowerCase();
+
+	    if(os.indexOf("nix") >= 0 || os.indexOf("nux") >= 0) {   
+	        NetworkInterface ni = NetworkInterface.getByName("eth0");
+
+	        Enumeration<InetAddress> ias = ni.getInetAddresses();
+
+	        InetAddress iaddress;
+	        do {
+	            iaddress = ias.nextElement();
+	        } while(!(iaddress instanceof Inet4Address));
+
+	        return iaddress;
+	    }
+
+	    return InetAddress.getLocalHost();  // for Windows and OS X it should work well
+	}
+    /*
+    private static String getFirstNonLoopbackAddress() throws SocketException {
+	    Enumeration en = NetworkInterface.getNetworkInterfaces();
+	    while (en.hasMoreElements()) {
+	        NetworkInterface i = (NetworkInterface) en.nextElement();
+	        for (Enumeration en2 = i.getInetAddresses(); en2.hasMoreElements();) {
+	            InetAddress addr = (InetAddress) en2.nextElement();
+	            if (!addr.isLoopbackAddress()) {
+	                if (addr instanceof Inet4Address) {
+	                    return addr.getHostAddress();
+	                }
+	            }
+	        }
+	    }
+	    return null;
+    }
+
+*/
     private String validateValues() {
         if(!chkAutoSet.isSelected()) {
             if(txtHost.getText().trim().length() < 1 || txtHost.getText().trim().equals("") || txtHost.getText().trim() == null) {
@@ -489,7 +525,7 @@ public class MainFrame extends javax.swing.JFrame {
             SET.setHost(txtHost.getText().trim());
             SET.setPort(Integer.valueOf(txtPort.getText().trim()));
         } else {
-            txtPort.setText("41788");
+            txtPort.setText(String.valueOf(DEFAULT_PORT));
             txtHost.setText(this.FindSystemIP());
             SET.setHost(txtHost.getText().trim());
             SET.setPort(Integer.valueOf(txtPort.getText().trim()));
@@ -522,7 +558,7 @@ public class MainFrame extends javax.swing.JFrame {
         if(level == 4) { a = "**FATAL**: "; }
         Server.pln(a + tag + " -- " + info);
     }
-
+/*
     public static InetAddress getLocalHost_nix() throws UnknownHostException {
             InetAddress localHost = InetAddress.getLocalHost();
             if(!localHost.isLoopbackAddress()) return localHost;
@@ -561,7 +597,7 @@ public class MainFrame extends javax.swing.JFrame {
             }
             return iAddresses;
     }
-
+*/
     public Image getImage(String sImage) {
         Image imgReturn = this.toolkit.createImage(this.getClass().getClassLoader().getResource(sImage));
         return imgReturn;
