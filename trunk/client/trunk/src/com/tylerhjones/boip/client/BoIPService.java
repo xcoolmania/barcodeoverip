@@ -3,7 +3,7 @@
 /*
  * 
  * BarcodeOverIP (Android < v4.0.3) Version 1.0.3
- * Copyright (C) 2012, Tyler H. Jones (me@tylerjones.me)
+ * Copyright (C) 2013, Tyler H. Jones (me@tylerjones.me)
  * http://boip.tylerjones.me/
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
