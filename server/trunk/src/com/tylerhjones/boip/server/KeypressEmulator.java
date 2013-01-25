@@ -38,22 +38,23 @@ import com.sun.xml.internal.fastinfoset.util.CharArray;
 
 public class KeypressEmulator {
     private static final String TAG = "KeypressEmulator";
-    private static boolean ErrorOccured = false;
     private Robot robot;
 
 
-    public String typeString(char[] chars, boolean AppendReturn) {
-        // Verify that all the chars intending to be typed are ONLY letters and numbers.
+    public boolean typeString(char[] chars, boolean AppendReturn) {
+    	
         char c;
+        
         try {
             robot = new Robot();
         } catch (AWTException ex) {
             System.out.println(TAG + "Robot declaration exception! -- MESSAGE: " + ex);
+            return false;
         }
 
         try {
             for(int i=0; i < chars.length; ++i) {
-        	c = chars[i];
+        	    c = chars[i];
                 System.out.println(TAG + " - Keypress:  '" + String.valueOf(c) + "'");
                 
                 int code = (int)c;
@@ -70,7 +71,8 @@ public class KeypressEmulator {
                 robot.keyRelease( code );
             }         
         } catch (Exception e) {
-             return "The data sent to the server contained illegal characters! -- " + e.getMessage();
+             System.out.println(TAG + "The data sent to the server contained illegal characters! -- " + e.getMessage());
+             return false;
         }
         
         try {
@@ -81,11 +83,9 @@ public class KeypressEmulator {
             }
         } catch (AWTException e) {
             System.out.println(TAG + " - AWTException was thrown where the enter key is emulated...");
-            return "AWTException!";
+            return false;
         }
-
-        if(ErrorOccured) { return "There was an unknown error trying to send the keystrokes!"; }
-        return "OK";
+        return true;
     }
 
     private void keyPress(int code) throws AWTException {
@@ -93,7 +93,6 @@ public class KeypressEmulator {
             Robot robot = new Robot();
             robot.keyPress(code);
 	} catch (IllegalArgumentException e) {
-            ErrorOccured  = true;
             System.out.println("*ERROR*: Invalid keyPress code: " + code);
 	}
     }
@@ -103,7 +102,6 @@ public class KeypressEmulator {
             Robot robot = new Robot();
             robot.keyRelease(code);
 	} catch (IllegalArgumentException e) {
-            ErrorOccured  = true;
             System.out.println("*ERROR*: Invalid keyRelease code: " + code);
 	}
     }

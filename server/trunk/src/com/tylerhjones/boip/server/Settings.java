@@ -35,9 +35,10 @@ public class Settings {
 
     private final static String TAG = "Settings";
 
-    public final String VERSION = "1.0.2-Alpha2";
+    public final String VERSION = "1.0.2-Beta2";
     public final String VERNUM = "1.0.2";
-    public final String VERTYPE = "Alpha2";
+    public final int REVNUM = 160;
+    public final String VERTYPE = "Beta2";
     public final String APP_NAME = "BarcodeOverIP-Server";
     public final String APP_AUTHOR = "Tyler H. Jones";
     public final String APP_WEBSITE = "http://boip.tylerjones.me";
@@ -76,11 +77,11 @@ public class Settings {
     public String getPassHash() {
         try {
             if(!this.getPass().equals("")) {
-                return SHA1(this.getPass()).trim().toUpperCase();
+                return SHA1(this.getPass()).trim();
             }
             return "NONE";
         } catch (NoSuchAlgorithmException e) {
-            System.err.println(TAG + " -- NoSuchAlgorithmException was caught in ConnectionHandler.run()! -- " + e.toString());
+            System.err.println(TAG + "NoSuchAlgorithmException was caught in ConnectionHandler.run()! -- " + e.toString());
             return "NONE"; // Kill thread
         }
     }
@@ -95,7 +96,7 @@ public class Settings {
 
     public void setPass(String val) {
         System.out.println("Set pass to: " + val);
-        if(val.trim().toUpperCase().equals("NONE")) {
+        if(val.trim().equals("NONE")) {
             prefs.put(S_PASS, "");
         } else if(val.length() < 3) {
             prefs.put(S_PASS, "");
