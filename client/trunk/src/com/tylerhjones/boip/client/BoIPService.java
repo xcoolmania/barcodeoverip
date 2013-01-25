@@ -132,11 +132,11 @@ public class BoIPService extends IntentService {
 		}
 		catch (UnknownHostException e) {
 			Log.e(TAG, "connect() - Hostname not found(or unknown): " + CurServer.getHost() + ": " + e);
-			return "ERR100";
+			return "ERR50";
 		}
 		catch (IOException e) {
 			Log.e(TAG, "connect() - Cannot connect to " + CurServer.getHost() + " on port " + CurServer.getPort() + " ---- " + e);
-			return "ERR101";
+			return "ERR51";
 		}
 	}
 	
@@ -162,7 +162,7 @@ public class BoIPService extends IntentService {
 		try {
 			String res = this.connect();
 			if (!res.equals(Common.OK)) { return res; }
-			this.output.println(Common.CHECK + Common.DSEP + this.CurServer.getPassHash() + Common.SMC); // Send a Common.DCHECK command to the server
+			this.output.println(Common.CHECK + Common.DSEP + this.CurServer.getPassHash()); // Send a Common.DCHECK command to the server
 			
 			String result;
 			while ((result = input.readLine().trim()) != null) {
@@ -181,7 +181,7 @@ public class BoIPService extends IntentService {
 					return result.substring(idx, result.length());
 				} else {
 					this.close();
-					return "ERR8";
+					return "ERR6";
 				}
 			}
 			this.close();
@@ -191,7 +191,7 @@ public class BoIPService extends IntentService {
 			this.close();
 			Log.e(TAG, "Common.Validate() - IO Exception: " + e);
 			e.printStackTrace();
-			return "ERR99";
+			return "ERR8";
 		}
 	}
 	
@@ -199,7 +199,7 @@ public class BoIPService extends IntentService {
 		String result;
 		try {
 			this.connect();
-			String servermsg = this.CurServer.getPassHash() + Common.DSEP + barcode + Common.SMC;
+			String servermsg = this.CurServer.getPassHash() + Common.DSEP + Common.BCODE + barcode;
 			this.output.println(servermsg);
 			
 			while ((result = input.readLine().trim()) != null) {
@@ -212,15 +212,15 @@ public class BoIPService extends IntentService {
 					return result.substring(idx, result.length());
 				} else if (result.indexOf(Common.NOPE) > -1) { return Common.NOPE; }
 			}
-			Log.v(TAG, "*** Unknown Result ***  " + result); // DEBUG
-			return "ERR8";
+			Log.v(TAG, "*** Bad Response From Server ***  " + result); // DEBUG
+			return "ERR20";
 		}
 		catch (IOException e) {
 			this.close();
 			Log.e(TAG, "sendBarcode() - Unknown Exception occured: " + e);
 			System.err.println("sendBarcode() - " + e);
 			e.printStackTrace();
-			return "ERR99";
+			return "ERR21";
 		}
 	}
 	
