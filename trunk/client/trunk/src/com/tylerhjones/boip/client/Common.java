@@ -90,7 +90,7 @@ public class Common {
 	public static final String OK = "OK"; // Server's client/user authorization pass message
 	public static final String NOPE = "NOPE"; // Server's response to any and all data received while it is deactivated
 	public static final String THANKS = "THANKS"; // Server's 'all OK' response message
-	public static final String SMC = ";"; // Data string terminator
+	public static final String BCODE = "BARCODE="; // Data string terminator
 	public static final String DSEP = "||"; // Data and values separator
 	public static final String CHECK = "CHECK"; // Command to ask the server to authenticate us
 	public static final String ERR = "ERR"; // Prefix for errors returned by the server
@@ -105,20 +105,22 @@ public class Common {
 	
 	public static Hashtable<String, String> errorCodes() {
 		Hashtable<String, String> errors = new Hashtable<String, String>(13);
-		errors.put("ERR1", "Invalid data and/or request syntax!");
-		errors.put("ERR2", "Invalid data, possible missing data separator.");
-		errors.put("ERR3", "Invalid data/syntax, could not parse data.");
-		errors.put("ERR4", "Missing/Empty Command Argument(s) Recvd.");
-		errors.put("ERR5", "Invalid command syntax!");
-		errors.put("ERR6", "Invalid Auth Syntax!");
-		errors.put("ERR7", "Access Denied!");
-		errors.put("ERR8", "Server Timeout, Too Busy to Handle Request!");
-		errors.put("ERR9", "Incorrect Password.");
-		errors.put("ERR14", "Invalid Login Command Syntax.");
-		errors.put("ERR19", "Unknown Auth Error");
-		errors.put("ERR99", "Unknown exception occured.");
-		errors.put("ERR100", "Invalid Host/IP.");
-		errors.put("ERR101", "Cannont connect to server.");
+		errors.put("ERR1", "Invalid, null or missing data was passed by the client! (ErrCode=1)");
+		errors.put("ERR2", "Invalid or missing data separator in client data. (ErrCode=2");
+		errors.put("ERR3", "Data not formatted properly for the parser. Possible command/syntax mismatch. (ErrCode=3)");
+		errors.put("ERR4", "Cient passed no discernable data. Possibly null. (ErrCode=4)");
+		errors.put("ERR5", "Parsing Failed!! Client passed non-parsable data. No parameters/data-blocks were found, looks like data, really just gibberish. (ErrCode=5)");
+		errors.put("ERR6", "Authentication: Invalid, missing or garbled command syntax! (ErrCode=6)");
+		errors.put("ERR7", "Access to server denied! Reason: Server may be deactivated or have too many clients. (ErrCode=7)");
+		errors.put("ERR8", "Authentication: IO exception occured while communicating with the server. (ErrCode=8)");
+		errors.put("ERR9", "Invalid password was passed by the client, double check and try again. (ErrCode=9)");
+		errors.put("ERR20", "SendBarcode: Received invalid, garbled or unknown response from server. (ErrCode=20)");
+		errors.put("ERR21", "SendBarcode: Unknown exception occured while communicating with the server. (ErrCode=20)");
+		errors.put("ERR99", "General Unknown exception has occured. (ErrCode=99)");
+		errors.put("ERR50", "Invalid Host/IP. (ErrCode=50)");
+		errors.put("ERR51", "Cannont connect to server. (ErrCode=51)");
+		errors.put("ERR52", "Server Timeout, Too busy to handle request! (ErrCode=52)");
+		errors.put("ERR101", "Server encountered an unknown error when attempting to 'type' the barcode. (ErrCode=101)");
 		return errors;
 	}
 	

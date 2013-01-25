@@ -250,18 +250,20 @@ public class ServerInfoActivity extends Activity {
 			return false;
 		} 
 		
-		DB.open();
-		if (DB.getHostExists(txtHost.getText().toString())) {
-			this.MsgBox(getText(R.string.hostexists_msg_body).toString(), getText(R.string.hostexists_msg_title).toString());
-			txtHost.requestFocus();
-			return false;
+		if (thisAction != Common.EDIT_SREQ) {
+			DB.open();
+			if (DB.getHostExists(txtHost.getText().toString())) {
+				this.MsgBox(getText(R.string.hostexists_msg_body).toString(), getText(R.string.hostexists_msg_title).toString());
+				txtHost.requestFocus();
+				return false;
+			}
+			if (DB.getNameExists(txtName.getText().toString())) {
+				this.MsgBox(getText(R.string.nameexists_msg_body).toString(), getText(R.string.nameexists_msg_title).toString());
+				txtName.requestFocus();
+				return false;
+			}
+			DB.close();
 		}
-		if (DB.getNameExists(txtName.getText().toString())) {
-			this.MsgBox(getText(R.string.nameexists_msg_body).toString(), getText(R.string.nameexists_msg_title).toString());
-			txtName.requestFocus();
-			return false;
-		}
-		DB.close();
 
 		try {
 			if (!Common.isValidPort(txtPort.getText().toString().trim())) {
