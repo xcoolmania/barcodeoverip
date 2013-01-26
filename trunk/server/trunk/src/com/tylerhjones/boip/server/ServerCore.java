@@ -74,9 +74,7 @@ public class ServerCore implements Runnable {
     private static final String OK = "OK"; //OK - The client validation response for positive validation
     private static final String NOPE = "NOPE"; //NOPE - the server's connection refusal response
 
-    private static String server_hash = "NONE"; //Default password (and hash)
-
-    KeypressEmulator KP = new KeypressEmulator(); //The keyboard keypress emulation class
+    KeypressEmulator Keyboard;  //The keyboard keypress emulation class
 
     public ServerCore() {  }
     
@@ -117,7 +115,7 @@ public class ServerCore implements Runnable {
                             	System.out.println(TAG + "Parser returned a barcode for system input: " + res);
                             	System.out.println(TAG + "Sending keystrokes to system...");
                             	if(SET.getAppendNL()) { res = res + String.valueOf(13); }
-                            	if (KP.typeString(res.toCharArray())) {
+                             	if (Keyboard.TypeStr(res.toString())) {
                             		System.out.println(TAG + "Barcode was inputted. Sending 'THANKS' to client.");
                                 	streamOut.println(THX);
                             	} else {
