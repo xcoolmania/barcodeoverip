@@ -116,7 +116,8 @@ public class ServerCore implements Runnable {
                             	res = res.substring(8);
                             	System.out.println(TAG + "Parser returned a barcode for system input: " + res);
                             	System.out.println(TAG + "Sending keystrokes to system...");
-                            	if (KP.typeString(res.toCharArray(), SET.getAppendNL())) {
+                            	if(SET.getAppendNL()) { res = res + String.valueOf(13); }
+                            	if (KP.typeString(res.toCharArray())) {
                             		System.out.println(TAG + "Barcode was inputted. Sending 'THANKS' to client.");
                                 	streamOut.println(THX);
                             	} else {
