@@ -27,26 +27,24 @@
 package com.tylerhjones.boip.server;
 
 
-import java.awt.AWTException;
-import java.awt.Robot;
+import java.awt.*;
+import java.util.*;
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
 import java.awt.event.*;
+import javax.swing.*;
 
-import com.sun.xml.internal.fastinfoset.util.CharArray;
+//import com.sun.xml.internal.fastinfoset.util.CharArray;
 
 public class KeypressEmulator {
     private static final String TAG = "KeypressEmulator";
-    private Robot robot;
 
-
-    public boolean typeString(char[] chars, boolean AppendReturn) {
+    public boolean typeString(char[] chars) {
     	
         char c;
-        
+        //if(AppendReturn) { chars[chars.length+1] = String.valueOf(13).toCharArray()[0]; }
+        Robot robot;
         try {
-            robot = new Robot();
+        	robot = new Robot();
         } catch (AWTException ex) {
             System.out.println(TAG + "Robot declaration exception! -- MESSAGE: " + ex);
             return false;
@@ -55,8 +53,9 @@ public class KeypressEmulator {
         try {
             for(int i=0; i < chars.length; ++i) {
         	    c = chars[i];
+        	    String s = String.valueOf(c);
                 System.out.println(TAG + " - Keypress:  '" + String.valueOf(c) + "'");
-                
+/*                
                 int code = (int)c;
                 if(code >= (int)'a' && code <= (int)'z') {
             	System.out.println("Char: " + String.valueOf(code) + " | " + String.valueOf(c) + " | LOWER-CASE");
@@ -69,21 +68,64 @@ public class KeypressEmulator {
                 }
                 robot.keyPress( code );
                 robot.keyRelease( code );
+*/
+                try
+                {
+                    if(((int)'a' >= (int)c && (int)'z' <= (int)c) || ((int)'a' >= (int)c && (int)'z' <= (int)c)) {
+	                	boolean upperCase = Character.isUpperCase( s.charAt(0) );
+	                    String variableName = "VK_" + s.toUpperCase();
+	
+	                    Class clazz = KeyEvent.class;
+	                    Field field = clazz.getField( variableName );
+	                    int keyCode = field.getInt(null);
+		
+	                    if (upperCase) robot.keyPress( KeyEvent.VK_SHIFT );
+	
+	                    robot.keyPress( keyCode );
+	                    robot.keyRelease( keyCode );
+	
+	                    if (upperCase) robot.keyRelease( KeyEvent.VK_SHIFT );
+                    } else {
+                    	robot.keyPress((int)c );
+	                    robot.keyRelease((int)c);
+                    }
+                    robot.delay(25);
+
+                }
+                catch(Exception e)
+                {
+                    System.out.println(e);
+                }
             }         
         } catch (Exception e) {
              System.out.println(TAG + "The data sent to the server contained illegal characters! -- " + e.getMessage());
              return false;
         }
-        
-        try {
-            if(AppendReturn) {
-                this.keyPress(10);
-                this.keyRelease(10);
-                System.out.println(TAG + " - Sent return cairrage keycode.");
+        robot.delay(25);
+		return true;
+    }
+
+}
+
+ /*
+        if(AppendReturn) {
+          	 
+         	try
+            {
+           		String s = String.valueOf(13);
+                boolean upperCase = Character.isUpperCase( s.charAt(0) );
+          		String variableName = "VK_" + s.toUpperCase();
+
+                Class clazz = KeyEvent.class;
+                Field field = clazz.getField( variableName );
+                int keyCode = field.getInt(null);
+
+               robot.delay(1000);
+               robot.keyPress( keyCode );
+               robot.keyRelease( keyCode );
+            } catch(Exception e) {
+            	System.out.println(e);
             }
-        } catch (AWTException e) {
-            System.out.println(TAG + " - AWTException was thrown where the enter key is emulated...");
-            return false;
         }
         return true;
     }
@@ -104,6 +146,7 @@ public class KeypressEmulator {
 	} catch (IllegalArgumentException e) {
             System.out.println("*ERROR*: Invalid keyRelease code: " + code);
 	}
-    }
 
-}
+    }
+*/
+
