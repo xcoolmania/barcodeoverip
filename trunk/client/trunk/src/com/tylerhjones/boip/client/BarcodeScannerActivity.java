@@ -71,16 +71,16 @@ public class BarcodeScannerActivity extends Activity {
 			
 			if (result.getString("RESULT").equals("NONE")) {
 				Log.e(TAG, "Service gave result: NONE");
-				finish();
+				//finish();
 			} else if (result.getString("RESULT").equals("ERR_Intent")) {
 				Log.e(TAG, "Service returned an intent error.");
-				finish();
+				//finish();
 			} else if (result.getString("RESULT").equals("ERR_Index")) {
 				Log.e(TAG, "Service returned an index error.");
-				finish();
+				//finish();
 			} else if (result.getString("RESULT").equals("ERR_InvalidIP")) {
 				Log.e(TAG, "Service returned an invalid IP error.");
-				finish();
+				//finish();
 			}
 			
 			if (message.arg1 == RESULT_OK) {
@@ -93,13 +93,10 @@ public class BarcodeScannerActivity extends Activity {
 					SendBarcodeResult(result.getString("RESULT"));
 				} else {
 					Log.e(TAG, "ServiceHandler: Service intent didn't return valid action: " + String.valueOf(result.getInt("ACTION", -1)));
-					finish();
 				}
 			} else {
 				Log.e(TAG, "ServiceHandler: Service intent didn't return RESULT_OK: " + String.valueOf(message.arg1));
-				finish();
 			}
-			finish();
 			
 		};
 	};
