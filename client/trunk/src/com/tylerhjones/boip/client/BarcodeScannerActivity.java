@@ -37,6 +37,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.widget.Toast;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
@@ -92,13 +93,10 @@ public class BarcodeScannerActivity extends Activity {
 					SendBarcodeResult(result.getString("RESULT"));
 				} else {
 					Log.e(TAG, "ServiceHandler: Service intent didn't return valid action: " + String.valueOf(result.getInt("ACTION", -1)));
-					finish();
 				}
 			} else {
 				Log.e(TAG, "ServiceHandler: Service intent didn't return RESULT_OK: " + String.valueOf(message.arg1));
-				finish();
 			}
-			finish();
 		};
 	};
 
@@ -128,15 +126,21 @@ public class BarcodeScannerActivity extends Activity {
 		sEdit.commit();
 		
 		BarcodeScannerActivity.this.setTitle("Press back to return to the Servers list window!");
-		BarcodeScannerActivity.this.
 		ValidateServer(CurServer);
+	}
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+			this.finish();
+		}
+		return super.onKeyDown(keyCode, event);
 	}
 	
 	/******************************************************************************************/
 	/** Validate Client with Server ***********************************************************/
 	
 	public void ValidateServer(Server s) {
-		Log.v(TAG, "ValidateServer(Server s, Context c) called!");
 		Intent intent = new Intent(this, BoIPService.class);
 		Messenger messenger = new Messenger(ServiceHandler);
 		
@@ -151,24 +155,28 @@ public class BarcodeScannerActivity extends Activity {
 		if (res.equals("ERR9")) {
 			Common.showMsgBox(this, "Wrong Password!",
 				"The password you gave does not match the password set on the server. Verify that the passwords match on the server and client then try again.'");
+			return false;
 		} else if (res.equals("ERR1")) {
 			Toast.makeText(getApplicationContext(), "Invalid data and/or request syntax!", Toast.LENGTH_SHORT).show();
+			return false;
 		} else if (res.equals("ERR2")) {
 			Toast.makeText(getApplicationContext(), "Invalid data, possible missing data separator.", Toast.LENGTH_SHORT).show();
+			return false;
 		} else if (res.equals("ERR3")) {
 			Toast.makeText(getApplicationContext(), "Invalid data/syntax, could not parse data.", Toast.LENGTH_SHORT).show();
+			return false;
 		} else if (res.equals(Common.NOPE)) {
 			Toast.makeText(getApplicationContext(), "Server is not activated!", Toast.LENGTH_SHORT).show();
+			return false;
 		} else if (res.equals(Common.OK)) {
 			return true;
 		} else {
 			Toast.makeText(getApplicationContext(), "Error! - " + Common.errorCodes().get(res).toString(), Toast.LENGTH_SHORT).show();
+			return false;
 		}
-		return false;
 	}
 	
 	public void SendBarcode(final String code) {
-		Log.v(TAG, "SendBarcode(Server s, String code) called!");
 		Intent intent = new Intent(this, BoIPService.class);
 		Messenger messenger = new Messenger(ServiceHandler);
 		
@@ -243,6 +251,7 @@ public class BarcodeScannerActivity extends Activity {
 		if (result != null) {
 			try {
 				String barcode = result.getContents().toString();
+				Log.d(TAG, "onActivityResult() : BARCODE = " + barcode);
 				this.SendBarcode(barcode);
 				Toast.makeText(this, getString(R.string.barcode_sent_ok), Toast.LENGTH_SHORT).show();
 				finish();
@@ -252,6 +261,7 @@ public class BarcodeScannerActivity extends Activity {
 				Log.e(TAG, "onActivityResult(): " + ne.toString());
 				finish();
 			}
+			
 		}
 		this.finish();
 	}
