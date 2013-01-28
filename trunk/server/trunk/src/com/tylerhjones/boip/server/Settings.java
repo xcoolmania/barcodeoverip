@@ -35,8 +35,8 @@ public class Settings {
 
     private final static String TAG = "Settings";
 
-    public final String VERSION = "1.0.2r1";
-    public final String VERNUM = "1.0.2";
+    public final String VERSION = "1.0.3-r1";
+    public final String VERNUM = "1.0.3";
     public final int REVNUM = 160;
     public final String VERTYPE = "r1";
     public final String APP_NAME = "BarcodeOverIP-Server";

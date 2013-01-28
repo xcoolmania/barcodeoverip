@@ -41,6 +41,8 @@ import java.util.jar.JarFile;
 import javax.swing.JOptionPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 
 // MainFrame class
@@ -74,6 +76,11 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         btnExit = new javax.swing.JButton();
         btnOk = new javax.swing.JButton();
+        btnOk.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        	    btnHideActionPerformed(e);
+        	}
+        });
         jLabel1 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         txtPassword = new javax.swing.JTextField();
@@ -335,8 +342,11 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void chkAppendNLStateChanged(javax.swing.event.ChangeEvent evt) {                                         
         SET.setAppendNL(chkAppendNL.isSelected());
-    }                                        
-
+    }         
+    
+    private void btnHideActionPerformed(java.awt.event.ActionEvent evt) {
+	this.setVisible(false);
+    }
 
     public void init() {
         serverThread.start();
