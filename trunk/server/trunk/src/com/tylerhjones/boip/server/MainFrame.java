@@ -292,9 +292,7 @@ public class MainFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>                        
 
-    private void txtPasswordActionPerformed(java.awt.event.ActionEvent evt) {                                            
-        // TODO add your handling code here:
-    }                                           
+    private void txtPasswordActionPerformed(java.awt.event.ActionEvent evt) {  }                                           
 
     private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {                                        
         int n = JOptionPane.showConfirmDialog(this, "Are you sure you want to exit?", "Confirm quit", JOptionPane.YES_NO_OPTION);

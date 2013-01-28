@@ -28,7 +28,8 @@
 
 package com.tylerhjones.boip.server;
 
-import java.awt.*;
+import java.awt.AWTException;
+import java.awt.Robot;
 import static java.awt.event.KeyEvent.*;
 
 public class KeypressEmulator {
@@ -40,13 +41,13 @@ public class KeypressEmulator {
     }
 
     public boolean TypeStr(CharSequence characters) {
-	int i;
-    	int length = characters.length();
+	if(robot==null) { System.out.println(TAG + "ROBOT IS NULL!!!");  return false;} 
+	int i, length = characters.length();
     	for (i = 0; i < length; i++) {
     		char character = characters.charAt(i);
     		TypeChar(character);
     	}
-    	if (i < characters.length()) { return false; }
+    	if (i < length) { return false; }
     	return true;
     }
     
