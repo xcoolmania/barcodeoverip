@@ -45,7 +45,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.RemoteViews;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 public class BoIPWidgetConfigure extends Activity {
 	

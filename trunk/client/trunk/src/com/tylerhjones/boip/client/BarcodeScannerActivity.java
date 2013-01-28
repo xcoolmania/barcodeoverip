@@ -29,6 +29,7 @@ package com.tylerhjones.boip.client;
 import java.util.ArrayList;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -47,23 +48,26 @@ public class BarcodeScannerActivity extends Activity {
 	
 	private static final String TAG = "BarcodeScannerActivity";
 	
+	@SuppressWarnings("unused")
 	private static ArrayList<Server> Servers = new ArrayList<Server>();
 	private Database DB = new Database(this);
 	private Server CurServer = new Server();
 	private static String ServerName = null;
-	private final int ACTION_VALIDATE = 1;
-	private final int ACTION_SEND = 2;
+	static final int ACTION_VALIDATE = 1;
+	static final int ACTION_SEND = 2;
 	public static String SERVER_NAME = "servername";
 	public static int INVALID_SERVER_ID = -1;
+	static Context context;
+	static BarcodeScannerActivity act = new BarcodeScannerActivity();
 	
-	public BarcodeScannerActivity() {
+	public BarcodeScannerActivity() {	    
 		
 	}
 	
 	/*******************************************************************************************************/
 	/** Service result handler function ****************************************************************** */
 	
-	private Handler ServiceHandler = new Handler() {
+	private static Handler ServiceHandler = new Handler() {
 		
 		@SuppressLint("HandlerLeak")
 		public void handleMessage(Message message) {
@@ -71,22 +75,18 @@ public class BarcodeScannerActivity extends Activity {
 			
 			if (result.getString("RESULT").equals("NONE")) {
 				Log.e(TAG, "Service gave result: NONE");
-				finish();
 			} else if (result.getString("RESULT").equals("ERR_Intent")) {
 				Log.e(TAG, "Service returned an intent error.");
-				finish();
 			} else if (result.getString("RESULT").equals("ERR_Index")) {
 				Log.e(TAG, "Service returned an index error.");
-				finish();
 			} else if (result.getString("RESULT").equals("ERR_InvalidIP")) {
 				Log.e(TAG, "Service returned an invalid IP error.");
-				finish();
 			}
 			
 			if (message.arg1 == RESULT_OK) {
 				if (result.getInt("ACTION", -1) == ACTION_VALIDATE) {
 					if (ValidateResult(result.getString("RESULT"))) {
-						IntentIntegrator integrator = new IntentIntegrator(BarcodeScannerActivity.this);
+						IntentIntegrator integrator = new IntentIntegrator(act);
 						integrator.initiateScan(IntentIntegrator.ALL_CODE_TYPES);
 					}
 				} else if (result.getInt("ACTION", -1) == ACTION_SEND) {
@@ -103,6 +103,9 @@ public class BarcodeScannerActivity extends Activity {
 	@Override
 	public void onCreate(Bundle si) {
 		super.onCreate(si);
+		
+		context = this.getApplicationContext();
+		act = BarcodeScannerActivity.this;
 				
 		Intent intent = this.getIntent();
 		Bundle extras = intent.getExtras();
@@ -151,27 +154,27 @@ public class BarcodeScannerActivity extends Activity {
 		startService(intent);
 	}
 	
-	public boolean ValidateResult(String res) {
+	public static boolean ValidateResult(String res) {
 		if (res.equals("ERR9")) {
-			Common.showMsgBox(this, "Wrong Password!",
+			Common.showMsgBox(context, "Wrong Password!",
 				"The password you gave does not match the password set on the server. Verify that the passwords match on the server and client then try again.'");
 			return false;
 		} else if (res.equals("ERR1")) {
-			Toast.makeText(getApplicationContext(), "Invalid data and/or request syntax!", Toast.LENGTH_SHORT).show();
+			Toast.makeText(context, "Invalid data and/or request syntax!", Toast.LENGTH_SHORT).show();
 			return false;
 		} else if (res.equals("ERR2")) {
-			Toast.makeText(getApplicationContext(), "Invalid data, possible missing data separator.", Toast.LENGTH_SHORT).show();
+			Toast.makeText(context, "Invalid data, possible missing data separator.", Toast.LENGTH_SHORT).show();
 			return false;
 		} else if (res.equals("ERR3")) {
-			Toast.makeText(getApplicationContext(), "Invalid data/syntax, could not parse data.", Toast.LENGTH_SHORT).show();
+			Toast.makeText(context, "Invalid data/syntax, could not parse data.", Toast.LENGTH_SHORT).show();
 			return false;
 		} else if (res.equals(Common.NOPE)) {
-			Toast.makeText(getApplicationContext(), "Server is not activated!", Toast.LENGTH_SHORT).show();
+			Toast.makeText(context, "Server is not activated!", Toast.LENGTH_SHORT).show();
 			return false;
 		} else if (res.equals(Common.OK)) {
 			return true;
 		} else {
-			Toast.makeText(getApplicationContext(), "Error! - " + Common.errorCodes().get(res).toString(), Toast.LENGTH_SHORT).show();
+			Toast.makeText(context, "Error! - " + Common.errorCodes().get(res).toString(), Toast.LENGTH_SHORT).show();
 			return false;
 		}
 	}
@@ -188,22 +191,22 @@ public class BarcodeScannerActivity extends Activity {
 		startService(intent);
 	}
 	      
-	public void SendBarcodeResult(String res) {
+	public static void SendBarcodeResult(String res) {
 		if (res.equals("ERR9")) {
-			Common.showMsgBox(this, "Wrong Password!",
+			Common.showMsgBox(context, "Wrong Password!",
 				"The password you gave does not match the on on the server. Please change it on your app and press 'Apply Server Settings' and then try again.'");
 		} else if (res.equals("ERR1")) {
-			Toast.makeText(getApplicationContext(), "Invalid data and/or request syntax!", Toast.LENGTH_SHORT).show();
+			Toast.makeText(context, "Invalid data and/or request syntax!", Toast.LENGTH_SHORT).show();
 		} else if (res.equals("ERR2")) {
-			Toast.makeText(getApplicationContext(), "Invalid data, possible missing data separator.", Toast.LENGTH_SHORT).show();
+			Toast.makeText(context, "Invalid data, possible missing data separator.", Toast.LENGTH_SHORT).show();
 		} else if (res.equals("ERR3")) {
-			Toast.makeText(getApplicationContext(), "Invalid data/syntax, could not parse data.", Toast.LENGTH_SHORT).show();
+			Toast.makeText(context, "Invalid data/syntax, could not parse data.", Toast.LENGTH_SHORT).show();
 		} else if (res.equals(Common.NOPE)) {
-			Toast.makeText(getApplicationContext(), "Server is not activated!", Toast.LENGTH_SHORT).show();
+			Toast.makeText(context, "Server is not activated!", Toast.LENGTH_SHORT).show();
 		} else if (res.equals(Common.OK)) {
 			Log.v(TAG, "SendBarcodeResult(String res): All OK");
 		} else {
-			Toast.makeText(this, "Error! - " + Common.errorCodes().get(res).toString(), Toast.LENGTH_SHORT).show();
+			Toast.makeText(context, "Error! - " + Common.errorCodes().get(res).toString(), Toast.LENGTH_SHORT).show();
 		}
 	}
 	

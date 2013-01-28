@@ -67,7 +67,7 @@ public class DiscoverServersActivity extends Activity {
 		this.Servers = new Vector<String>();
 		
 		((ListView) this.findViewById(R.id.lvDiscover)).setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			public void onItemClick(AdapterView adapter, View v, int position, long id) {
+			public void onItemClick(AdapterView<?> adapter, View v, int position, long id) {
 				onServerClick(position);
 			}
 		});
