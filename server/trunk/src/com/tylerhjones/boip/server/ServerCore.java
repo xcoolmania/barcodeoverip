@@ -29,6 +29,7 @@
 
 package com.tylerhjones.boip.server;
 
+import java.awt.AWTException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -80,6 +81,12 @@ public class ServerCore implements Runnable {
     
     @Override
     public void run() { //The thread 'thread' starts here
+	try {
+	    Keyboard = new KeypressEmulator();
+	} catch(AWTException e) {
+	    System.out.println("Error creating the java.awt.robot! BoIP Server will not work!");
+	    return;
+	}
         this.runThread = true;
         if(!this.startListener()) { this.runThread = false; } else { this.runThread = true; }
        
@@ -114,7 +121,7 @@ public class ServerCore implements Runnable {
                             	res = res.substring(8);
                             	System.out.println(TAG + "Parser returned a barcode for system input: " + res);
                             	System.out.println(TAG + "Sending keystrokes to system...");
-                            	if(SET.getAppendNL()) { res = res + String.valueOf(13); }
+                            	if(SET.getAppendNL()) { res = res + "\n"; }                            	
                              	if (Keyboard.TypeStr(res.toString())) {
                             		System.out.println(TAG + "Barcode was inputted. Sending 'THANKS' to client.");
                                 	streamOut.println(THX);

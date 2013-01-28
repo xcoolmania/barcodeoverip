@@ -49,12 +49,11 @@ public class MulticastSocketThread extends Thread {
 
 	public MulticastSocketThread() {
                   this.Port = SET.getPort() + 131;
-		// TODO Auto-generated constructor stub
 	}
 
 	public MulticastSocketThread(int port) {
 		this.Port = port + 131;
-                //SET.getPort() + 131; //FIXME: Add some code to check if port is on the upper or lower limits of the ports range, right now 262 ports wouldn't work right.
+                //SET.getPort() + 131; 
 	}
 
 	public MulticastSocketThread(Runnable target) {
