@@ -31,6 +31,8 @@ import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.TrayIcon;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -41,8 +43,6 @@ import java.util.jar.JarFile;
 import javax.swing.JOptionPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 
 // MainFrame class
@@ -68,6 +68,7 @@ public class MainFrame extends javax.swing.JFrame {
 
     /** Creates new form MainFrame */
     public MainFrame() {
+    	setResizable(false);
         initComponents();
     }
   
@@ -77,6 +78,7 @@ public class MainFrame extends javax.swing.JFrame {
         btnExit = new javax.swing.JButton();
         btnOk = new javax.swing.JButton();
         btnOk.addActionListener(new ActionListener() {
+            @Override
         	public void actionPerformed(ActionEvent e) {
         	    btnHideActionPerformed(e);
         	}
@@ -99,9 +101,7 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel5.setText("http://boip.tylerjones.me/");
 
         setTitle("BarcodeOverIP-Server");
-        setAlwaysOnTop(true);
-        setName("MainWindow"); // NOI18N
-        setResizable(false);
+        setName("MainWindow");
 
         btnExit.setText("Exit");
         btnExit.setToolTipText("Exit the server application and close all connections.");
@@ -109,6 +109,7 @@ public class MainFrame extends javax.swing.JFrame {
         btnExit.setMinimumSize(new java.awt.Dimension(94, 25));
         btnExit.setPreferredSize(new java.awt.Dimension(94, 25));
         btnExit.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnExitActionPerformed(evt);
             }
@@ -136,6 +137,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         txtPassword.setToolTipText("Set a password to limit access to the server. Default is blank (no password), set blank to remove password.");
         txtPassword.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtPasswordActionPerformed(evt);
             }
@@ -147,6 +149,7 @@ public class MainFrame extends javax.swing.JFrame {
         btnAbout.setMinimumSize(new java.awt.Dimension(94, 25));
         btnAbout.setPreferredSize(new java.awt.Dimension(94, 25));
         btnAbout.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnAboutActionPerformed(evt);
             }
@@ -156,6 +159,7 @@ public class MainFrame extends javax.swing.JFrame {
         chkAppendNL.setText("Add 'Enter' key after barcode.");
         chkAppendNL.setToolTipText("Adds a simulated press of the enter key after the barcode is received and typed by the system. Defualt is TRUE.");
         chkAppendNL.addChangeListener(new javax.swing.event.ChangeListener() {
+            @Override
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 chkAppendNLStateChanged(evt);
             }
@@ -167,6 +171,7 @@ public class MainFrame extends javax.swing.JFrame {
         chkAutoSet.setActionCommand("Automatically detect and set the IP and port");
         chkAutoSet.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         chkAutoSet.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 chkAutoSetActionPerformed(evt);
             }
@@ -198,6 +203,7 @@ public class MainFrame extends javax.swing.JFrame {
         btnApplyIPPort.setActionCommand("Apply (Needs App Reload)");
         btnApplyIPPort.setEnabled(false);
         btnApplyIPPort.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnApplyIPPortActionPerformed(evt);
             }
@@ -347,6 +353,7 @@ public class MainFrame extends javax.swing.JFrame {
     private void btnHideActionPerformed(java.awt.event.ActionEvent evt) {
 	this.setVisible(false);
     }
+
 
     public void init() {
         serverThread.start();
