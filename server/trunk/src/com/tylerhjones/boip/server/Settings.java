@@ -35,10 +35,10 @@ public class Settings {
 
     private final static String TAG = "Settings";
 
-    public final String VERSION = "1.0.2-Beta2";
+    public final String VERSION = "1.0.2r1";
     public final String VERNUM = "1.0.2";
     public final int REVNUM = 160;
-    public final String VERTYPE = "Beta2";
+    public final String VERTYPE = "r1";
     public final String APP_NAME = "BarcodeOverIP-Server";
     public final String APP_AUTHOR = "Tyler H. Jones";
     public final String APP_WEBSITE = "http://boip.tylerjones.me";

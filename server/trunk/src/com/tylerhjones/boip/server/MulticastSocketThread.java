@@ -53,50 +53,49 @@ public class MulticastSocketThread extends Thread {
 
 	public MulticastSocketThread(int port) {
 		this.Port = port + 131;
-                //SET.getPort() + 131; 
 	}
 
 	public MulticastSocketThread(Runnable target) {
 		super(target);
                 this.Port = SET.getPort() + 131;
-                // TODO Auto-generated constructor stub
+                
 	}
 
 	public MulticastSocketThread(String name) {
 		super(name);
                 this.Port = SET.getPort() + 131;
-		// TODO Auto-generated constructor stub
+		
 	}
 
 	public MulticastSocketThread(ThreadGroup group, Runnable target) {
 		super(group, target);
                 this.Port = SET.getPort() + 131;
-		// TODO Auto-generated constructor stub
+		
 	}
 
 	public MulticastSocketThread(ThreadGroup group, String name) {
 		super(group, name);
                 this.Port = SET.getPort() + 131;
-		// TODO Auto-generated constructor stub
+		
 	}
 
 	public MulticastSocketThread(Runnable target, String name) {
 		super(target, name);
                 this.Port = SET.getPort() + 131;
-		// TODO Auto-generated constructor stub
+		
 	}
 
 	public MulticastSocketThread(ThreadGroup group, Runnable target, String name) {
 		super(group, target, name);
                 this.Port = SET.getPort() + 131;
-		// TODO Auto-generated constructor stub
+		
 	}
 
 	public MulticastSocketThread(ThreadGroup group, Runnable target, String name,
 			long stackSize) {
 		super(group, target, name, stackSize);
                 this.Port = SET.getPort() + 131;
-		// TODO Auto-generated constructor stub
+		
 	}
 
 	//
