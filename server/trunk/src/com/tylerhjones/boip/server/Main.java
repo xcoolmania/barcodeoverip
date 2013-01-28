@@ -46,25 +46,24 @@ public class Main {
         MAINF.setIconImage(Toolkit.getDefaultToolkit().getImage(Main.class.getResource("/icon24.png")));
         MAINF.setVisible(true);
         MAINF.setResizable(false);
-        MAINF.setTitle("BarcodeOverIP Server " + SET.VERSION + " - Settings");
+        MAINF.setTitle("BarcodeOverIP-Server " + SET.VERSION + " - Settings");
 
         // Catch the 'X' button being pressed on the main window
         MAINF.addWindowListener(new WindowAdapter() {
 
             public void windowClosing(WindowEvent e) {
+                MAINF.setVisible(false);
                 if (!SystemTray.isSupported()) {
-                    MAINF.setVisible(false);
                     MAINF.dispose();
                     System.exit(0);
-                } else { // Don't exit app when the 'X' is pressed, just minimize to system tray
-                    MAINF.setVisible(false);
                 }
 	    }
 
-	    public void windowIconified(WindowEvent e) {
+	    public void windowIconified(WindowEvent e) { //When the window is minimized, hide in system-tray instead
 	    	MAINF.setVisible(false);
 	    }
 	});
+        System.out.println("OS Version: " + System.getProperty("os.name"));
         
         MAINF.init();
         //------------------------------------------------------
@@ -74,14 +73,11 @@ public class Main {
 
 	if (SystemTray.isSupported()) {
 	    ImageIcon icon = new ImageIcon(Main.class.getResource("/icon24.png"));
-	    tray = new TrayIcon(icon.getImage().getScaledInstance(24, 24, Image.SCALE_DEFAULT), "BarcodeOverIP Server Starting...");
+	    tray = new TrayIcon(icon.getImage().getScaledInstance(24, 24, Image.SCALE_DEFAULT), "BarcodeOverIP-Server Starting...");
 	    tray.addMouseListener(new MouseListener(){
                 @Override
 		public void mouseClicked(MouseEvent e) {
-        		if(MAINF.isVisible())
-				MAINF.setVisible(false);
-			else
-				MAINF.setVisible(true);
+                    MAINF.setVisible(true);
 		}
 		public void mouseEntered(MouseEvent e) {}
 		public void mouseExited(MouseEvent e) {}
@@ -96,7 +92,7 @@ public class Main {
                 System.err.println("Error adding system-tray icon!");
 	    }
 	} else {
-            JOptionPane.showMessageDialog(MAINF, "No system-tray was found or your system does not support one. You must NOT close the settings window!", "No system tray available!", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(MAINF, "No system-tray was found or your system does not support one. Closing the window will also kill the server!", "No System-tray Available!", JOptionPane.WARNING_MESSAGE);
         }
     }
 }
