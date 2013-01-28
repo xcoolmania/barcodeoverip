@@ -107,6 +107,7 @@ public class BoIPService extends IntentService {
 			Messenger messenger = (Messenger) extras.get("MESSENGER");
 			Message msg = Message.obtain();
 			Bundle bundle = new Bundle();
+			Log.d(TAG, "SEND MSG FROM SVC: " + sname + " -- " + result + " -- " + action);
 			bundle.putString("SNAME", sname);
 			bundle.putString("RESULT", result);
 			bundle.putInt("ACTION", action);
@@ -125,7 +126,6 @@ public class BoIPService extends IntentService {
 	public String connect() {
 		try {
 			sock = new Socket(CurServer.getHost(), CurServer.getPort());
-			Log.i(TAG, "connect() - Connection with server is established");
 			input = new DataInputStream(sock.getInputStream());
 			output = new PrintStream(sock.getOutputStream());
 			return Common.OK;
@@ -154,9 +154,7 @@ public class BoIPService extends IntentService {
 	}
 	
 	// Common.DCHECK if server is up and if we are authorized and if you password is correct.
-	public String Validate() {
-		Log.i(TAG, "Common.Validate() - Test the server settings...");
-		
+	public String Validate() {		
 		String ipaddr = CheckInetAddress(CurServer.getHost());
 		if (ipaddr == null) { return "ERR_InvalidIP"; }
 		try {
@@ -166,7 +164,6 @@ public class BoIPService extends IntentService {
 			
 			String result;
 			while ((result = input.readLine().trim()) != null) {
-				Log.i(TAG, "Common.Validate() - Server: " + result);
 				CanConnect = false;
 				if (result.indexOf(Common.OK) > -1) {
 					CanConnect = true;
@@ -196,14 +193,12 @@ public class BoIPService extends IntentService {
 	}
 	
 	public String sendBarcode(String barcode) {
-		String result;
 		try {
 			this.connect();
 			String servermsg = this.CurServer.getPassHash() + Common.DSEP + Common.BCODE + barcode;
 			this.output.println(servermsg);
-			
+			String result;
 			while ((result = input.readLine().trim()) != null) {
-				Log.i(TAG, "Common.sendBarcode() - Server: " + result); // DEBUG
 				this.close();
 				if (result.indexOf(Common.THANKS) > -1) {
 					return Common.OK;
@@ -241,21 +236,21 @@ public class BoIPService extends IntentService {
 		}
 		catch (UnknownHostException e) {
 			Toast.makeText(getApplicationContext(), "Invalid Hostname/IP Address! (-1)", Toast.LENGTH_LONG).show();
-			return null;
+			return "ERROR";
 		}
 		if (addr.isLoopbackAddress() || addr.isLinkLocalAddress() || addr.isAnyLocalAddress()) {
 			Toast.makeText(getApplicationContext(), "Invalid IP Address! IP must point to a physical, reachable computer!  (-2)", Toast.LENGTH_LONG).show();
-			return null;
+			return "ERROR";
 		}
 		try {
 			if (!addr.isReachable(2500)) {
 				Toast.makeText(getApplicationContext(), "Address/Hosst is unreachable! (2500ms Timeout) (-3)", Toast.LENGTH_LONG).show();
-				return null;
+				return "ERROR";
 			}
 		}
 		catch (IOException e1) {
 			Toast.makeText(getApplicationContext(), "Address/Host is unreachable! (Error Connecting) (-4)", Toast.LENGTH_LONG).show();
-			return null;
+			return "ERROR";
 		}
 		
 		return addr.getHostAddress();
@@ -263,7 +258,7 @@ public class BoIPService extends IntentService {
 	
 	public boolean IsSiteLocalIP(String s) {
 		String str = CheckInetAddress(s);
-		if (str == null) { return false; }
+		if (str.equals("ERROR")) { return false; }
 		InetAddress addr = null;
 		try {
 			addr = InetAddress.getByName(str);
