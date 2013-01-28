@@ -1,11 +1,8 @@
 HIGH:
- - $BARCODE||password||data;
  - Get rid of CHECK_OK
  - Get it released!
- - Fix system tray icon click events.
 
 MEDIUM:
- - Check for SMC at endo fdata first then immediatley remove it from the data string
  - Base 64 data with the application password
 
 
