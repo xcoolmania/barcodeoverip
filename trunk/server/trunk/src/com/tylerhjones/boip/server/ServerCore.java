@@ -38,6 +38,9 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+//TODO: Fix (is it broken?) the system tray applet
+
+
 public class ServerCore implements Runnable {
     
     private static final String TAG = "ServerCore -- ";
@@ -45,7 +48,7 @@ public class ServerCore implements Runnable {
     protected Settings SET = new Settings();
 
     private BufferedReader  streamIn  =  null; //The is the replacement for the old "DataStream" variable
-    private PrintStream streamOut = null; //The output datastream from sending data to the client over a socket
+    private PrintStream streamOut = null; //The output data stream from sending data to the client over a socket
     private Thread thread = null; //This is the thread that does all the work handling the sockets and connections
     private ServerSocket listener; //The listening socket listens for new client connections
     private Socket socket; //This is the socket that is returned when a client connects
@@ -64,10 +67,10 @@ public class ServerCore implements Runnable {
     private static final String VER = "VERSION"; 
     private static final String BCODE = "BARCODE=";
     //Error codes
-    private static final String ERR9 = "Invalid password was passed by the client, double check and try again. (ErrCode=9)";
-    private static final String ERR4 = "Cient passed no discernable data. Possibly null. (ErrCode=4)"; //Invalid command/syntax (no SMC)
-    private static final String ERR2 = "Error while parsing client data: Invalid or missing data separator in client data  (ErrCode=2)"; //Parser.NoDSEP
-    private static final String ERR3 = "Error while parsing client data: Data not formatted properly for the parser. (ErrCode=3)"; //Parser.AIOOBException
+    //private static final String ERR9 = "Invalid password was passed by the client, double check and try again. (ErrCode=9)";
+    //private static final String ERR4 = "Cient passed no discernable data. Possibly null. (ErrCode=4)"; //Invalid command/syntax (no SMC)
+    //private static final String ERR2 = "Error while parsing client data: Invalid or missing data separator in client data  (ErrCode=2)"; //Parser.NoDSEP
+    //private static final String ERR3 = "Error while parsing client data: Data not formatted properly for the parser. (ErrCode=3)"; //Parser.AIOOBException
     private static final String ERR101 = "Server encountered an unknown error when attempting to 'type' the barcode. (ErrCode=101)";
     private static final String ERR8 = "Parsing Failed!! Client passed non-parsable data. No parameters/data-blocks were found, looks like data, really just gibberish. (ErrCode=99)";
     //Server response strings, for telling the client what's up
@@ -227,8 +230,10 @@ public class ServerCore implements Runnable {
     private String ParseData(String data) {
         String begin, end;
         if(data.equals(VER)) { return VER; }
+        
         // This is here for legacy (pre 1.0) support). No longer using ';' as the data suffix. 
         if(data.endsWith(SMC)) { data = data.substring(0, data.length() -1); } // If there is a ';' remove it and move on
+        
     	if(!data.contains(DSEP)) { 
     		System.out.println(TAG + "ParseData(data) -- Invalid data format and/or syntax! - Command does not seem to be assembled right. It cannot be parsed. Type=ParseData.FindDSEP");
             return "ERR2";

@@ -36,7 +36,6 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.jar.JarFile;
 import javax.swing.JOptionPane;
@@ -47,24 +46,20 @@ import javax.swing.event.DocumentListener;
 // MainFrame class
 public class MainFrame extends javax.swing.JFrame {
 
+    private static final long serialVersionUID = 2473321176543596860L;
+
     private String TAG = "MainFrame";
 
     private static final int DEFAULT_PORT = 41788;
     private static final String DEFAULT_IP = "0.0.0.0";
     private static final String OK = "OK";
-
-    private ServerCore Server = new ServerCore();
-
-    private Settings SET = new Settings();
-
-    private TrayIcon SysTrayIcon;
-
     public static JarFile jar;
     public static String basePath = "";
 
-    
+    private ServerCore Server = new ServerCore();
+    private Settings SET = new Settings();
+    private TrayIcon SysTrayIcon;
     private Toolkit toolkit;
-
     private Thread serverThread = new Thread(Server);
     private MulticastSocketThread discoverable;
 
@@ -74,7 +69,6 @@ public class MainFrame extends javax.swing.JFrame {
         initComponents();
     }
   
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
     private void initComponents() {
 
         jLabel5 = new javax.swing.JLabel();
@@ -118,11 +112,6 @@ public class MainFrame extends javax.swing.JFrame {
         btnOk.setMaximumSize(new java.awt.Dimension(94, 25));
         btnOk.setMinimumSize(new java.awt.Dimension(94, 25));
         btnOk.setPreferredSize(new java.awt.Dimension(94, 25));
-        btnOk.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnOkActionPerformed(evt);
-            }
-        });
 
         jLabel1.setFont(new java.awt.Font("DejaVu Sans", 0, 14)); // NOI18N
         jLabel1.setText("<html>Enter the IP and Port given below into your BarcodeOverIP Client app to scan and send barcodes to this computer. It's that easy!</html>");
@@ -290,26 +279,18 @@ public class MainFrame extends javax.swing.JFrame {
         );
 
         pack();
-    }// </editor-fold>                        
+    }                  
 
     private void txtPasswordActionPerformed(java.awt.event.ActionEvent evt) {  }                                           
 
     private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {                                        
-        int n = JOptionPane.showConfirmDialog(this, "Are you sure you want to exit?", "Confirm quit", JOptionPane.YES_NO_OPTION);
-        if (n == JOptionPane.YES_OPTION) {
-            Server.stopListener();
-            dispose();
-            System.exit(0);
-        }
-    }                                       
-
-    private void btnOkActionPerformed(java.awt.event.ActionEvent evt) {                                      
-
-    }                                     
+        Server.stopListener();
+        dispose();
+        System.exit(0);
+    }                                                                           
 
     private void btnAboutActionPerformed(java.awt.event.ActionEvent evt) { 
-	//Server.testKeys();
-        JOptionPane.showMessageDialog(this, "<html><center><b><big>BarcodeOverIP-Server " + SET.VERSION + "</big></b><br><strong>Written by Tyler H. Jones</strong> -- <b>eMail:</b> tylerhuntjones@gmail.com OR me@tylerjones.me<br><b>Blog:</b> https://tylerjones.me | <b>Twitter:</b> twitter.com/tylerhuntjones<br><hr><b>BarcodeOverIP Project Site:</b> boip.tylerjones.me</a><br><b>Application Usage Notes</b></center><br><div style=\"text-align: left;\"><b>a.</b> This application works best when run in OpenJDK-6 or OracleJava-6, v7 works but it is buggy. <br><b>b.</b> I have tested this application on Linux, MacOS X and Windows XP/7/8and can confirm that it works.<br>Windows users might have to disable Windows firewall for XP/7/8 to cooperate.<br><b>c.</b> I have not tested (or even thought about testing it) for use of the Internet, because... why?<br><b>d.</b> I have made a lot of effort in enabling BoIP to be able to scan any kind of barcode in existence.<br>If certain ones aren't working, please file a bug report (see below)<br><b>e.</b> Please report any bugs, typos, crash reports, and comments/tweaks/suggestions by filing a bug report<br>on the BoIP Google Code Project Issues: http://code.google.com/p/barcodeoverip/issues</div></html>", "About BarcodeOverIP-Server " + SET.VERSION, JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, "<html><center><b><big>BarcodeOverIP-Server " + SET.VERSION + "</big></b><br><strong>Written by Tyler H. Jones</strong> -- <b>eMail:</b> inquirewue@gmail.com<br><b>Blog:</b> https://tylerjones.me | <b>Twitter:</b> twitter.com/tylerhuntjones<br><hr><b>BarcodeOverIP Project Site:</b> boip.tylerjones.me</a><br><b>Application Usage Notes</b></center><br><div style=\"text-align: left;\"><b>a.</b> This application works best when run in OpenJDK-6 or OracleJava-6, v7 works but it is buggy. <br><b>b.</b> I have tested this application on Linux, MacOS X and Windows XP/7/8and can confirm that it works.<br>Windows users might have to disable Windows firewall for XP/7/8 to cooperate.<br><b>c.</b> I have not tested (or even thought about testing it) for use of the Internet, because... why?<br><b>d.</b> I have made a lot of effort in enabling BoIP to be able to scan any kind of barcode in existence.<br>If certain ones aren't working, please file a bug report (see below)<br><b>e.</b> Please report any bugs, typos, crash reports, and comments/tweaks/suggestions by filing a bug report<br>on the BoIP Google Code Project Issues: http://code.google.com/p/barcodeoverip/issues</div></html>", "About BarcodeOverIP-Server " + SET.VERSION, JOptionPane.INFORMATION_MESSAGE);
     }                                        
 
     private void chkAutoSetActionPerformed(java.awt.event.ActionEvent evt) {    
@@ -339,8 +320,6 @@ public class MainFrame extends javax.swing.JFrame {
                 this.ApplyIPPort();
             }
     	} else {
-            //txtHost.setText(SET.getHost());
-            //txtPort.setText(String.valueOf(SET.getPort()));
             txtHost.setEditable(true);
             txtPort.setEditable(true);
             txtHost.setFocusable(true);
@@ -433,7 +412,6 @@ public class MainFrame extends javax.swing.JFrame {
             txtHost.selectAll();
             btnApplyIPPort.setEnabled(true);
         }
-        //Server.startListener();
         Server.activate();
     }
 
@@ -441,6 +419,52 @@ public class MainFrame extends javax.swing.JFrame {
         this.SysTrayIcon = ico;
         this.SysTrayIcon.setToolTip("BarcodeOverIP " + SET.VERSION + " - Active\n(Right or Left click to show settings window)\nHost:Port - " + SET.getHost() + ":" + String.valueOf(SET.getPort()));
     }
+    
+    
+    
+    // Auto-discover IP for Java 6
+    /*
+     
+    public static InetAddress getLocalHost_nix() throws UnknownHostException {
+            InetAddress localHost = InetAddress.getLocalHost();
+            if(!localHost.isLoopbackAddress()) return localHost;
+            InetAddress[] addrs = getAllLocalUsingNetworkInterface_nix();
+            for(int i=0; i<addrs.length; i++) {
+                    //Check for "." to ensure IPv4
+                    if(!addrs[i].isLoopbackAddress() && addrs[i].getHostAddress().contains(".")) return addrs[i];
+            }
+            return localHost;
+    }
+
+    public static InetAddress[] getAllLocal_nix() throws UnknownHostException {
+            InetAddress[] iAddresses = InetAddress.getAllByName("127.0.0.1");
+            if(iAddresses.length != 1) return iAddresses;
+            if(!iAddresses[0].isLoopbackAddress()) return iAddresses;
+            return getAllLocalUsingNetworkInterface_nix();
+    }
+
+    private static InetAddress[] getAllLocalUsingNetworkInterface_nix() throws UnknownHostException {
+            ArrayList addresses = new ArrayList();
+            Enumeration e = null;
+            try {
+                    e = NetworkInterface.getNetworkInterfaces();
+            } catch (SocketException ex) {
+                    throw new UnknownHostException("127.0.0.1");
+            }
+            while(e.hasMoreElements()) {
+                    NetworkInterface ni = (NetworkInterface)e.nextElement();
+                    for(Enumeration e2 = ni.getInetAddresses(); e2.hasMoreElements();) {
+                            addresses.add(e2.nextElement());
+                    }
+            }
+            InetAddress[] iAddresses = new InetAddress[addresses.size()];
+            for(int i=0; i<iAddresses.length; i++) {
+                    iAddresses[i] = (InetAddress)addresses.get(i);
+            }
+            return iAddresses;
+    }
+     */
+    
     
     private String FindSystemIP() {
 	String ip = DEFAULT_IP;
@@ -451,6 +475,22 @@ public class MainFrame extends javax.swing.JFrame {
 	} catch (UnknownHostException unk) {
 	    System.out.println("UnknownHostException when looking up local system IP address! -- MESSAGE: " + unk.toString());
 	}
+	
+	/*
+	 * For Java 6
+	 * 
+	try {
+            localAddr = InetAddress.getLocalHost();
+            if (localAddr.isLoopbackAddress()) {
+                localAddr = getLocalHost_nix();
+            }
+            ip = localAddr.getHostAddress();
+        } catch (UnknownHostException ex) {
+            Server.pln("Error finding local IP.");
+            return NO;
+        }
+	 
+	 */
 	return ip;
     }
 
@@ -472,6 +512,10 @@ public class MainFrame extends javax.swing.JFrame {
 	    return InetAddress.getLocalHost();  
     }
  
+    
+    
+    
+    
     private String validateValues() {
         if(!chkAutoSet.isSelected()) {
             if(txtHost.getText().trim().length() < 1 || txtHost.getText().trim().equals("") || txtHost.getText().trim() == null) {
@@ -521,7 +565,7 @@ public class MainFrame extends javax.swing.JFrame {
         txtHost.setText(SET.getHost());
         txtPort.setText(String.valueOf(SET.getPort()));
 
-        int n = JOptionPane.showConfirmDialog(this, "The changes to the IP and/or Port settings will not take effect until BoIP-Server is restarted. Would you like to exit now?", "App Restart Required", JOptionPane.YES_NO_OPTION);
+        int n = JOptionPane.showConfirmDialog(this, "The changes to the IP and/or Port settings will not take effect until BoIP-Server is restarted. Would you like to EXIT now?", "App Restart Required", JOptionPane.YES_NO_OPTION);
         if (n == JOptionPane.YES_OPTION) {
             Server.stopListener();
             dispose();
