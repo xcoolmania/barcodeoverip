@@ -27,7 +27,6 @@ package com.tylerhjones.boip.client;
 
 
 import java.util.ArrayList;
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -69,18 +68,24 @@ public class BarcodeScannerActivity extends Activity {
 	
 	private static Handler ServiceHandler = new Handler() {
 		
-		@SuppressLint("HandlerLeak")
 		public void handleMessage(Message message) {
 			Bundle result = message.getData();
 			
 			if (result.getString("RESULT").equals("NONE")) {
 				Log.e(TAG, "Service gave result: NONE");
+				act.finish();
 			} else if (result.getString("RESULT").equals("ERR_Intent")) {
 				Log.e(TAG, "Service returned an intent error.");
+				act.finish();
 			} else if (result.getString("RESULT").equals("ERR_Index")) {
 				Log.e(TAG, "Service returned an index error.");
+				act.finish();
 			} else if (result.getString("RESULT").equals("ERR_InvalidIP")) {
 				Log.e(TAG, "Service returned an invalid IP error.");
+				act.finish();
+			} else if (result.getString("RESULT").startsWith("ERROR")) {
+			    	Log.e(TAG, "Service returned error: " + result.getString("RESULT").substring(6));
+			    	Toast.makeText(context, result.getString("RESULT").substring(6), Toast.LENGTH_LONG).show();
 			}
 			
 			if (message.arg1 == RESULT_OK) {
@@ -93,9 +98,11 @@ public class BarcodeScannerActivity extends Activity {
 					SendBarcodeResult(result.getString("RESULT"));
 				} else {
 					Log.e(TAG, "ServiceHandler: Service intent didn't return valid action: " + String.valueOf(result.getInt("ACTION", -1)));
+					act.finish();
 				}
 			} else {
 				Log.e(TAG, "ServiceHandler: Service intent didn't return RESULT_OK: " + String.valueOf(message.arg1));
+				act.finish();
 			}
 		};
 	};
@@ -128,15 +135,13 @@ public class BarcodeScannerActivity extends Activity {
 		sEdit.putString(Common.PREF_CURSRV, ServerName);
 		sEdit.commit();
 		
-		BarcodeScannerActivity.this.setTitle("Press back to return to the Servers list window!");
+		BarcodeScannerActivity.this.setTitle("Press 'Back' for Servers list!");
 		ValidateServer(CurServer);
 	}
 	
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-			this.finish();
-		}
+		if (keyCode == KeyEvent.KEYCODE_BACK) { this.finish(); }
 		return super.onKeyDown(keyCode, event);
 	}
 	

@@ -2,7 +2,7 @@
 <resources>
 
 	<!-- Project and version info --> 
-	<string name="app_name">BarcodeOverIP (Beta)</string>
+	<string name="app_name">BarcodeOverIP</string>
 	<string name="app_full_name">BarcodeOverIP Client v1.0</string>
 	<string name="app_full_namever">BarcodeOverIP Client v1.0</string>
 	<string name="ver_full_name">1.0.3-Beta2</string>

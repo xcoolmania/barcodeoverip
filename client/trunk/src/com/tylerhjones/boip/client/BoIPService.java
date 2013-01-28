@@ -45,7 +45,7 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.util.Log;
-import android.widget.Toast;
+//import android.widget.Toast;
 
 
 public class BoIPService extends IntentService {
@@ -61,6 +61,7 @@ public class BoIPService extends IntentService {
 	private final int VALIDATE = 1;
 	private final int SEND = 2;
 	private int intResult = Activity.RESULT_CANCELED;
+	//private String strResult = "NONE";
 	
 	// Socket and socket data variables.
 	private Socket sock; // Network Socket object
@@ -86,16 +87,22 @@ public class BoIPService extends IntentService {
 			
 		if (action == VALIDATE && DB.getNameExists(sname)) {
 			result = this.Validate();
-			this.intResult = Activity.RESULT_OK;
+			if(result.startsWith("ERROR")) {
+			    this.intResult = Activity.RESULT_CANCELED;
+			} else {
+			    this.intResult = Activity.RESULT_OK;
+			}
 		} else if (action == SEND && DB.getNameExists(sname)) {
 			result = this.sendBarcode(intent.getStringExtra("BARCODE").toString());
 			this.intResult = Activity.RESULT_OK;
 		} else {
 			if (!DB.getNameExists(sname)) {
 				Log.e(TAG, "Invalid server name!");
+				this.intResult = Activity.RESULT_CANCELED;
 				result = "ERR_Index";
 			} else {
 				Log.e(TAG, "Invalid intent action! Given: " + action);
+				this.intResult = Activity.RESULT_CANCELED;
 				result = "ERR_Intent";
 			}
 		}
@@ -131,7 +138,7 @@ public class BoIPService extends IntentService {
 			return Common.OK;
 		}
 		catch (UnknownHostException e) {
-			Log.e(TAG, "connect() - Hostname not found(or unknown): " + CurServer.getHost() + ": " + e);
+			Log.e(TAG, "connect() - Hostname/IP not found(or unknown): " + CurServer.getHost() + ": " + e);
 			return "ERR50";
 		}
 		catch (IOException e) {
@@ -156,7 +163,7 @@ public class BoIPService extends IntentService {
 	// Common.DCHECK if server is up and if we are authorized and if you password is correct.
 	public String Validate() {		
 		String ipaddr = CheckInetAddress(CurServer.getHost());
-		if (ipaddr == null) { return "ERR_InvalidIP"; }
+		if (ipaddr.startsWith("ERROR")) { return ipaddr; }
 		try {
 			String res = this.connect();
 			if (!res.equals(Common.OK)) { return res; }
@@ -235,22 +242,22 @@ public class BoIPService extends IntentService {
 			addr = InetAddress.getByName(s);
 		}
 		catch (UnknownHostException e) {
-			Toast.makeText(getApplicationContext(), "Invalid Hostname/IP Address! (-1)", Toast.LENGTH_LONG).show();
-			return "ERROR";
+			//Toast.makeText(getApplicationContext(), "Invalid Hostname/IP Address! (-1)", Toast.LENGTH_LONG).show();
+			return "ERROR:" + "Invalid Hostname/IP Address! (Can you ping it?) (-1)";
 		}
 		if (addr.isLoopbackAddress() || addr.isLinkLocalAddress() || addr.isAnyLocalAddress()) {
-			Toast.makeText(getApplicationContext(), "Invalid IP Address! IP must point to a physical, reachable computer!  (-2)", Toast.LENGTH_LONG).show();
-			return "ERROR";
+			//Toast.makeText(getApplicationContext(), "Invalid IP Address! IP must point to a physical, reachable computer!  (-2)", Toast.LENGTH_LONG).show();
+			return "ERROR:" + "Invalid IP! IP must be reachable (check this) by other devices on the local network!  (-2)";
 		}
 		try {
 			if (!addr.isReachable(2500)) {
-				Toast.makeText(getApplicationContext(), "Address/Hosst is unreachable! (2500ms Timeout) (-3)", Toast.LENGTH_LONG).show();
-				return "ERROR";
+				//Toast.makeText(getApplicationContext(), "Address/Host is unreachable! (2500ms Timeout) (-3)", Toast.LENGTH_LONG).show();
+				return "ERROR:" + "Host is unreachable: 2500ms Timeout! (-3)";
 			}
 		}
 		catch (IOException e1) {
-			Toast.makeText(getApplicationContext(), "Address/Host is unreachable! (Error Connecting) (-4)", Toast.LENGTH_LONG).show();
-			return "ERROR";
+			//Toast.makeText(getApplicationContext(), "Address/Host is unreachable! (Error Connecting) (-4)", Toast.LENGTH_LONG).show();
+			return "ERROR:" + "Host is unreachable: Unknown error! (Extra: " + e1.getMessage() + ") (-4)";
 		}
 		
 		return addr.getHostAddress();
@@ -258,7 +265,7 @@ public class BoIPService extends IntentService {
 	
 	public boolean IsSiteLocalIP(String s) {
 		String str = CheckInetAddress(s);
-		if (str.equals("ERROR")) { return false; }
+		if (str.startsWith("ERROR")) { return false; }
 		InetAddress addr = null;
 		try {
 			addr = InetAddress.getByName(str);
