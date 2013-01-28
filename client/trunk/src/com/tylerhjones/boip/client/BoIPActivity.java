@@ -52,6 +52,12 @@ import android.widget.TextView;
 
 public class BoIPActivity extends ListActivity {
 	
+    	//TODO: Remove bin dir in repository
+    	//TODO: Update file headers and versions for release
+        //TODO: Verify strings.xml is up to date
+    	//TODO: Test widget
+    	//TODO: Complete, every fuction and button test of app
+    
 	private static final String TAG = "BoIPActivity";
 	private ArrayList<Server> Servers = new ArrayList<Server>();
 	private ServerAdapter theAdapter;
