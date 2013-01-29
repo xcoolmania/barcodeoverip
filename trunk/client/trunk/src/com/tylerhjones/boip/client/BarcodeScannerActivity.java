@@ -28,14 +28,18 @@ package com.tylerhjones.boip.client;
 
 import java.util.ArrayList;
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
+import android.os.RemoteException;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.Toast;
@@ -63,49 +67,65 @@ public class BarcodeScannerActivity extends Activity {
 		
 	}
 	
-	/*******************************************************************************************************/
-	/** Service result handler function ****************************************************************** */
-	
-	private static Handler ServiceHandler = new Handler() {
+		Messenger mService = null;
+
+		/** Flag indicating whether we have called bind on the service. */
+		boolean mBound;
+
+		/*******************************************************************************************************/
+		/** Service result handler function ****************************************************************** */
 		
-		public void handleMessage(Message message) {
-			Bundle result = message.getData();
+		class ServiceHandler extends Handler {
 			
-			if (result.getString("RESULT").equals("NONE")) {
-				Log.e(TAG, "Service gave result: NONE");
-				act.finish();
-			} else if (result.getString("RESULT").equals("ERR_Intent")) {
-				Log.e(TAG, "Service returned an intent error.");
-				act.finish();
-			} else if (result.getString("RESULT").equals("ERR_Index")) {
-				Log.e(TAG, "Service returned an index error.");
-				act.finish();
-			} else if (result.getString("RESULT").equals("ERR_InvalidIP")) {
-				Log.e(TAG, "Service returned an invalid IP error.");
-				act.finish();
-			} else if (result.getString("RESULT").startsWith("ERROR")) {
-			    	Log.e(TAG, "Service returned error: " + result.getString("RESULT").substring(6));
-			    	Toast.makeText(context, result.getString("RESULT").substring(6), Toast.LENGTH_LONG).show();
-			}
-			
-			if (message.arg1 == RESULT_OK) {
-				if (result.getInt("ACTION", -1) == ACTION_VALIDATE) {
-					if (ValidateResult(result.getString("RESULT"))) {
-						IntentIntegrator integrator = new IntentIntegrator(act);
-						integrator.initiateScan(IntentIntegrator.ALL_CODE_TYPES);
-					}
-				} else if (result.getInt("ACTION", -1) == ACTION_SEND) {
-					SendBarcodeResult(result.getString("RESULT"));
-				} else {
-					Log.e(TAG, "ServiceHandler: Service intent didn't return valid action: " + String.valueOf(result.getInt("ACTION", -1)));
-					act.finish();
+			public void handleMessage(Message message) {
+			    	String res;
+				Bundle result = message.getData();
+				res = result.getString("RESULT");
+				Toast.makeText(context, res, Toast.LENGTH_LONG).show();
+				if (res.equals("NONE")) {
+					Log.e(TAG, "Service gave result: NONE");
+				} else if (res.equals("ERR_Intent")) {
+					Log.e(TAG, "Service returned an intent error.");
+				} else if (res.equals("ERR_Index")) {
+					Log.e(TAG, "Service returned an index error.");
+				} else if (res.equals("ERR_InvalidIP")) {
+					Log.e(TAG, "Service returned an invalid IP error.");
+				} else if (res.startsWith("ERROR")) {
+				    	Log.e(TAG, "Service returned error: " + res.substring(6));
+				    	Toast.makeText(context, res.substring(6), Toast.LENGTH_LONG).show();
 				}
-			} else {
-				Log.e(TAG, "ServiceHandler: Service intent didn't return RESULT_OK: " + String.valueOf(message.arg1));
-				act.finish();
-			}
+				
+				if (message.arg1 == ACTION_VALIDATE) {
+					ValidateResult(res);
+				} else if (message.arg1 == ACTION_SEND) {
+					SendBarcodeResult(res);
+				} else {
+					Log.e(TAG, "ServiceHandler: Service intent didn't return valid action: " + String.valueOf(message.arg1));
+				}
+			};
 		};
-	};
+		
+		final Messenger mMessenger = new Messenger(new ServiceHandler());
+
+		/**
+		 * Class for interacting with the main interface of the service.
+		 */
+		private ServiceConnection mConnection = new ServiceConnection() {
+		    public void onServiceConnected(ComponentName className, IBinder service) {
+	            	mService = new Messenger(service);
+	            	Log.d(TAG, "onServiceConnected");
+	            	mBound = true;
+	                ValidateServer();
+		    }
+
+	        	public void onServiceDisconnected(ComponentName className) {
+	        	    // This is called when the connection with the service has been
+	        	    // unexpectedly disconnected -- that is, its process crashed.
+	        	    mService = null;
+	            	    mBound = false;
+	        	}
+		};
+	
 
 	@Override
 	public void onCreate(Bundle si) {
@@ -136,7 +156,8 @@ public class BarcodeScannerActivity extends Activity {
 		sEdit.commit();
 		
 		BarcodeScannerActivity.this.setTitle("Press 'Back' for Servers list!");
-		ValidateServer(CurServer);
+		//ValidateServer(CurServer);
+		doBindService();
 	}
 	
 	@Override
@@ -145,58 +166,115 @@ public class BarcodeScannerActivity extends Activity {
 		return super.onKeyDown(keyCode, event);
 	}
 	
+	 @Override
+	    protected void onDestroy() {
+	        super.onStop();
+	        // Unbind from the service
+	        doUnbindService();
+	    }
+	 
+        void doBindService() {
+            // Establish a connection with the service.  We use an explicit
+            // class name because there is no reason to be able to let other
+            // applications replace our component.
+            bindService(new Intent(BarcodeScannerActivity.this, 
+            BoIPService.class), mConnection, Context.BIND_AUTO_CREATE);
+            mBound = true;
+            
+        }
+        
+        void doUnbindService() {
+            if (mBound) {
+                // If we have received the service, and hence registered with
+                // it, then now is the time to unregister.
+
+                
+                // Detach our existing connection.
+                unbindService(mConnection);
+                mBound = false;
+            }
+        }
+	
 	/******************************************************************************************/
 	/** Validate Client with Server ***********************************************************/
 	
-	public void ValidateServer(Server s) {
-		Intent intent = new Intent(this, BoIPService.class);
-		Messenger messenger = new Messenger(ServiceHandler);
+	public void ValidateServer() {
+		//Intent intent = new Intent(this, BoIPService.class);
+		//Messenger messenger = new Messenger(ServiceHandler);
 		
-		Log.v(TAG, "ValidateServer(Server s, Context c): Starting BoIPService...");
-		intent.putExtra("MESSENGER", messenger);
-		intent.putExtra("ACTION", ACTION_VALIDATE);
-		intent.putExtra("SNAME", this.CurServer.getName());
-		startService(intent);
-	}
-	
-	public static boolean ValidateResult(String res) {
-		if (res.equals("ERR9")) {
-			Common.showMsgBox(context, "Wrong Password!",
-				"The password you gave does not match the password set on the server. Verify that the passwords match on the server and client then try again.'");
-			return false;
-		} else if (res.equals("ERR1")) {
-			Toast.makeText(context, "Invalid data and/or request syntax!", Toast.LENGTH_SHORT).show();
-			return false;
-		} else if (res.equals("ERR2")) {
-			Toast.makeText(context, "Invalid data, possible missing data separator.", Toast.LENGTH_SHORT).show();
-			return false;
-		} else if (res.equals("ERR3")) {
-			Toast.makeText(context, "Invalid data/syntax, could not parse data.", Toast.LENGTH_SHORT).show();
-			return false;
-		} else if (res.equals(Common.NOPE)) {
-			Toast.makeText(context, "Server is not activated!", Toast.LENGTH_SHORT).show();
-			return false;
-		} else if (res.equals(Common.OK)) {
-			return true;
-		} else {
-			Toast.makeText(context, "Error! - " + Common.errorCodes().get(res).toString(), Toast.LENGTH_SHORT).show();
-			return false;
+		//Log.v(TAG, "ValidateServer(Server s, Context c): Starting BoIPService...");
+		//intent.putExtra("MESSENGER", messenger);
+		//intent.putExtra("ACTION", ACTION_VALIDATE);
+		//intent.putExtra("SNAME", this.CurServer.getName());
+		//startService(intent);
+            	Message msg = Message.obtain();
+            	Bundle b = new Bundle();
+            	b.putString("SERVER", CurServer.getName());
+            	msg.setData(b);
+            	msg.arg1 = ACTION_VALIDATE;
+            	msg.replyTo = mMessenger;
+            	try {
+		    mService.send(msg);
+		} catch (RemoteException e) {
+		    // TODO Auto-generated catch block
+		    e.printStackTrace();
 		}
 	}
 	
+	public void ValidateResult(String res) {
+		if (res.equals("ERR9")) {
+			Common.showMsgBox(context, "Wrong Password!",
+				"The password you gave does not match the password set on the server. Verify that the passwords match on the server and client then try again.'");
+			finish();
+		} else if (res.equals("ERR1")) {
+			Toast.makeText(context, "Invalid data and/or request syntax!", Toast.LENGTH_SHORT).show();
+			finish();
+		} else if (res.equals("ERR2")) {
+			Toast.makeText(context, "Invalid data, possible missing data separator.", Toast.LENGTH_SHORT).show();
+			finish();
+		} else if (res.equals("ERR3")) {
+			Toast.makeText(context, "Invalid data/syntax, could not parse data.", Toast.LENGTH_SHORT).show();
+			finish();
+		} else if (res.equals(Common.NOPE)) {
+			Toast.makeText(context, "Server is not activated!", Toast.LENGTH_SHORT).show();
+			finish();
+		} else if (res.equals(Common.OK)) {
+		    	IntentIntegrator integrator = new IntentIntegrator(BarcodeScannerActivity.this);
+			integrator.initiateScan(IntentIntegrator.ALL_CODE_TYPES);
+		} else {
+			Toast.makeText(context, "Error! - " + Common.errorCodes().get(res).toString(), Toast.LENGTH_SHORT).show();
+			finish();
+		}
+		//doUnbindService();
+		//finish();
+	}
+	
 	public void SendBarcode(final String code) {
-		Intent intent = new Intent(this, BoIPService.class);
-		Messenger messenger = new Messenger(ServiceHandler);
+		//Intent intent = new Intent(this, BoIPService.class);
+		//Messenger messenger = new Messenger(ServiceHandler);
 		
-		Log.v(TAG, "SendBarcode(Server s, String code): Starting BoIPService...");
-		intent.putExtra("MESSENGER", messenger);
-		intent.putExtra("ACTION", ACTION_SEND);
-		intent.putExtra("SNAME", this.CurServer.getName());
-		intent.putExtra("BARCODE", code);
-		startService(intent);
+		//Log.v(TAG, "SendBarcode(Server s, String code): Starting BoIPService...");
+		//intent.putExtra("MESSENGER", messenger);
+		//intent.putExtra("ACTION", ACTION_SEND);
+		//intent.putExtra("SNAME", this.CurServer.getName());
+		//intent.putExtra("BARCODE", code);
+		//startService(intent);
+        	Message msg = Message.obtain();
+        	Bundle b = new Bundle();
+        	b.putString("SERVER", CurServer.getName());
+        	b.putString("BARCODE", code);
+        	msg.setData(b);
+        	msg.arg1 = ACTION_SEND;
+        	msg.replyTo = mMessenger;
+        	try {
+		    mService.send(msg);
+		} catch (RemoteException e) {
+		    // TODO Auto-generated catch block
+		    e.printStackTrace();
+		}
 	}
 	      
-	public static void SendBarcodeResult(String res) {
+	public void SendBarcodeResult(String res) {
 		if (res.equals("ERR9")) {
 			Common.showMsgBox(context, "Wrong Password!",
 				"The password you gave does not match the on on the server. Please change it on your app and press 'Apply Server Settings' and then try again.'");
@@ -213,6 +291,8 @@ public class BarcodeScannerActivity extends Activity {
 		} else {
 			Toast.makeText(context, "Error! - " + Common.errorCodes().get(res).toString(), Toast.LENGTH_SHORT).show();
 		}
+		doUnbindService();
+		finish();
 	}
 	
 	public boolean IsValidIPv4(String ip) {
@@ -262,15 +342,15 @@ public class BarcodeScannerActivity extends Activity {
 				Log.d(TAG, "onActivityResult() : BARCODE = " + barcode);
 				this.SendBarcode(barcode);
 				Toast.makeText(this, getString(R.string.barcode_sent_ok), Toast.LENGTH_SHORT).show();
-				finish();
+				//finish();
 			}
 			catch (NullPointerException ne) {
 				Toast.makeText(this, getString(R.string.hmm_try_again), Toast.LENGTH_LONG).show();
 				Log.e(TAG, "onActivityResult(): " + ne.toString());
-				finish();
+				//this.finish();
 			}
 			
 		}
-		this.finish();
+		//this.finish();
 	}
 }

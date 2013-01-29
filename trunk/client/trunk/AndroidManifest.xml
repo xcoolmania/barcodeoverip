@@ -72,7 +72,7 @@
         android:normalScreens="true"
         android:smallScreens="true" />
         
-        <service android:name="com.tylerhjones.boip.client.BoIPService" >
+        <service android:name="com.tylerhjones.boip.client.BoIPService" android:process=":BoIPService" >
 		</service> 
 		
     </application>     
