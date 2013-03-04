@@ -40,13 +40,15 @@
 
 	<!-- Messages (Toasts/Msgboxes) text -->
 	<string name="about_msg_title">About BarcodeOverIP</string>
-	<string name="about_msg_body"><b>BarcodeOverIP Client 1.0.3-r3</b>\n&#169;2012 - Tyler H. Jones - tylerhuntjones@gmail.com\n\nWelcome to BarcodeOverIP Client for Android!\nTo get started you must add a server by pressing \'Menu\' > \'Add Server\'. 
+	<string name="about_msg_body"><b>BarcodeOverIP Client 1.0.3-r3</b>\n&#169;2013 - Tyler H. Jones - tylerhuntjones@gmail.com\n\nWelcome to BarcodeOverIP Client for Android!\nTo get started you must add a server by pressing \'Menu\' > \'Add Server\'. 
 	    Once you have added one or more servers, to scan a barcode,
-	    simply touch the desired server on the list and scan away! To edit or remove a server from the list, press and hold the desired server in the list and a menu with some actions will appear.\nNOW WITH WIDGETS! Don\'t forget that BarcodeOverIP
+	    simply touch the desired server on the list and scan away! To edit or remove a server from the list, press and hold the desired server in the list and a menu with some actions will appear.\nnNOW WITH WIDGETS! Don\'t forget that BarcodeOverIP
 	    now has homescreen widgets to make scanning a barcode even easier! 
-	    \n<b>*NOTE: </b>The server application is available on Google Code project website.\n\n
-	    Google Code Project Website - http://boip.tylerjones.me (Report bugs here)
-	    Support Open Source Apps! <b>Donate!</b> - http://boip.tylerjones.me/donate\n
+	    \n\n<b>*NOTE: BoIP Client v1.x will ONLY work with BoIP Server v1.x! If you are sill using an older server, you must update the server app to v1.x!</b> The converse is also true, BoIP-Server v1.x doesn\'t work with older client versions.\n\n
+	    The server application is available on Google Code project website.\n\n
+	    BoIP on Google Code - http://boip.tylerjones.me\n
+	    Bug Reporting  - http://boip.tylerjones.me/bugs\n
+	    <b>Support Open Source Apps! Donate!</b>\n -- http://boip.tylerjones.me/donate\n
 	</string>	
 	<string name="editservers_msg_title">Edit Servers</string>
 	<string name="editservers_msg_body">Edit servers activity is not done yet! Try again later!</string>
