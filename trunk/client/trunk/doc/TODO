@@ -1,5 +1,8 @@
 HIGH:
--Get it released!
+-Add 'Add Server' to Action Bar
+-Get server discovery working
+-Fix widget (All widgets default to first server when phone is rebooted)
+-Add webserver to allow for download of server app directly from device
 
 MEDIUM:
 
