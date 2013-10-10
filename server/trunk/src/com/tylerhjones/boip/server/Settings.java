@@ -1,6 +1,6 @@
 /*
  *
- *  BarcodeOverIP-Server (Java) Version 1.0.x
+ *  BarcodeOverIP-Server (Java) Version 1.1.x
  *  Copyright (C) 2013, Tyler H. Jones (me@tylerjones.me)
  *  http://boip.tylerjones.me
  *
@@ -35,8 +35,8 @@ public class Settings {
 
     private final static String TAG = "Settings";
 
-    public final String VERSION = "1.0.3-r3";
-    public final String VERNUM = "1.0.3";
+    public final String VERSION = "1.1.0-r1";
+    public final String VERNUM = "1.1.0";
     public final int REVNUM = 160;
     public final String VERTYPE = "r1";
     public final String APP_NAME = "BarcodeOverIP-Server";

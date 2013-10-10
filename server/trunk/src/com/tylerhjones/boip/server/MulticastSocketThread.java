@@ -1,6 +1,6 @@
 /*
  *
- *  BarcodeOverIP-Server (Java) Version 1.0.x
+ *  BarcodeOverIP-Server (Java) Version 1.1.x
  *  Copyright (C) 2013, Tyler H. Jones (me@tylerjones.me)
  *  http://boip.tylerjones.me
  *
