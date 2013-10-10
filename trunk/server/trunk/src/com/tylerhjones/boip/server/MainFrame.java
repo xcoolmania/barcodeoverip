@@ -1,3 +1,29 @@
+/*
+ *
+ *  BarcodeOverIP-Server (Java) Version 1.1.x
+ *  Copyright (C) 2013, Tyler H. Jones (me@tylerjones.me)
+ *  http://boip.tylerjones.me
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ *  Filename: MainFrame.java
+ *  Package Name: com.tylerhjones.boip.server
+ *  Created By: Tyler H. Jones <me@tylerjones.me> on Feb 26, 2012 9:50:26 AM
+ *
+ *  Description: The main application window and controls.
+ *
+ */
+
 package com.tylerhjones.boip.server;
 
 import java.awt.BorderLayout;
@@ -37,6 +63,7 @@ import java.awt.event.ActionEvent;
 
 public class MainFrame extends JFrame {
 
+	private static final long serialVersionUID = 7688549769450377285L;
 	private JPanel contentPane;
     private String TAG = "MainFrame";
 
@@ -63,10 +90,9 @@ public class MainFrame extends JFrame {
     private JButton btnAbout;
     private JButton btnHide;
 
-	/**
-	 * Create the frame.
-	 */
+
 	public MainFrame() {
+		setTitle("BarcodeOverIP Server");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 377, 386);
 		contentPane = new JPanel();
