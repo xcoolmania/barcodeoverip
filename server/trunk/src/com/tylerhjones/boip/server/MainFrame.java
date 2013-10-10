@@ -18,9 +18,21 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+
+import java.awt.Font;
+
+import javax.swing.JCheckBox;
+import javax.swing.JButton;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ChangeEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 
 public class MainFrame extends JFrame {
@@ -40,32 +52,178 @@ public class MainFrame extends JFrame {
     private Toolkit toolkit;
     private Thread serverThread = new Thread(Server);
     private MulticastSocketThread discoverable;
-    private JTextField textField;
+    private JTextField txtHost;
+    private JLabel lblPort;
+    private JTextField txtPort;
+    private JTextField txtPassword;
+    private JCheckBox chkAutoSet;
+    private JCheckBox chkAppendNL;
+    private JButton btnApply;
+    private JButton btnExit;
+    private JButton btnAbout;
+    private JButton btnHide;
 
 	/**
 	 * Create the frame.
 	 */
 	public MainFrame() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
+		setBounds(100, 100, 377, 386);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JLabel lblTitle = new JLabel("New label");
-		lblTitle.setBounds(6, 6, 438, 52);
+		JLabel lblTitle = new JLabel("");
+		lblTitle.setFont(new Font("Courier", Font.PLAIN, 13));
+		lblTitle.setBounds(6, 6, 365, 52);
 		lblTitle.setText("<html>Enter the IP and Port given below into your BarcodeOverIP Client app to scan and send barcodes to this computer. It's that easy!</html>");
 		contentPane.add(lblTitle);
 		
 		JLabel lblIpAddress = new JLabel("IP Address:");
-		lblIpAddress.setBounds(16, 70, 76, 28);
+		lblIpAddress.setFont(new Font("Courier", Font.BOLD, 14));
+		lblIpAddress.setBounds(16, 70, 201, 24);
 		contentPane.add(lblIpAddress);
 		
-		textField = new JTextField();
-		textField.setBounds(104, 70, 157, 28);
-		contentPane.add(textField);
-		textField.setColumns(10);
+		txtHost = new JTextField();
+		txtHost.setEditable(false);
+		txtHost.setText("255.255.255.255");
+		txtHost.setFont(new Font("Courier", Font.PLAIN, 16));
+		txtHost.setBounds(26, 106, 188, 43);
+		contentPane.add(txtHost);
+		txtHost.setColumns(10);
+		
+		lblPort = new JLabel("Port:");
+		lblPort.setFont(new Font("Courier", Font.BOLD, 14));
+		lblPort.setBounds(229, 70, 215, 24);
+		contentPane.add(lblPort);
+		
+		txtPort = new JTextField();
+		txtPort.setEditable(false);
+		txtPort.setFont(new Font("Courier", Font.PLAIN, 16));
+		txtPort.setBounds(239, 106, 102, 43);
+		contentPane.add(txtPort);
+		txtPort.setColumns(10);
+		
+		chkAutoSet = new JCheckBox("Automatically detect IP and Port");
+		chkAutoSet.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if(chkAutoSet.isSelected()) {
+		            String ip = FindSystemIP();
+		            if(ip.equals(DEFAULT_IP) || ip.startsWith("127") || ip.equals("")) {
+		                JOptionPane.showMessageDialog(getParent(), "The IP address of your system could not be auto-discovered. Check the network connection and try again or set the IP and port manually.", "Cannot Auto-discover Local IP Address", JOptionPane.WARNING_MESSAGE);
+		                chkAutoSet.setSelected(false);
+		                SET.setAutoSet(false);
+		                txtHost.setEditable(true);
+		                txtPort.setEditable(true);
+		                txtHost.setFocusable(true);
+		                txtHost.requestFocusInWindow();
+		                txtHost.selectAll();
+		                txtHost.requestFocusInWindow();
+		                btnApply.setEnabled(true);
+		            } else {
+		                chkAutoSet.setSelected(true);
+		                SET.setAutoSet(true);
+		                txtHost.setEditable(false);
+		                txtPort.setEditable(false);
+		                btnApply.setEnabled(false);
+		                SET.setHost(ip);
+		                SET.setPort(DEFAULT_PORT);
+		                txtHost.setText(ip);
+		                txtPort.setText(String.valueOf(DEFAULT_PORT));
+		                ApplyIPPort();
+		            }
+		    	} else {
+		            txtHost.setEditable(true);
+		            txtPort.setEditable(true);
+		            txtHost.setFocusable(true);
+		            txtHost.requestFocusInWindow();
+		            txtHost.selectAll();
+		            btnApply.setEnabled(true);
+		        }
+			}
+		});
+		chkAutoSet.setSelected(true);
+		chkAutoSet.setToolTipText("Automatically detect the IP and port for the server. (RECOMENDED)");
+		chkAutoSet.setFont(new Font("Courier", Font.PLAIN, 14));
+		chkAutoSet.setBounds(6, 252, 365, 23);
+		contentPane.add(chkAutoSet);
+		
+		chkAppendNL = new JCheckBox("Append newline (enter key) after barcode");
+		chkAppendNL.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				SET.setAppendNL(chkAppendNL.isSelected());
+			}
+		});
+		chkAppendNL.setSelected(true);
+		chkAppendNL.setToolTipText("Append (add) a newline character (enter key) after typing the barcode");
+		chkAppendNL.setFont(new Font("Courier", Font.PLAIN, 14));
+		chkAppendNL.setBounds(6, 287, 365, 23);
+		contentPane.add(chkAppendNL);
+		
+		JLabel lblPassword = new JLabel("Password: (Blank for NONE)");
+		lblPassword.setFont(new Font("Courier", Font.BOLD, 14));
+		lblPassword.setBounds(16, 161, 355, 24);
+		contentPane.add(lblPassword);
+		
+		txtPassword = new JTextField();
+		txtPassword.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent arg0) {
+				//Set password
+			}
+		});
+		txtPassword.setFont(new Font("Courier", Font.PLAIN, 16));
+		txtPassword.setBounds(26, 197, 315, 43);
+		contentPane.add(txtPassword);
+		txtPassword.setColumns(10);
+		
+		btnApply = new JButton("Apply");
+		btnApply.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				ApplyIPPort();
+			}
+		});
+		btnApply.setEnabled(false);
+		btnApply.setToolTipText("Apply the settings and save the configuration");
+		btnApply.setFont(new Font("Courier", Font.PLAIN, 13));
+		btnApply.setBounds(6, 322, 92, 29);
+		contentPane.add(btnApply);
+		
+		btnExit = new JButton("Exit");
+		btnExit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+		        Server.stopListener();
+		        dispose();
+		        System.exit(0);
+			}
+		});
+		btnExit.setToolTipText("Exit the application and kill all connections");
+		btnExit.setFont(new Font("Courier", Font.PLAIN, 13));
+		btnExit.setBounds(279, 322, 92, 29);
+		contentPane.add(btnExit);
+		
+		btnAbout = new JButton("About");
+		btnAbout.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+		        JOptionPane.showMessageDialog(getParent(), "<html><center><b><big>BarcodeOverIP-Server " + SET.VERSION + "</big></b><br><strong>Written by Tyler H. Jones</strong> -- <b>eMail:</b> tylerhuntjones@gmail.com<br><b>Blog:</b> https://tylerjones.me | <b>Twitter:</b> twitter.com/tylerhuntjones<br><hr><b>BarcodeOverIP Project Site:</b> http://boip.tylerjones.me</a><br><b>Application Usage Notes</b></center><br><div style=\"text-align: left;\"><b>a.</b> This application works best when run in OpenJDK-6 or OracleJava-6, v7 works but it may be buggy depending on your platform and exact JRE version. <br><b>b.</b> I have tested this application on Linux, MacOS X and Windows XP/7/8and can confirm that it works.<br>Windows users might have to disable Windows firewall for XP/7/8 to cooperate.<br><b>c.</b> I have not tested (or even thought about testing it) for use of the Internet, because... why?<br><b>d.</b> I have made a lot of effort in enabling BoIP to be able to scan any kind of barcode in existence.<br>If certain ones aren't working, please file a bug report (see below)<br><b>e.</b> Please report any bugs, typos, crash reports, and comments/tweaks/suggestions by filing a bug report<br>on the BoIP Google Code Project Issues: http://boip.tylerjones.me/bugs</div></html>", "About BarcodeOverIP-Server " + SET.VERSION, JOptionPane.INFORMATION_MESSAGE);
+			}
+		});
+		btnAbout.setToolTipText("About BoIP");
+		btnAbout.setFont(new Font("Courier", Font.PLAIN, 13));
+		btnAbout.setBounds(97, 322, 92, 29);
+		contentPane.add(btnAbout);
+		
+		btnHide = new JButton("Hide");
+		btnHide.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				setVisible(false);
+			}
+		});
+		btnHide.setToolTipText("Hide the window to the system tray");
+		btnHide.setFont(new Font("Courier", Font.PLAIN, 13));
+		btnHide.setBounds(188, 322, 92, 29);
+		contentPane.add(btnHide);
 		setResizable(false);
 	}
 	
@@ -121,13 +279,13 @@ public class MainFrame extends JFrame {
                 txtHost.setFocusable(true);
                 txtHost.requestFocusInWindow();
                 txtHost.selectAll();
-                btnApplyIPPort.setEnabled(true);
+                btnApply.setEnabled(true);
             } else {
                 chkAutoSet.setSelected(true);
                 SET.setAutoSet(true);
                 txtHost.setEditable(false);
                 txtPort.setEditable(false);
-                btnApplyIPPort.setEnabled(false);
+                btnApply.setEnabled(false);
                 SET.setHost(ip);
                 SET.setPort(DEFAULT_PORT);
                 txtHost.setText(ip);
@@ -141,7 +299,7 @@ public class MainFrame extends JFrame {
             txtHost.setFocusable(true);
             txtHost.requestFocusInWindow();
             txtHost.selectAll();
-            btnApplyIPPort.setEnabled(true);
+            btnApply.setEnabled(true);
         }
         Server.activate();
     }
