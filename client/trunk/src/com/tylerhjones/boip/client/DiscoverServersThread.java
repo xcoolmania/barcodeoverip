@@ -38,7 +38,7 @@ import android.util.Log;
 public class DiscoverServersThread extends Thread {
 	
 	private static final String TAG = "DiscoverServersThread";
-	private int Port = 41788 + 32;
+	private int Port = 8174;
 	
 	// Define sockets and Listeners
 	private MulticastSocket socket;
@@ -52,7 +52,6 @@ public class DiscoverServersThread extends Thread {
 	
 	public DiscoverServersThread(int p, FindListener listener) {
 		li("DiscoverServersThread -- Constructor w/ port. this.Port = ", String.valueOf(p));
-		this.Port = p + 131;
 		this.listener = listener;
 	}
 	
@@ -104,7 +103,7 @@ public class DiscoverServersThread extends Thread {
 		String data = new String(packet.getData());
 		li("handleReceivedPacket() -- Got packet data: ", packet.toString());
 		li("Server IP: " + packet.getAddress().getHostAddress());
-		li("Server Port [ Real | Shown ]: " + packet.getPort() + " | " + String.valueOf(this.Port - 131));
+		li("Server Port [ Real | Shown ]: " + packet.getPort() + " | " + String.valueOf(this.Port));
 		if (data.substring(0, Common.HOST_RESPONSE.length()).compareTo(Common.HOST_RESPONSE) == 0) {
 			li("handleReceivedPacket() -- Server's response OK! Add to list");
 			this.listener.onAddressReceived(packet.getAddress().getHostAddress());
