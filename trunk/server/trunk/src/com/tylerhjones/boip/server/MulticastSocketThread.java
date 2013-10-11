@@ -41,59 +41,59 @@ public class MulticastSocketThread extends Thread {
         private static final String HOST_CHALLENGE = "BoIP:NarwhalBaconTime";
         private static final String HOST_RESPONSE = "BoIP:Midnight";
 
-        private Settings SET = new Settings();
+        //private Settings SET = new Settings();
 
-	private int Port = 41788 + 131;
+	private int Port = 8714;
 	private MulticastSocket socket;
 
 	public MulticastSocketThread() {
-                  this.Port = SET.getPort() + 131;
+                  //this.Port = SET.getPort() + 131;
 	}
 
 	public MulticastSocketThread(int port) {
-		this.Port = port + 131;
+		//this.Port = port + 131;
 	}
 
 	public MulticastSocketThread(Runnable target) {
 		super(target);
-                this.Port = SET.getPort() + 131;
+                //this.Port = SET.getPort() + 131;
                 
 	}
 
 	public MulticastSocketThread(String name) {
 		super(name);
-                this.Port = SET.getPort() + 131;
+                //this.Port = SET.getPort() + 131;
 		
 	}
 
 	public MulticastSocketThread(ThreadGroup group, Runnable target) {
 		super(group, target);
-                this.Port = SET.getPort() + 131;
+                //this.Port = SET.getPort() + 131;
 		
 	}
 
 	public MulticastSocketThread(ThreadGroup group, String name) {
 		super(group, name);
-                this.Port = SET.getPort() + 131;
+                //this.Port = SET.getPort() + 131;
 		
 	}
 
 	public MulticastSocketThread(Runnable target, String name) {
 		super(target, name);
-                this.Port = SET.getPort() + 131;
+                //this.Port = SET.getPort() + 131;
 		
 	}
 
 	public MulticastSocketThread(ThreadGroup group, Runnable target, String name) {
 		super(group, target, name);
-                this.Port = SET.getPort() + 131;
+                //this.Port = SET.getPort() + 131;
 		
 	}
 
 	public MulticastSocketThread(ThreadGroup group, Runnable target, String name,
 			long stackSize) {
 		super(group, target, name, stackSize);
-                this.Port = SET.getPort() + 131;
+                //this.Port = SET.getPort() + 131;
 		
 	}
 
