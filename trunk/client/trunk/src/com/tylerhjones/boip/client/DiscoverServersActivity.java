@@ -51,7 +51,7 @@ public class DiscoverServersActivity extends Activity {
 	private Handler handler; // FindServer thread handler
 	private Vector<String> Servers; // IP address of server only
 	
-	private int Port = Common.DEFAULT_PORT + 131;
+	private int Port = 8714;
 
 	// Empty default class constructor
 	public DiscoverServersActivity() {}
