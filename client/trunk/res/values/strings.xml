@@ -19,6 +19,7 @@
 	<string name="author">Tyler H. Jones</string>
 	<string name="author_email">tylerhuntjones@gmail.com</string>
 	<string name="service_name">BoIP Service</string>
+	<string name="findservers_title">Find Servers</string>
 	
 	<!-- ServerInfoActiviy items -->
 	<string name="server_info">Add/Modify Server</string>
@@ -33,6 +34,7 @@
 	<!-- Menus text and info -->
 	<string name="mnuRefreshServers_title">Refresh</string>
 	<string name="mnuMainAddServer_title">Add Server</string>
+	<string name="mnuMainFindServers_title">Find Servers</string>
 	<string name="mnuMainAbout_title">About</string>
 	<string name="mnuMainDonate_title">Donate</string>
 	<string name="mnuESDelete_title">Delete</string>

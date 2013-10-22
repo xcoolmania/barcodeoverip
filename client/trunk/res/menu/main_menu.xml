@@ -2,6 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
     <item android:id="@+id/mnuMainAddServer"
           android:title="@string/mnuMainAddServer_title" />
+    <item android:id="@+id/mnuMainFindServers"
+          android:title="@string/mnuMainFindServers_title" />
     <item android:id="@+id/mnuRefreshServers"
           android:title="@string/mnuRefreshServers_title" />
 	<item android:id="@+id/mnuMainAbout"

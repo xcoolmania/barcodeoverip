@@ -108,7 +108,7 @@ public class BoIPActivity extends ListActivity {
 					
 					public void onClick(DialogInterface dialog, int which) {
 						dialog.dismiss();
-					finish();
+						finish();
 					}
 				});
 			ad.show();
@@ -247,6 +247,9 @@ public class BoIPActivity extends ListActivity {
 			case R.id.mnuMainAddServer:
 				this.addServer();
 				return true;
+			case R.id.mnuMainFindServers:
+				this.findServers();
+				return true;
 			default:
 				return super.onOptionsItemSelected(item);
 		}
@@ -268,6 +271,12 @@ public class BoIPActivity extends ListActivity {
 		intent.setClassName("com.tylerhjones.boip.client", "com.tylerhjones.boip.client.ServerInfoActivity");
 		intent.putExtra("com.tylerhjones.boip.client.Action", Common.ADD_SREQ);
 		startActivityForResult(intent, Common.ADD_SREQ);
+	}
+	
+	private void findServers() {
+		Intent intent = new Intent();
+		intent.setClassName("com.tylerhjones.boip.client", "com.tylerhjones.boip.client.DiscoverServersActivity");
+		startActivity(intent);
 	}
 	
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
