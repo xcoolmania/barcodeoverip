@@ -37,6 +37,7 @@ import java.net.MulticastSocket;
 
 public class MulticastSocketThread extends Thread {
 
+	protected Settings SET = new Settings();
     private static int BUFFER_LEN = 1024;
 	public static String MULTICAST_IP = "231.0.2.46";
     private static final String HOST_CHALLENGE = "BoIP:NarwhalBaconTime";
@@ -102,20 +103,25 @@ public class MulticastSocketThread extends Thread {
 	public void run() {
 		try {
 			byte[] b = new byte[BUFFER_LEN];
-			DatagramPacket packet = new DatagramPacket(b, b.length);
+			String message = SET.getHost() + ":" + SET.getPort();
+			b = message.getBytes();
+			//DatagramPacket packet = new DatagramPacket(b, b.length);
 			this.socket = new MulticastSocket(this.Port);
 			this.socket.joinGroup(InetAddress.getByName(MULTICAST_IP));
-            System.out.println("MST -- run(): Listen IP: " + MULTICAST_IP);
-            System.out.println("MST -- run(): Listen Port: " + String.valueOf(this.Port));
+            System.out.println("MulticastServerThread -- run(): Listen IP: " + MULTICAST_IP);
+            System.out.println("MulticastServerThread -- run(): Listen Port: " + String.valueOf(this.Port));
+            System.out.println("MulticastServerThread -- run(): Message: " + message);
             while (true) {
-				this.socket.receive(packet);
-				this.PacketHandler(packet);
+            	DatagramPacket packet = new DatagramPacket(b, b.length, InetAddress.getByName(MULTICAST_IP), this.Port);
+            	socket.send(packet);
+            	Thread.sleep(500);
+				//this.socket.receive(packet);
+				//this.PacketHandler(packet);
 			}
-		} catch (IOException e) {
-
-		} catch (InterruptedException e) {
-
-		}
+		} catch (IOException | InterruptedException e) {
+			System.out.println("MulticastServerThread -- run(): IOException Caught!");
+		} 
+		//socket.leaveGroup(InetAddress.getByName(MULTICAST_IP));
 	}
 
 	private void PacketHandler(DatagramPacket packet) throws IOException, InterruptedException {
