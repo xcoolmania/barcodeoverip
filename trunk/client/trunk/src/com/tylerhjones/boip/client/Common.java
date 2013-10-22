@@ -81,6 +81,7 @@ public class Common {
 
 	public static final int BUFFER_LEN = 1024;
 	public static final String MULTICAST_IP = "231.0.2.46";
+	public static final int MULTICAST_PORT = 8714;
 	
 	// Host challenge phrase and response
 	public static final String HOST_CHALLENGE = "BoIP:NarwhalBaconTime"; // If you don't understand why I used NarwhalBaconTime then you need to visit http://reddit.com

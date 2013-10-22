@@ -26,11 +26,14 @@
 package com.tylerhjones.boip.client;
 
 import java.util.Vector;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.DataSetObserver;
+import android.net.wifi.WifiManager;
+import android.net.wifi.WifiManager.MulticastLock;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -51,8 +54,6 @@ public class DiscoverServersActivity extends Activity {
 	private Handler handler; // FindServer thread handler
 	private Vector<String> Servers; // IP address of server only
 	
-	private int Port = 8714;
-
 	// Empty default class constructor
 	public DiscoverServersActivity() {}
 
@@ -102,10 +103,16 @@ public class DiscoverServersActivity extends Activity {
 	public void onStart() {
 		super.onStart();
 		// this.StartSocketThread();
-		this.ServerFinder = new DiscoverServersThread(this.Port, new DiscoverServersThread.FindListener() {
+		WifiManager wm = (WifiManager)getSystemService(Context.WIFI_SERVICE);
+		MulticastLock mcastlock = wm.createMulticastLock("multicastlock");
+		mcastlock.acquire();
+		this.ServerFinder = new DiscoverServersThread(new DiscoverServersThread.FindListener() {
 			
 			public void onAddressReceived(String address) {
-				Servers.add(address);
+				if(!Servers.contains(address)) {
+					Log.i(TAG, address);
+					Servers.add(address);
+				}
 				Log.i(TAG, "onResume() - Got response from server, " + address);
 				handler.post(new Runnable() {
 					

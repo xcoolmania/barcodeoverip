@@ -38,7 +38,6 @@ import android.util.Log;
 public class DiscoverServersThread extends Thread {
 	
 	private static final String TAG = "DiscoverServersThread";
-	private int Port = 8714;
 	
 	// Define sockets and Listeners
 	private MulticastSocket socket;
@@ -50,27 +49,29 @@ public class DiscoverServersThread extends Thread {
 		this.listener = listener;
 	}
 	
-	public DiscoverServersThread(int p, FindListener listener) {
-		li("DiscoverServersThread -- Constructor w/ port. this.Port = ", String.valueOf(p));
-		//this.Port = p + 131;
-		this.listener = listener;
-	}
-	
 	public void run() {
 		li("run() -- Start MulticastSocketThread.");
+		byte[] barray = new byte[Common.BUFFER_LEN];
 		try {
-			this.socket = new MulticastSocket(this.Port);
+			DatagramPacket packet = new DatagramPacket(barray, barray.length, InetAddress.getByName(Common.MULTICAST_IP), Common.MULTICAST_PORT);
+			this.socket = new MulticastSocket(Common.MULTICAST_PORT);
 			this.socket.joinGroup(InetAddress.getByName(Common.MULTICAST_IP));
-			this.inSocket = new DatagramSocket(this.Port + 1);
-			this.SendHostChallenge();
-			this.WaitForResponse();
+			while (true) {
+				socket.receive(packet);
+				String data = new String(packet.getData(), 0, packet.getLength());
+				li("Multicast Paket Data: ", data);
+				this.listener.onAddressReceived(data);
+			}
+			//this.inSocket = new DatagramSocket(Common.MULTICAST_PORT + 1);
+			//this.SendHostChallenge();
+			//this.WaitForResponse();
 		}
 		catch (IOException e) {
 			Log.e(TAG, "run() IOException: " + e.getMessage().toString());
 		}
-		catch (InterruptedException e) {
-			Log.e(TAG, "run() InterruptedException: " + e.getMessage().toString());
-		}
+		//catch (InterruptedException e) {
+		//	Log.e(TAG, "run() InterruptedException: " + e.getMessage().toString());
+		//}
 	}
 	
 	public void closeSocket() {
@@ -84,7 +85,7 @@ public class DiscoverServersThread extends Thread {
 		byte[] barray = Common.HOST_CHALLENGE.getBytes();
 		DatagramPacket packet = new DatagramPacket(barray, barray.length);
 		packet.setAddress(InetAddress.getByName(Common.MULTICAST_IP));
-		packet.setPort(this.Port);
+		packet.setPort(Common.MULTICAST_PORT);
 		this.socket.send(packet);
 		li("SendHostChallenge() -- Sent multicast packet containing: ", packet.toString());
 		Thread.sleep(500);
@@ -104,7 +105,7 @@ public class DiscoverServersThread extends Thread {
 		String data = new String(packet.getData());
 		li("handleReceivedPacket() -- Got packet data: ", packet.toString());
 		li("Server IP: " + packet.getAddress().getHostAddress());
-		li("Server Port [ Real | Shown ]: " + packet.getPort() + " | " + String.valueOf(this.Port));
+		li("Server Port [ Real | Shown ]: " + packet.getPort() + " | " + String.valueOf(Common.MULTICAST_PORT));
 		if (data.substring(0, Common.HOST_RESPONSE.length()).compareTo(Common.HOST_RESPONSE) == 0) {
 			li("handleReceivedPacket() -- Server's response OK! Add to list");
 			this.listener.onAddressReceived(packet.getAddress().getHostAddress());
