@@ -30,6 +30,7 @@ package com.tylerhjones.boip.server;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 
@@ -127,10 +128,11 @@ public class MulticastSocketThread extends Thread {
 			DatagramPacket p = new DatagramPacket(b, b.length);
 			p.setAddress(packet.getAddress());
 			p.setPort(this.Port+1);
+			
 			// wait half a second just in case.
 			Thread.sleep(500);
-			//datagramSocket outSocket = new DatagramSocket();
-			//outSocket.joinGroup(InetAddress.getByName(MULTICAST_ADDRESS));
+			//DatagramSocket outSocket = new DatagramSocket();
+			//outSocket.joinGroup(InetAddress.getByName(MULTICAST_IP));
 			//outSocket.send(p);
 		}
 	}
