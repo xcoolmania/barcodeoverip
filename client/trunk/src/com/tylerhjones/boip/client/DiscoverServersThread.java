@@ -38,7 +38,7 @@ import android.util.Log;
 public class DiscoverServersThread extends Thread {
 	
 	private static final String TAG = "DiscoverServersThread";
-	private int Port = 8174;
+	private int Port = 8714;
 	
 	// Define sockets and Listeners
 	private MulticastSocket socket;
@@ -52,6 +52,7 @@ public class DiscoverServersThread extends Thread {
 	
 	public DiscoverServersThread(int p, FindListener listener) {
 		li("DiscoverServersThread -- Constructor w/ port. this.Port = ", String.valueOf(p));
+		//this.Port = p + 131;
 		this.listener = listener;
 	}
 	

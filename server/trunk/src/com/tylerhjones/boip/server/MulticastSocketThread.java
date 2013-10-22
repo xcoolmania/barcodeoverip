@@ -36,10 +36,10 @@ import java.net.MulticastSocket;
 
 public class MulticastSocketThread extends Thread {
 
-        private static int BUFFER_LEN = 1024;
+    private static int BUFFER_LEN = 1024;
 	public static String MULTICAST_IP = "231.0.2.46";
-        private static final String HOST_CHALLENGE = "BoIP:NarwhalBaconTime";
-        private static final String HOST_RESPONSE = "BoIP:Midnight";
+    private static final String HOST_CHALLENGE = "BoIP:NarwhalBaconTime";
+    private static final String HOST_RESPONSE = "BoIP:Midnight";
 
         //private Settings SET = new Settings();
 
@@ -104,9 +104,9 @@ public class MulticastSocketThread extends Thread {
 			DatagramPacket packet = new DatagramPacket(b, b.length);
 			this.socket = new MulticastSocket(this.Port);
 			this.socket.joinGroup(InetAddress.getByName(MULTICAST_IP));
-                        System.out.println("MST -- run(): Listen IP: " + MULTICAST_IP);
-                        System.out.println("MST -- run(): Listen Port: " + String.valueOf(this.Port));
-                        while (true) {
+            System.out.println("MST -- run(): Listen IP: " + MULTICAST_IP);
+            System.out.println("MST -- run(): Listen Port: " + String.valueOf(this.Port));
+            while (true) {
 				this.socket.receive(packet);
 				this.PacketHandler(packet);
 			}
